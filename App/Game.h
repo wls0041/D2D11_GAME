@@ -46,4 +46,6 @@ private:
 	}data;
 
 	ID3D11Buffer *cbuffer; //hlsl의 VS에 정보를 보내줄 버퍼
+
+	ID3D11RasterizerState *rsState;
 };

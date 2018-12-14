@@ -125,7 +125,8 @@ void Game::Initialize()
 
 	//Create View Matrix
 	{
-		D3DXMatrixOrthoLH(&projection, 1280, 720, 0, 1);  //투영될 공간의 사이즈 지정, 카메라 앞 - zn(near), 투영된 곳 - zf(far)
+	//	D3DXMatrixOrthoLH(&projection, 1280, 720, 0, 1);  //투영될 공간의 사이즈 지정, 카메라 앞 - zn(near plane), 투영된 곳 - zf(far plane)
+		D3DXMatrixOrthoOffCenterLH(&projection, 0, 1280, 0, 720, 0, 1);
 	}
 	//만들어진 공간을 변환시키는 것은 VS. 따라서 VS로 가서 만듬(color.hlsld의 cbuffer와 vs), 보낼 때 정보를 보내줘야함(id3d11buffer)
 
@@ -136,29 +137,45 @@ void Game::Initialize()
 		bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //카메라가 조금이라도 움직이면 실시간으로 반영되어야 함
 		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		bufferDesc.ByteWidth = sizeof(Data);
-		bufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE; //usage가 dynamic일 때 추가. cpu를 쓰기용으로 접근하라(계산은 gpu가 다 해주므로)
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //usage가 dynamic일 때 추가. cpu를 쓰기용으로 접근하라(계산은 gpu가 다 해주므로)
 
 		HRESULT hr = graphics->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &cbuffer);
+		assert(SUCCEEDED(hr));
+	}
+
+	//Create Rasterizer State
+	{
+		D3D11_RASTERIZER_DESC desc;
+		MAKE_ZERO_TOKEN(&desc, sizeof(D3D11_RASTERIZER_DESC));
+		desc.FrontCounterClockwise = false; //앞면을 어떻게 판별할 것인가. false = 시계방향이 앞면
+		desc.CullMode = D3D11_CULL_BACK; //컬링. 원하지 않는 부분(BACK, FRONT, NONE)은 생략해 퍼포먼스를 높임
+		desc.FillMode = D3D11_FILL_SOLID; //WIREFRAME. 외곽선만 출력
+
+		HRESULT hr = graphics->GetDevice()->CreateRasterizerState(&desc, &rsState);
 		assert(SUCCEEDED(hr));
 	}
 }
 
 void Game::Update()
 {
-	//if (GetAsyncKeyState('A') & 0x8000) {
-	//	for (uint i = 0; i < 6; i++) vertices[i].position.x -= 0.03f;
-	//}
-	//else if (GetAsyncKeyState('S') & 0x8000) {
-	//	for (uint i = 0; i < 6; i++) vertices[i].position.x += 0.03f;
-	//}
+	D3DXMATRIX S, R, T;
+	D3DXMatrixScaling(&S, 100, 100, 1);
+	D3DXMatrixRotationZ(&R, static_cast<float>(D3DXToRadian(45)));
+	D3DXMatrixTranslation(&T, 100, 100, 0);
 
-	//graphics->GetDeviceContext()->UpdateSubresource(vertexBuffer, 0, nullptr, vertices, sizeof(VertexColor) * 6, 0);
+	world = S * R * T;
+
+	//행우선을 열우선으로 바꿔줌(전치)
+	D3DXMatrixTranspose(&data.World, &world);
+	D3DXMatrixTranspose(&data.View, &view);
+	D3DXMatrixTranspose(&data.Projection, &projection);
 
 	D3D11_MAPPED_SUBRESOURCE subResource;
 	//맵, 언맵. 맵->더 이상 들어오지 못하도록 막음(update 중에 cbuffer를 못 건들게)(나가지도 못함)->subResource가 대신 값을 가져와서 넣어줌,  언맵->막은 것을 품. 
 	graphics->GetDeviceContext()->Map(cbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); //subResource에 복사해라, 섰으면 버려라(discard)
-	memcpy(&subResource.pData, &data, sizeof(Data)); //복사, 원본, 복사할 크기
+	memcpy(subResource.pData, &data, sizeof(Data)); //복사, 원본, 복사할 크기
 	graphics->GetDeviceContext()->Unmap(cbuffer, 0);
+
 }
 
 void Game::Render()
@@ -175,8 +192,10 @@ void Game::Render()
 
 	//VS단계 세팅
 	dc->VSSetShader(vertexShader, nullptr, 0);
+	dc->VSSetConstantBuffers(0, 1, &cbuffer); //cbuffer넘겨줌
 
 	//RS단계 -> 기본 세팅 되어있음
+	dc->RSSetState(rsState);
 
 	//PS단계
 	dc->PSSetShader(pixelShader, nullptr, 0);
