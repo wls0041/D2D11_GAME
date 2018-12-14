@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="System\Window.cpp" />
+    <ClCompile Include="System\Settings.cpp" />
+    <ClCompile Include="App\App.cpp" />
+    <ClCompile Include="App\Game.cpp" />
+    <ClCompile Include="System\Graphics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="System\Window.h" />
+    <ClInclude Include="System\Settings.h" />
+    <ClInclude Include="App\App.h" />
+    <ClInclude Include="App\Game.h" />
+    <ClInclude Include="System\Graphics.h" />
+  </ItemGroup>
+</Project>
