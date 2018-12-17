@@ -1,8 +1,12 @@
-cbuffer WorldViewProjectionBuffer : register(b0) //0번째(슬롯번호) 버퍼
+cbuffer ViewProjectionBuffer : register(b0) //0번째(슬롯번호) 버퍼
 {
-    matrix World;
     matrix View;
     matrix Projection;
+};
+
+cbuffer WorldBuffer : register(b1) //0번째(슬롯번호) 버퍼
+{
+    matrix World;
 };
 
 struct VertexInput

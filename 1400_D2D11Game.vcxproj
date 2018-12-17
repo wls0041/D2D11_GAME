@@ -154,6 +154,8 @@
     <ClCompile Include="App\App.cpp" />
     <ClCompile Include="App\Game.cpp" />
     <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Rendering\Rect.cpp" />
+    <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -165,6 +167,8 @@
   <ItemGroup>
     <ClInclude Include="App\App.h" />
     <ClInclude Include="App\Game.h" />
+    <ClInclude Include="Rendering\Rect.h" />
+    <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="System\Graphics.h" />
     <ClInclude Include="System\Settings.h" />

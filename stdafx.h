@@ -37,3 +37,4 @@ typedef unsigned int uint;
 //system
 #include "./System/Settings.h"
 #include "./System/Graphics.h"
+#include "./Rendering/Vertex.h"
