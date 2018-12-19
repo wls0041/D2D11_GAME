@@ -10,21 +10,21 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 		02  213
 		*/
 		//0
-		vertices = new VertexColor[4];
+		vertices = new VertexTexture[4];
 		vertices[0].position = D3DXVECTOR3(-0.5f, -0.5f, 0.0f);
-		vertices[0].color = D3DXCOLOR(1, 0, 0, 1);
+		vertices[0].uv = D3DXVECTOR2(0, 1);
 
 		//1
 		vertices[1].position = D3DXVECTOR3(-0.5f, 0.5f, 0.0f);
-		vertices[1].color = D3DXCOLOR(0, 1, 0, 1);
+		vertices[1].uv = D3DXVECTOR2(0, 0);
 
 		//2
 		vertices[2].position = D3DXVECTOR3(0.5f, -0.5f, 0.0f);
-		vertices[2].color = D3DXCOLOR(0, 0, 1, 1);
+		vertices[2].uv = D3DXVECTOR2(2, 1);
 
 		//3
 		vertices[3].position = D3DXVECTOR3(0.5f, 0.5f, 0.0f);
-		vertices[3].color = D3DXCOLOR(0, 0, 1, 1);
+		vertices[3].uv = D3DXVECTOR2(2, 0);
 	}
 
 	//Create Vertex Buffer
@@ -34,7 +34,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT; //만든 버퍼를 어떠한 형태로 사용할 것인가, 가장 기본값으로 사용하겠다
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //만든 버퍼를 어떠한 버퍼로 묶을 것인가, vertex buffer로 묶겠다
-		bufferDesc.ByteWidth = sizeof(VertexColor) * 4;//버퍼의 크기를 어느 정도로 할 것인가
+		bufferDesc.ByteWidth = sizeof(VertexTexture) * 4;//버퍼의 크기를 어느 정도로 할 것인가
 
 		D3D11_SUBRESOURCE_DATA subData;
 		ZeroMemory(&subData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -48,7 +48,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	{
 		//Color.hlsl에 들어있는 VS를 vs_5버전으로 컴파일해서 vsBlob에 넣어준다.
 		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"Color.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
+			"Texture.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
 			nullptr, nullptr,
 			"VS", //우리가 만든 함수 이름
 			"vs_5_0",  //컴파일 수준
@@ -98,7 +98,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	//Create Pixel Shader
 	{
 		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"Color.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
+			"Texture.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
 			nullptr, nullptr,
 			"PS", //우리가 만든 함수 이름
 			"ps_5_0",  //컴파일 수준
@@ -120,7 +120,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	//Create InputLayout
 	{
 		//layout을 만드는데 vertex shader가 들어가는 이유 : 셰이더의 시멘틱과 엘리먼트의 시멘틱이 일치하는지 확인하기 위함
-		HRESULT hr = graphics->GetDevice()->CreateInputLayout(VertexColor::descs, VertexColor::count, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
+		HRESULT hr = graphics->GetDevice()->CreateInputLayout(VertexTexture::descs, VertexTexture::count, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -152,6 +152,37 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 		assert(SUCCEEDED(hr));
 	}
 
+	//Crate Texture
+	{
+		HRESULT hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Tree.png", nullptr, nullptr, &diffuseMap, nullptr);
+		assert(SUCCEEDED(hr));
+	}
+
+	//Create Blend State
+	{
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BLEND_DESC));
+		desc.AlphaToCoverageEnable = true; //alpha의 적용 범위
+		desc.IndependentBlendEnable = false; //여러 rendertarget을 사용할 경우 각각의 state의 설정을 따로 쓰겠는가. false면 0의 설정을 모두 적용
+		desc.RenderTarget[0].BlendEnable = false; //blend할 것인가
+
+
+		//일단 사용. 색들의 혼합
+		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; //혼합공식에 나오는 두 색을 어떻게 섞을 것인가(두 개를 더하라)
+
+		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		//
+
+
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; //그리는 곳에 주어진 색만 써라 
+
+		HRESULT hr = graphics->GetDevice()->CreateBlendState(&desc, &blendState);
+		assert(SUCCEEDED(hr));
+	}
 }
 
 Rect::~Rect()
@@ -169,11 +200,11 @@ Rect::~Rect()
 void Rect::Update()
 {
 	D3DXMATRIX S, R, T;
-	D3DXMatrixScaling(&S, 100, 100, 1);
+	D3DXMatrixScaling(&S, 1280, 720, 1);
 	D3DXMatrixRotationZ(&R, static_cast<float>(D3DXToRadian(45)));
 	D3DXMatrixTranslation(&T, 0, 0, 0);
 
-	world = S * R * T;
+	world = S;// *R * T;
 
 	//행우선을 열우선으로 바꿔줌(전치)
 	D3DXMatrixTranspose(&data.World, &world);
@@ -187,7 +218,7 @@ void Rect::Update()
 
 void Rect::Render()
 {
-	uint stride = sizeof(VertexColor); //정점 한 개의 크기
+	uint stride = sizeof(VertexTexture); //정점 한 개의 크기
 	uint offset = 0; //시작점
 
 	auto dc = graphics->GetDeviceContext();
@@ -203,12 +234,14 @@ void Rect::Render()
 	dc->VSSetConstantBuffers(1, 1, &cbuffer); //cbuffer넘겨줌
 
 	//RS단계 -> 기본 세팅 되어있음
-	dc->RSSetState(rsState);
+	//dc->RSSetState(rsState);
 
 	//PS단계
 	dc->PSSetShader(pixelShader, nullptr, 0);
+	dc->PSSetShaderResources(0, 1, &diffuseMap); //일부 제외하고 PS단계에서 삽입
 
 	//OM단계 -> back buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
+	dc->OMSetBlendState(blendState, nullptr, 0xff);
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
 	dc->DrawIndexed(6, 0, 0); //몇 개를, 몇 번부터
