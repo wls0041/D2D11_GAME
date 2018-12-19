@@ -48,7 +48,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	{
 		//Color.hlsl에 들어있는 VS를 vs_5버전으로 컴파일해서 vsBlob에 넣어준다.
 		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"Texture.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
+			"TexCoord.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
 			nullptr, nullptr,
 			"VS", //우리가 만든 함수 이름
 			"vs_5_0",  //컴파일 수준
@@ -98,7 +98,7 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	//Create Pixel Shader
 	{
 		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"Texture.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
+			"TexCoord.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
 			nullptr, nullptr,
 			"PS", //우리가 만든 함수 이름
 			"ps_5_0",  //컴파일 수준
@@ -156,6 +156,10 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 	{
 		HRESULT hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Tree.png", nullptr, nullptr, &diffuseMap, nullptr);
 		assert(SUCCEEDED(hr));
+
+		hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Forest.png", nullptr, nullptr, &diffuseMap2, nullptr);
+		assert(SUCCEEDED(hr));
+
 	}
 
 	//Create Blend State
@@ -239,6 +243,7 @@ void Rect::Render()
 	//PS단계
 	dc->PSSetShader(pixelShader, nullptr, 0);
 	dc->PSSetShaderResources(0, 1, &diffuseMap); //일부 제외하고 PS단계에서 삽입
+	dc->PSSetShaderResources(1, 1, &diffuseMap2); 
 
 	//OM단계 -> back buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
 	dc->OMSetBlendState(blendState, nullptr, 0xff);
