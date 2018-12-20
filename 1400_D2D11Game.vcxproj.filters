@@ -3,22 +3,24 @@
   <ItemGroup>
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="System\Window.cpp" />
-    <ClCompile Include="System\Settings.cpp" />
     <ClCompile Include="App\App.cpp" />
     <ClCompile Include="App\Game.cpp" />
-    <ClCompile Include="System\Graphics.cpp" />
     <ClCompile Include="Rendering\Rect.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\Graphics.cpp" />
+    <ClCompile Include="Framework\Core\Settings.cpp" />
+    <ClCompile Include="Framework\Core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="System\Window.h" />
-    <ClInclude Include="System\Settings.h" />
     <ClInclude Include="App\App.h" />
     <ClInclude Include="App\Game.h" />
-    <ClInclude Include="System\Graphics.h" />
     <ClInclude Include="Rendering\Rect.h" />
     <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
+    <ClInclude Include="Framework\Core\Context.h" />
+    <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
+    <ClInclude Include="Framework\Core\Settings.h" />
+    <ClInclude Include="Framework\Core\Window.h" />
   </ItemGroup>
 </Project>

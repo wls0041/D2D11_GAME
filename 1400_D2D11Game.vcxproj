@@ -160,19 +160,21 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="System\Graphics.cpp" />
-    <ClCompile Include="System\Settings.cpp" />
-    <ClCompile Include="System\Window.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\Graphics.cpp" />
+    <ClCompile Include="Framework\Core\Settings.cpp" />
+    <ClCompile Include="Framework\Core\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\App.h" />
     <ClInclude Include="App\Game.h" />
+    <ClInclude Include="Framework\Core\Context.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
     <ClInclude Include="Rendering\Rect.h" />
     <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="System\Graphics.h" />
-    <ClInclude Include="System\Settings.h" />
-    <ClInclude Include="System\Window.h" />
+    <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
+    <ClInclude Include="Framework\Core\Settings.h" />
+    <ClInclude Include="Framework\Core\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
