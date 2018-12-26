@@ -153,6 +153,8 @@
   <ItemGroup>
     <ClCompile Include="App\App.cpp" />
     <ClCompile Include="App\Game.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Rendering\Rect.cpp" />
     <ClCompile Include="Rendering\Vertex.cpp" />
@@ -168,7 +170,9 @@
     <ClInclude Include="App\App.h" />
     <ClInclude Include="App\Game.h" />
     <ClInclude Include="Framework\Core\Context.h" />
+    <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
+    <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
     <ClInclude Include="Rendering\Rect.h" />
     <ClInclude Include="Rendering\Vertex.h" />
     <ClInclude Include="stdafx.h" />

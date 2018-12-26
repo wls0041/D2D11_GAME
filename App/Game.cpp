@@ -4,6 +4,8 @@
 
 void Game::Initialize()
 {
+	graphics = context->GetSubsystem<Graphics>();
+
 	//Create Constant Buffer
 	{
 		D3D11_BUFFER_DESC bufferDesc;
