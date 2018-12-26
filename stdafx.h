@@ -43,6 +43,10 @@ typedef unsigned int uint;
 //Wrapper Class
 #include "./Rendering/Vertex.h"
 
+//Utility
+#include "./Utility/Geometry.h"
+#include "./Utility/GeometryUtility.h"
+
 //SubSystem
 #include "./Framework/Core/Subsystem/Graphics.h"
 #include "./Framework/Core/Subsystem/Input.h"

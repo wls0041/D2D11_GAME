@@ -165,6 +165,7 @@
     <ClCompile Include="Framework\Core\Subsystem\Graphics.cpp" />
     <ClCompile Include="Framework\Core\Settings.cpp" />
     <ClCompile Include="Framework\Core\Window.cpp" />
+    <ClCompile Include="Utility\GeometryUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\App.h" />
@@ -179,6 +180,13 @@
     <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
     <ClInclude Include="Framework\Core\Settings.h" />
     <ClInclude Include="Framework\Core\Window.h" />
+    <ClInclude Include="Utility\Geometry.h" />
+    <ClInclude Include="Utility\GeometryUtility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utility\Geometry.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

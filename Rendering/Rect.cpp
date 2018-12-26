@@ -3,29 +3,8 @@
 
 Rect::Rect(Graphics * graphics) : graphics(graphics)
 {
-	//Create Vertex Data
-	{
-		/*
-		13  012
-		02  213
-		*/
-		//0
-		vertices = new VertexTexture[4];
-		vertices[0].position = D3DXVECTOR3(-0.5f, -0.5f, 0.0f);
-		vertices[0].uv = D3DXVECTOR2(0, 1);
-
-		//1
-		vertices[1].position = D3DXVECTOR3(-0.5f, 0.5f, 0.0f);
-		vertices[1].uv = D3DXVECTOR2(0, 0);
-
-		//2
-		vertices[2].position = D3DXVECTOR3(0.5f, -0.5f, 0.0f);
-		vertices[2].uv = D3DXVECTOR2(2, 1);
-
-		//3
-		vertices[3].position = D3DXVECTOR3(0.5f, 0.5f, 0.0f);
-		vertices[3].uv = D3DXVECTOR2(2, 0);
-	}
+	//Create Vertex Data, Create Index Data
+	GeometryUtility::CreateQuad(geometry);
 
 	//Create Vertex Buffer
 	{
@@ -34,11 +13,11 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT; //만든 버퍼를 어떠한 형태로 사용할 것인가, 가장 기본값으로 사용하겠다
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //만든 버퍼를 어떠한 버퍼로 묶을 것인가, vertex buffer로 묶겠다
-		bufferDesc.ByteWidth = sizeof(VertexTexture) * 4;//버퍼의 크기를 어느 정도로 할 것인가
+		bufferDesc.ByteWidth = sizeof(VertexTexture) * geometry.GetVertexCount();//버퍼의 크기를 어느 정도로 할 것인가
 
 		D3D11_SUBRESOURCE_DATA subData;
 		ZeroMemory(&subData, sizeof(D3D11_SUBRESOURCE_DATA));
-		subData.pSysMem = vertices;
+		subData.pSysMem = geometry.GetVertexData();
 
 		HRESULT hr = graphics->GetDevice()->CreateBuffer(&bufferDesc, &subData, &vertexBuffer); //두 데이터를 가지고 vertexBuffer를 생성
 		assert(SUCCEEDED(hr));
@@ -67,11 +46,6 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 		assert(SUCCEEDED(hr));
 	}
 
-	//Create Index Data
-	{
-		indices = new uint[6]{ 0, 1, 2, 2, 1, 3 }; //정점은 4개여도 정점의 정보를 받을 건 6개가 필요.
-	}
-
 	//Create Index Buffer
 	{
 		D3D11_BUFFER_DESC desc;
@@ -85,11 +59,11 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 		*/
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		desc.ByteWidth = sizeof(uint) * 6;
+		desc.ByteWidth = sizeof(uint) * geometry.GetIndexCount();
 
 		D3D11_SUBRESOURCE_DATA subData;
 		ZeroMemory(&subData, sizeof(D3D11_SUBRESOURCE_DATA));
-		subData.pSysMem = indices;
+		subData.pSysMem = geometry.GetIndexData();
 
 		HRESULT hr = graphics->GetDevice()->CreateBuffer(&desc, &subData, &indexBuffer);
 		assert(SUCCEEDED(hr));
@@ -198,7 +172,6 @@ Rect::~Rect()
 	SAFE_RELEASE(vertexShader);
 	SAFE_RELEASE(vsBlob);
 	SAFE_RELEASE(vertexBuffer);
-	SAFE_DELETE_ARRAY(vertices);
 }
 
 void Rect::Update()
@@ -249,5 +222,5 @@ void Rect::Render()
 	dc->OMSetBlendState(blendState, nullptr, 0xff);
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
-	dc->DrawIndexed(6, 0, 0); //몇 개를, 몇 번부터
+	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
 }

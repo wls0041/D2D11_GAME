@@ -12,10 +12,9 @@ public:
 private:
 	class Graphics *graphics;
 
-	VertexTexture *vertices;
-	ID3D11Buffer *vertexBuffer;
+	Geometry<VertexTexture> geometry;
 
-	uint *indices;
+	ID3D11Buffer *vertexBuffer;
 	ID3D11Buffer *indexBuffer;
 
 	//hlsl의 VS, PS가 파이프라인에 들어갈 수 있도록 변환

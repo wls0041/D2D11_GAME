@@ -12,6 +12,7 @@
     <ClCompile Include="Framework\Core\Window.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
+    <ClCompile Include="Utility\GeometryUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -26,5 +27,8 @@
     <ClInclude Include="Framework\Core\Window.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
+    <ClInclude Include="Utility\Geometry.h" />
+    <ClInclude Include="Utility\Geometry.inl" />
+    <ClInclude Include="Utility\GeometryUtility.h" />
   </ItemGroup>
 </Project>
