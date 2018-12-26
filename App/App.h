@@ -16,5 +16,5 @@ public:
 protected:
 	//기본 메인이 되는 두 정보를 가짐
 	class Window *window;
-	class Graphics *graphics;//계속해서 쓰이기 때문에 stdafx에 추가
+	class Context *context;//graphics를 subsystem으로 옮겨서 관리하므로 context로 관리
 };

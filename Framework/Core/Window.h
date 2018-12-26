@@ -4,7 +4,10 @@
 class Window
 {
 public:
+	static function<void(const uint&, const uint&)> OnResize;
+
+public:
 	Window();
-	~Window();
+	virtual ~Window();
 	void Initialize();
 };

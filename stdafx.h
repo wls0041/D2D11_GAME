@@ -7,6 +7,8 @@
 //STL
 #include <vector>
 #include <map>
+#include <functional>
+#include <chrono>
 using namespace std;
 
 //DirectX
@@ -34,7 +36,13 @@ typedef unsigned int uint;
 #define SAFE_DELETE_ARRAY(p) { if (p) { delete[] (p); (p) = nullptr; }}
 
 
-//system
-#include "./System/Settings.h"
-#include "./System/Graphics.h"
+//MainSystem
+#include "./Framework/Core/Settings.h"
+#include "./Framework/Core/Context.h"
+
+//Wrapper Class
 #include "./Rendering/Vertex.h"
+
+//SubSystem
+#include "./Framework/Core/Subsystem/Graphics.h"
+#include "./Framework/Core/Subsystem/Input.h"

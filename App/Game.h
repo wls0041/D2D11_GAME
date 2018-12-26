@@ -15,6 +15,7 @@ public:
 	virtual void Destroy() override;
 
 private:
+	class Graphics *graphics;
 	class Rect *rect;
 
 	D3DXMATRIX view; //시야공간

@@ -7,9 +7,12 @@ class Context final
 {
 public:
 	Context() {}
-	~Context() { for (uint i = subsystems.size() - 1; i >= 0; i--) SAFE_DELETE(subsystems[i]); }
+	~Context() { for (int i = static_cast<int>(subsystems.size()) - 1; i >= 0; i--) SAFE_DELETE(subsystems[i]); }
 
-	void RegisterSubsystem(class ISubsystem *subsystem) { subsystems.push_back(subsystem); }
+	void RegisterSubsystem(class ISubsystem *subsystem) { 
+		subsystem->Initialize();
+		subsystems.push_back(subsystem); 
+	}
 
 	//typename을 T(임의)로 하고 그 타입의 함수를 생성
 	template <typename T> //저장된 subsystems의 요소를 수정 삭제할 때 원하는 값을 찾기 위해 template사용
