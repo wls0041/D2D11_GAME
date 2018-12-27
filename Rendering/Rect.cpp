@@ -1,27 +1,20 @@
 #include "stdafx.h"
 #include "Rect.h"
 
-Rect::Rect(Graphics * graphics) : graphics(graphics)
+Rect::Rect(Context *context)
 {
+	graphics = context->GetSubsystem<Graphics>();
+
 	//Create Vertex Data, Create Index Data
 	GeometryUtility::CreateQuad(geometry);
 
-	//Create Vertex Buffer
-	{
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+	//create vertex buffer
+	vertexBuffer = new VertexBuffer(context);
+	vertexBuffer->Create<VertexTexture>(geometry.GetVertices());
 
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT; //만든 버퍼를 어떠한 형태로 사용할 것인가, 가장 기본값으로 사용하겠다
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //만든 버퍼를 어떠한 버퍼로 묶을 것인가, vertex buffer로 묶겠다
-		bufferDesc.ByteWidth = sizeof(VertexTexture) * geometry.GetVertexCount();//버퍼의 크기를 어느 정도로 할 것인가
-
-		D3D11_SUBRESOURCE_DATA subData;
-		ZeroMemory(&subData, sizeof(D3D11_SUBRESOURCE_DATA));
-		subData.pSysMem = geometry.GetVertexData();
-
-		HRESULT hr = graphics->GetDevice()->CreateBuffer(&bufferDesc, &subData, &vertexBuffer); //두 데이터를 가지고 vertexBuffer를 생성
-		assert(SUCCEEDED(hr));
-	}
+	//create index buffer
+	indexBuffer = new IndexBuffer(context);
+	indexBuffer->Create(geometry.GetIndices());
 
 	//Create Vertex Shader
 	{
@@ -43,29 +36,6 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 			nullptr,
 			&vertexShader
 		);
-		assert(SUCCEEDED(hr));
-	}
-
-	//Create Index Buffer
-	{
-		D3D11_BUFFER_DESC desc;
-		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
-
-		/*
-		default : cpu에서는 이 데이터를 접근 및 읽을 수 없다. 읽고 쓰기 cpu.
-		dynamic : 실시간으로 갱신시키기 위해 사용. gpu가 읽기만 함. 쓰는 건 cpu가. 조금 느림.
-		staging : gpu에서 쓰는 데이터를 cpu에 복사 가능. cpu는 읽기만 가능. 매우 느림.
-		immutable : 읽기 gpu. cpu가 접근조차 할 수 없음. 만들 때 초기화 필요.
-		*/
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		desc.ByteWidth = sizeof(uint) * geometry.GetIndexCount();
-
-		D3D11_SUBRESOURCE_DATA subData;
-		ZeroMemory(&subData, sizeof(D3D11_SUBRESOURCE_DATA));
-		subData.pSysMem = geometry.GetIndexData();
-
-		HRESULT hr = graphics->GetDevice()->CreateBuffer(&desc, &subData, &indexBuffer);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -133,7 +103,6 @@ Rect::Rect(Graphics * graphics) : graphics(graphics)
 
 		hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Forest.png", nullptr, nullptr, &diffuseMap2, nullptr);
 		assert(SUCCEEDED(hr));
-
 	}
 
 	//Create Blend State
@@ -171,7 +140,8 @@ Rect::~Rect()
 	SAFE_RELEASE(psBlob);
 	SAFE_RELEASE(vertexShader);
 	SAFE_RELEASE(vsBlob);
-	SAFE_RELEASE(vertexBuffer);
+	SAFE_DELETE(indexBuffer);
+	SAFE_DELETE(vertexBuffer);
 }
 
 void Rect::Update()
@@ -195,14 +165,12 @@ void Rect::Update()
 
 void Rect::Render()
 {
-	uint stride = sizeof(VertexTexture); //정점 한 개의 크기
-	uint offset = 0; //시작점
+	vertexBuffer->BindPipeline();
+	indexBuffer->BindPipeline();
 
 	auto dc = graphics->GetDeviceContext();
 
 	//IA단계 세팅
-	dc->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset); //정점정보 삽입
-	dc->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0); //4byte uint하나를 쓰므로 r32_uint
 	dc->IASetInputLayout(inputLayout); //정보의 구간, 용도 등을 알려줌
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //정점을 어떻게 쓸것인가 -> 삼각형의 띠로 쓰겠다(정점을 공유하는 이어진 삼각형)
 

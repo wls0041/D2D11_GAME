@@ -3,7 +3,7 @@
 class Rect
 {
 public:
-	Rect(class Graphics *graphics);
+	Rect(class Context *context);
 	virtual ~Rect();
 
 	void Update();
@@ -13,9 +13,8 @@ private:
 	class Graphics *graphics;
 
 	Geometry<VertexTexture> geometry;
-
-	ID3D11Buffer *vertexBuffer;
-	ID3D11Buffer *indexBuffer;
+	VertexBuffer *vertexBuffer;
+	IndexBuffer *indexBuffer;
 
 	//hlsl의 VS, PS가 파이프라인에 들어갈 수 있도록 변환
 	ID3D11VertexShader *vertexShader;

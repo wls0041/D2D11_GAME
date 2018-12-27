@@ -40,13 +40,15 @@ typedef unsigned int uint;
 #include "./Framework/Core/Settings.h"
 #include "./Framework/Core/Context.h"
 
+//SubSystem
+#include "./Framework/Core/Subsystem/Graphics.h"
+#include "./Framework/Core/Subsystem/Input.h"
+
 //Wrapper Class
 #include "./Rendering/Vertex.h"
+#include "./Framework/Core/D3D11/IAStage/VertexBuffer.h"
+#include "./Framework/Core/D3D11/IAStage/IndexBuffer.h"
 
 //Utility
 #include "./Utility/Geometry.h"
 #include "./Utility/GeometryUtility.h"
-
-//SubSystem
-#include "./Framework/Core/Subsystem/Graphics.h"
-#include "./Framework/Core/Subsystem/Input.h"

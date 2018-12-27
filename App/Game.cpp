@@ -35,7 +35,7 @@ void Game::Initialize()
 	}
 	//만들어진 공간을 변환시키는 것은 VS. 따라서 VS로 가서 만듬(color.hlsld의 cbuffer와 vs), 보낼 때 정보를 보내줘야함(id3d11buffer)
 
-	rect = new Rect(graphics);
+	rect = new Rect(context);
 }
 
 void Game::Update()
