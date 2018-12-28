@@ -48,6 +48,8 @@ typedef unsigned int uint;
 #include "./Rendering/Vertex.h"
 #include "./Framework/Core/D3D11/IAStage/VertexBuffer.h"
 #include "./Framework/Core/D3D11/IAStage/IndexBuffer.h"
+#include "./Framework/Core/D3D11/ShaderStage/VertexShader.h"
+#include "./Framework/Core/D3D11/ShaderStage/PixelShader.h"
 
 //Utility
 #include "./Utility/Geometry.h"

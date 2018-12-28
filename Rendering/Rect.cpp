@@ -16,57 +16,11 @@ Rect::Rect(Context *context)
 	indexBuffer = new IndexBuffer(context);
 	indexBuffer->Create(geometry.GetIndices());
 
-	//Create Vertex Shader
-	{
-		//Color.hlsl에 들어있는 VS를 vs_5버전으로 컴파일해서 vsBlob에 넣어준다.
-		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"TexCoord.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
-			nullptr, nullptr,
-			"VS", //우리가 만든 함수 이름
-			"vs_5_0",  //컴파일 수준
-			0, 0, nullptr,
-			&vsBlob,  //byte코드
-			nullptr, nullptr
-		);
-		assert(SUCCEEDED(hr));
+	vertexShader = new VertexShader(context);
+	vertexShader->Create("TexCoord.hlsl");
 
-		hr = graphics->GetDevice()->CreateVertexShader(
-			vsBlob->GetBufferPointer(), //시작점부터
-			vsBlob->GetBufferSize(),    //사이즈 크기까지
-			nullptr,
-			&vertexShader
-		);
-		assert(SUCCEEDED(hr));
-	}
-
-	//Create Pixel Shader
-	{
-		HRESULT hr = D3DX11CompileFromFileA( //FileW - wstring*으로 받겠다, FileA - char*로 받겠다
-			"TexCoord.hlsl", //src(source) 원본파일,  dest(destination) 복사파일
-			nullptr, nullptr,
-			"PS", //우리가 만든 함수 이름
-			"ps_5_0",  //컴파일 수준
-			0, 0, nullptr,
-			&psBlob,
-			nullptr, nullptr
-		);
-		assert(SUCCEEDED(hr));
-
-		hr = graphics->GetDevice()->CreatePixelShader(
-			psBlob->GetBufferPointer(), //시작점부터
-			psBlob->GetBufferSize(),    //사이즈 크기까지
-			nullptr,
-			&pixelShader
-		);
-		assert(SUCCEEDED(hr));
-	}
-
-	//Create InputLayout
-	{
-		//layout을 만드는데 vertex shader가 들어가는 이유 : 셰이더의 시멘틱과 엘리먼트의 시멘틱이 일치하는지 확인하기 위함
-		HRESULT hr = graphics->GetDevice()->CreateInputLayout(VertexTexture::descs, VertexTexture::count, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
-		assert(SUCCEEDED(hr));
-	}
+	pixelShader = new PixelShader(context);
+	pixelShader->Create("TexCoord.hlsl");
 
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
@@ -136,10 +90,8 @@ Rect::~Rect()
 {
 	SAFE_RELEASE(cbuffer);
 	SAFE_RELEASE(inputLayout);
-	SAFE_RELEASE(pixelShader);
-	SAFE_RELEASE(psBlob);
-	SAFE_RELEASE(vertexShader);
-	SAFE_RELEASE(vsBlob);
+	SAFE_DELETE(pixelShader);
+	SAFE_DELETE(vertexShader); 
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
 }
@@ -167,22 +119,21 @@ void Rect::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
+	vertexShader->BindPipeline();
+	pixelShader->BindPipeline();
 
 	auto dc = graphics->GetDeviceContext();
 
 	//IA단계 세팅
-	dc->IASetInputLayout(inputLayout); //정보의 구간, 용도 등을 알려줌
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //정점을 어떻게 쓸것인가 -> 삼각형의 띠로 쓰겠다(정점을 공유하는 이어진 삼각형)
 
 	//VS단계 세팅
-	dc->VSSetShader(vertexShader, nullptr, 0);
 	dc->VSSetConstantBuffers(1, 1, &cbuffer); //cbuffer넘겨줌
 
 	//RS단계 -> 기본 세팅 되어있음
 	//dc->RSSetState(rsState);
 
 	//PS단계
-	dc->PSSetShader(pixelShader, nullptr, 0);
 	dc->PSSetShaderResources(0, 1, &diffuseMap); //일부 제외하고 PS단계에서 삽입
 	dc->PSSetShaderResources(1, 1, &diffuseMap2); 
 
