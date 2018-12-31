@@ -14,9 +14,19 @@ public:
 	virtual void Render() override;
 	virtual void Destroy() override;
 
+	void IsCollision();
+
 private:
 	class Graphics *graphics;
-	class Rect *rect;
+	class Player *player;
+	class Rect *rect[10];
+
+	float comScale[10];
+	float userScale;
+	D3DXVECTOR2 comPosition[10];
+	D3DXVECTOR2 userPosition;
+
+	bool collResult[10];
 
 	D3DXMATRIX view; //시야공간
 	D3DXMATRIX projection; //투영공간

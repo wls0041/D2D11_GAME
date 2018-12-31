@@ -1,21 +1,25 @@
 #pragma once
 
-class Rect
+class Player
 {
 public:
-	Rect(class Context *context);
-	virtual ~Rect();
+	Player(class Context *context);
+	virtual ~Player();
 
 	void Update();
 	void Render();
+	
+	void MoveCircle(D3DXVECTOR2 dir);
+	bool IsCollisionEdge(int dir);
 
-	void MoveCircle();
-	void IsCollisionEdge();
+	void RaiseScale(float scale);
 
 	const D3DXVECTOR2& GetPosition() const { return curPosition; }
-	const float& GetScale() const { return randScale; }
+	const float& GetScale() const { return curScale; }
 
 private:
+	enum DIRECTION {LT = 1, TT, RT, RR, RB, BB, LB, LL};
+	
 	class Graphics *graphics;
 
 	Geometry<VertexColor> geometry;
@@ -39,17 +43,10 @@ private:
 		D3DXMATRIX World; //세계공간
 	}data;
 
-	float randScale;
-	D3DXVECTOR2 randPosition;
-	D3DXVECTOR2 moveDirection;
+	float curScale;
 	D3DXVECTOR2 curPosition;
 
 	ID3D11Buffer *cbuffer; //hlsl의 VS에 정보를 보내줄 버퍼
 
 	ID3D11RasterizerState *rsState;
-
-	//ID3D11ShaderResourceView *diffuseMap; //diffuse : 자기가 내보내는 색, shader안에 texture를 집어넣기 위해 변환
-	//ID3D11ShaderResourceView *diffuseMap2;
-
-	//ID3D11BlendState *blendState; //OM단계에 들어감(이미 색이 찍혀져 있어야 하기 때문)
 };

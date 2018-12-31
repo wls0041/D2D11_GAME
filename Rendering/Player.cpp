@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Rect.h"
+#include "Player.h"
 
-Rect::Rect(Context *context)
+Player::Player(Context *context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 
@@ -67,26 +67,18 @@ Rect::Rect(Context *context)
 		HRESULT hr = graphics->GetDevice()->CreateInputLayout(VertexColor::descs, VertexColor::count, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 		assert(SUCCEEDED(hr));
 	}
-
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
 
-	randPosition.x = 1280 / 14 * (rand() % 5 + 1);
-	randPosition.y = 720 / 14 * (rand() % 5 + 1);
+	curScale = 30.0f;
+	curPosition.x = 0;
+	curPosition.y = 0;
 
-	if (rand() % 2 == 0) randPosition.x *= -1;
-	if (rand() % 2 == 0) randPosition.y *= -1;
-
-	randScale = (rand() % 5 + 1) * 15;
-
-	D3DXMATRIX S, R, T;
-	D3DXMatrixScaling(&S, randScale, randScale, 1);
-	D3DXMatrixTranslation(&T, randPosition.x, randPosition.y, 0);
+	D3DXMATRIX S, T;
+	D3DXMatrixScaling(&S, curScale, curScale, 1);
+	D3DXMatrixTranslation(&T, curPosition.x, curPosition.y, 0);
 
 	world = S * T;
-
-	curPosition = randPosition;
-	MoveCircle();
 
 	//Create Constant Buffer
 	{
@@ -114,7 +106,7 @@ Rect::Rect(Context *context)
 	}
 }
 
-Rect::~Rect()
+Player::~Player()
 {
 	SAFE_RELEASE(cbuffer);
 	SAFE_RELEASE(inputLayout);
@@ -126,16 +118,36 @@ Rect::~Rect()
 	SAFE_DELETE(vertexBuffer);
 }
 
-void Rect::Update()
+void Player::Update()
 {
-	D3DXMATRIX T;
-
-	IsCollisionEdge();
-
-	D3DXMatrixTranslation(&T, moveDirection.x, moveDirection.y, 0);
-	curPosition += moveDirection;
-
-	world *= T;
+	if (GetAsyncKeyState('A') & 0x8000)
+	{
+		if (GetAsyncKeyState('W') & 0x8000) if(!IsCollisionEdge(LT)) MoveCircle(D3DXVECTOR2(0.0f, 3.0f));
+		if (GetAsyncKeyState('S') & 0x8000) if (!IsCollisionEdge(LB)) MoveCircle(D3DXVECTOR2(0.0f, -3.0f));
+		
+		if (!IsCollisionEdge(LL)) MoveCircle(D3DXVECTOR2(-3.0f, 0.0f));
+	}
+	else if (GetAsyncKeyState('D') & 0x8000)
+	{
+		if (GetAsyncKeyState('W') & 0x8000) if (!IsCollisionEdge(RT)) MoveCircle(D3DXVECTOR2(0.0f, 3.0f));
+		if (GetAsyncKeyState('S') & 0x8000) if (!IsCollisionEdge(RB)) MoveCircle(D3DXVECTOR2(0.0f, -3.0f));
+		
+		if (!IsCollisionEdge(RR)) MoveCircle(D3DXVECTOR2(3.0f, 0.0f));
+	}
+	else if (GetAsyncKeyState('W') & 0x8000)
+	{
+		if (GetAsyncKeyState('A') & 0x8000) if (!IsCollisionEdge(LT)) MoveCircle(D3DXVECTOR2(-3.0f, 0.0f));
+		if (GetAsyncKeyState('D') & 0x8000) if (!IsCollisionEdge(RT)) MoveCircle(D3DXVECTOR2(3.0f, 0.0f));
+		
+		if (!IsCollisionEdge(TT)) MoveCircle(D3DXVECTOR2(0.0f, 3.0f)); 
+	}
+	else if (GetAsyncKeyState('S') & 0x8000)
+	{
+		if (GetAsyncKeyState('A') & 0x8000) if (!IsCollisionEdge(LB)) MoveCircle(D3DXVECTOR2(-3.0f, 0.0f));
+		if (GetAsyncKeyState('D') & 0x8000) if (!IsCollisionEdge(RB)) MoveCircle(D3DXVECTOR2(3.0f, 0.0f));
+		
+		if (!IsCollisionEdge(BB)) MoveCircle(D3DXVECTOR2(0.0f, -3.0f)); 
+	}
 
 	//행우선을 열우선으로 바꿔줌(전치)
 	D3DXMatrixTranspose(&data.World, &world);
@@ -147,7 +159,7 @@ void Rect::Update()
 	graphics->GetDeviceContext()->Unmap(cbuffer, 0);
 }
 
-void Rect::Render()
+void Player::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
@@ -172,49 +184,45 @@ void Rect::Render()
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
 }
 
-void Rect::MoveCircle()
+bool Player::IsCollisionEdge(int dir)
 {
-	int dir = rand() % 8 + 1;
-
 	switch (dir)
 	{
-	case 1: //왼쪽 위 대각선
-		moveDirection.x = -3.0f;
-		moveDirection.y = 3.0f;
-		break;
-	case 2: //위
-		moveDirection.x = 0;
-		moveDirection.y = 3.0f;
-		break;
-	case 3: //오른쪽 위 대각선
-		moveDirection.x = 3.0f;
-		moveDirection.y = 3.0f;
-		break;
-	case 4: //오른쪽
-		moveDirection.x = 3.0f;
-		moveDirection.y = 0;
-		break;
-	case 5: //오른쪽 아래 대각선
-		moveDirection.x = 3.0f;
-		moveDirection.y = -3.0f;
-		break;
-	case 6: //아래
-		moveDirection.x = 0;
-		moveDirection.y = -3.0f;
-		break;
-	case 7: //왼쪽 아래 대각선
-		moveDirection.x = -3.0f;
-		moveDirection.y = -3.0f;
-		break;
-	case 8: //왼쪽
-		moveDirection.x = -3.0f;
-		moveDirection.y = 0;
-		break;
+	case LT:
+		if(curPosition.x < (-1280 / 2) + curScale || curPosition.y > (720 / 2) - curScale) return true;
+	case TT:
+		if (curPosition.y > (720 / 2) - curScale) return true;
+	case RT:
+		if (curPosition.x > (1280 / 2) - curScale || curPosition.y > (720 / 2) - curScale) return true;
+	case RR:
+		if (curPosition.x > (1280 / 2) - curScale) return true;
+	case RB:
+		if (curPosition.x > (1280 / 2) - curScale || curPosition.y < (-720 / 2) + curScale) return true;
+	case BB:
+		if (curPosition.y < (-720 / 2) + curScale) return true;
+	case LB:
+		if (curPosition.x < (-1280 / 2) + curScale || curPosition.y < (-720 / 2) + curScale) return true;
+	case LL:
+		if (curPosition.x < (-1280 / 2) + curScale) return true;
 	}
+	return false;
 }
 
-void Rect::IsCollisionEdge()
+void Player::RaiseScale(float scale)
 {
-	if (curPosition.x <= -1280 / 2 + randScale || curPosition.x >= 1280 / 2 - randScale) moveDirection.x = -moveDirection.x;
-	if (curPosition.y <= -720 / 2 + randScale || curPosition.y >= 720 / 2 - randScale) moveDirection.y = -moveDirection.y;
+	D3DXMATRIX S;
+	D3DXMatrixScaling(&S, scale, scale, 1);
+	curScale *= scale;
+
+	world *= S;
+}
+
+void Player::MoveCircle(D3DXVECTOR2 dir)
+{
+	D3DXMATRIX T;
+
+	D3DXMatrixTranslation(&T, dir.x, dir.y, 0);
+	curPosition += dir;
+
+	world *= T;
 }

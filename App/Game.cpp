@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 #include "./Rendering/Rect.h"
+#include "./Rendering/Player.h"
 
 void Game::Initialize()
 {
@@ -34,12 +35,18 @@ void Game::Initialize()
 		//D3DXMatrixOrthoOffCenterLH(&projection, 0, 1280, 720, 0, 0,  1);
 	}
 	//만들어진 공간을 변환시키는 것은 VS. 따라서 VS로 가서 만듬(color.hlsld의 cbuffer와 vs), 보낼 때 정보를 보내줘야함(id3d11buffer)
+	player = new Player(context);
+	for (int i = 0; i < 10; i++){
+		rect[i] = new Rect(context);
+	}
 
-	rect = new Rect(context);
 }
 
 void Game::Update()
 {
+	if (player->GetScale() > 450) MessageBoxA(NULL, "플레이어의 크기가 한계에 도달!!", "~~~~ THE END ~~~~", MB_OK);
+	IsCollision();
+
 	D3DXMatrixTranspose(&data.View, &view);
 	D3DXMatrixTranspose(&data.Projection, &projection);
 
@@ -49,7 +56,10 @@ void Game::Update()
 	memcpy(subResource.pData, &data, sizeof(Data)); //복사, 원본, 복사할 크기
 	graphics->GetDeviceContext()->Unmap(cbuffer, 0);
 
-	rect->Update();
+	player->Update();
+	for (int i = 0; i < 10; i++) {
+		rect[i]->Update();
+	}
 }
 
 void Game::Render()
@@ -57,10 +67,49 @@ void Game::Render()
 	auto dc = graphics->GetDeviceContext();
 	dc->VSSetConstantBuffers(0, 1, &cbuffer); //cbuffer넘겨줌
 
-	rect->Render();
+	player->Render();
+	for (int i = 0; i < 10; i++) {
+		rect[i]->Render();
+	}
 }
 
 void Game::Destroy()
 {
-	SAFE_DELETE(rect);
+	for (int i = 0; i < 10; i++) {
+		SAFE_DELETE(rect[i]);
+	}
+	SAFE_DELETE(player);
+}
+
+void Game::IsCollision()
+{
+	for (int i = 0; i < 10; i++) {
+		comPosition[i] = rect[i]->GetPosition();
+		comScale[i] = rect[i]->GetScale();
+	}
+	userPosition = player->GetPosition();
+	userScale = player->GetScale();
+
+	for (int i = 0; i < 10; i++) {
+		float deltaX = userPosition.x - comPosition[i].x;
+		float deltaY = userPosition.y - comPosition[i].y;
+		
+		float length = sqrt(deltaX * deltaX + deltaY * deltaY);
+
+		if (length > userScale + comScale[i]) collResult[i] = false;
+		else collResult[i] = true;
+	}
+
+	for (int i = 0; i < 10; i++) {
+		if (collResult[i]) {
+			player->RaiseScale(1 + comScale[i] / 500);
+
+			SAFE_DELETE(rect[i]);
+			rect[i] = new Rect(context);
+
+			comPosition[i] = rect[i]->GetPosition();
+			comScale[i] = rect[i]->GetScale();
+			collResult[i] = false;
+		}
+	}
 }
