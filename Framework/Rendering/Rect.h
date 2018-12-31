@@ -20,15 +20,10 @@ private:
 	VertexShader *vertexShader;
 	PixelShader *pixelShader;
 
-	ID3D11InputLayout *inputLayout; //배열 vertexColor*에 정보를 주기 위함
+	InputLayout *inputLayout; //배열 vertexColor*에 정보를 주기 위함
+	ConstantBuffer *worldBuffer;
 
 	D3DXMATRIX world; //세계공간
-
-	struct Data { //데이터를 넘기기 편하게 구조체로 선언
-		D3DXMATRIX World; //세계공간
-	}data;
-
-	ID3D11Buffer *cbuffer; //hlsl의 VS에 정보를 보내줄 버퍼
 
 	ID3D11RasterizerState *rsState;
 

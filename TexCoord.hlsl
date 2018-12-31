@@ -12,13 +12,13 @@ cbuffer WorldBuffer : register(b1) //0번째(슬롯번호) 버퍼
 struct VertexInput
 {
     float4 Position : POSITION0; //초록-시멘틱(인식표)num(시멘틱 번호)
-    float2 Uv : TEXCOORD;
+    float2 Uv : TEXCOORD0;
 };
 
 struct PixelInput
 {
     float4 Position : SV_POSITION0; //SV(system value), pixelshader는 pixel을 찍음. 따라서 공간상 좌표(system value)가 필요함.
-    float2 Uv : TEXCOORD;
+    float2 Uv : TEXCOORD0;
 };
 
 PixelInput VS(VertexInput input)

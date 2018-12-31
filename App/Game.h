@@ -17,14 +17,8 @@ public:
 private:
 	class Graphics *graphics;
 	class Rect *rect;
+	class ConstantBuffer *cameraBuffer; 
 
 	D3DXMATRIX view; //시야공간
 	D3DXMATRIX projection; //투영공간
-
-	struct Data { //데이터를 넘기기 편하게 구조체로 선언
-		D3DXMATRIX View; //시야공간
-		D3DXMATRIX Projection; //투영공간
-	}data;
-
-	ID3D11Buffer *cbuffer; //hlsl의 VS에 정보를 보내줄 버퍼
 };

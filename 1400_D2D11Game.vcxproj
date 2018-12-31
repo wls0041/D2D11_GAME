@@ -153,17 +153,19 @@
   <ItemGroup>
     <ClCompile Include="App\App.cpp" />
     <ClCompile Include="App\Game.cpp" />
+    <ClCompile Include="Framework\Core\D3D11\BasicData\Vertex.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\InputLayout.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\VertexBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\BaseShader.cpp" />
+    <ClCompile Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\PixelShader.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\VertexShader.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
+    <ClCompile Include="Framework\Rendering\Rect.cpp" />
+    <ClCompile Include="Framework\Utility\GeometryUtility.cpp" />
     <ClCompile Include="Program.cpp" />
-    <ClCompile Include="Rendering\Rect.cpp" />
-    <ClCompile Include="Rendering\Vertex.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -171,34 +173,33 @@
     <ClCompile Include="Framework\Core\Subsystem\Graphics.cpp" />
     <ClCompile Include="Framework\Core\Settings.cpp" />
     <ClCompile Include="Framework\Core\Window.cpp" />
-    <ClCompile Include="Utility\GeometryUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\App.h" />
     <ClInclude Include="App\Game.h" />
     <ClInclude Include="Framework\Core\Context.h" />
+    <ClInclude Include="Framework\Core\D3D11\BasicData\Config.h" />
+    <ClInclude Include="Framework\Core\D3D11\BasicData\Geometry.h" />
+    <ClInclude Include="Framework\Core\D3D11\BasicData\Vertex.h" />
     <ClInclude Include="Framework\Core\D3D11\IAStage\IndexBuffer.h" />
     <ClInclude Include="Framework\Core\D3D11\IAStage\InputLayout.h" />
     <ClInclude Include="Framework\Core\D3D11\IAStage\VertexBuffer.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\BaseShader.h" />
+    <ClInclude Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\PixelShader.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\VertexShader.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
-    <ClInclude Include="Rendering\Rect.h" />
-    <ClInclude Include="Rendering\Vertex.h" />
+    <ClInclude Include="Framework\Rendering\Rect.h" />
+    <ClInclude Include="Framework\Utility\GeometryUtility.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
     <ClInclude Include="Framework\Core\Settings.h" />
     <ClInclude Include="Framework\Core\Window.h" />
-    <ClInclude Include="Utility\Geometry.h" />
-    <ClInclude Include="Utility\GeometryUtility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Utility\Geometry.inl">
-      <FileType>Document</FileType>
-    </ClInclude>
+    <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

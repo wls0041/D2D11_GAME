@@ -22,21 +22,15 @@ Rect::Rect(Context *context)
 	pixelShader = new PixelShader(context);
 	pixelShader->Create("TexCoord.hlsl");
 
+	inputLayout = new InputLayout(context);
+	inputLayout->Create(vertexShader->GetBlob());
+
+	worldBuffer = new ConstantBuffer(context);
+	worldBuffer->Create<WorldData>();
+
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
 
-	//Create Constant Buffer
-	{
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //카메라가 조금이라도 움직이면 실시간으로 반영되어야 함
-		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bufferDesc.ByteWidth = sizeof(Data);
-		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //usage가 dynamic일 때 추가. cpu를 쓰기용으로 접근하라(계산은 gpu가 다 해주므로)
-
-		HRESULT hr = graphics->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &cbuffer);
-		assert(SUCCEEDED(hr));
-	}
 
 	//Create Rasterizer State
 	{
@@ -88,8 +82,8 @@ Rect::Rect(Context *context)
 
 Rect::~Rect()
 {
-	SAFE_RELEASE(cbuffer);
-	SAFE_RELEASE(inputLayout);
+	SAFE_DELETE(worldBuffer);
+	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
 	SAFE_DELETE(vertexShader); 
 	SAFE_DELETE(indexBuffer);
@@ -105,22 +99,21 @@ void Rect::Update()
 
 	world = S;// *R * T;
 
+	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	//행우선을 열우선으로 바꿔줌(전치)
-	D3DXMatrixTranspose(&data.World, &world);
+	D3DXMatrixTranspose(&data->World, &world);
+	worldBuffer->Unmap();
 
-	D3D11_MAPPED_SUBRESOURCE subResource;
-	//맵, 언맵. 맵->더 이상 들어오지 못하도록 막음(update 중에 cbuffer를 못 건들게)(나가지도 못함)->subResource가 대신 값을 가져와서 넣어줌,  언맵->막은 것을 품. 
-	graphics->GetDeviceContext()->Map(cbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); //subResource에 복사해라, 썼으면 버려라(discard)
-	memcpy(subResource.pData, &data, sizeof(Data)); //복사, 원본, 복사할 크기
-	graphics->GetDeviceContext()->Unmap(cbuffer, 0);
 }
 
 void Rect::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
+	inputLayout->BindPipeline();
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
+	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
 
 	auto dc = graphics->GetDeviceContext();
 
@@ -128,7 +121,6 @@ void Rect::Render()
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //정점을 어떻게 쓸것인가 -> 삼각형의 띠로 쓰겠다(정점을 공유하는 이어진 삼각형)
 
 	//VS단계 세팅
-	dc->VSSetConstantBuffers(1, 1, &cbuffer); //cbuffer넘겨줌
 
 	//RS단계 -> 기본 세팅 되어있음
 	//dc->RSSetState(rsState);

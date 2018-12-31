@@ -1,23 +1,13 @@
 #include "stdafx.h"
 #include "Game.h"
-#include "./Rendering/Rect.h"
+#include "./Framework/Rendering/Rect.h"
 
 void Game::Initialize()
 {
 	graphics = context->GetSubsystem<Graphics>();
 
-	//Create Constant Buffer
-	{
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //카메라가 조금이라도 움직이면 실시간으로 반영되어야 함
-		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		bufferDesc.ByteWidth = sizeof(Data);
-		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //usage가 dynamic일 때 추가. cpu를 쓰기용으로 접근하라(계산은 gpu가 다 해주므로)
-
-		HRESULT hr = graphics->GetDevice()->CreateBuffer(&bufferDesc, nullptr, &cbuffer);
-		assert(SUCCEEDED(hr));
-	}
+	cameraBuffer = new ConstantBuffer(context);
+	cameraBuffer->Create<CameraData>();
 
 	D3DXMatrixIdentity(&view);
 	D3DXMatrixIdentity(&projection);
@@ -40,27 +30,24 @@ void Game::Initialize()
 
 void Game::Update()
 {
-	D3DXMatrixTranspose(&data.View, &view);
-	D3DXMatrixTranspose(&data.Projection, &projection);
+	auto data = static_cast<CameraData*>(cameraBuffer->Map()); //꼬봉의 노트를 내보냄. 형식이 없으므로 cameraBuffer로 캐스팅
 
-	D3D11_MAPPED_SUBRESOURCE subResource;
-	//맵, 언맵. 맵->더 이상 들어오지 못하도록 막음(update 중에 cbuffer를 못 건들게)(나가지도 못함)->subResource가 대신 값을 가져와서 넣어줌,  언맵->막은 것을 품. 
-	graphics->GetDeviceContext()->Map(cbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource); //subResource에 복사해라, 썼으면 버려라(discard)
-	memcpy(subResource.pData, &data, sizeof(Data)); //복사, 원본, 복사할 크기
-	graphics->GetDeviceContext()->Unmap(cbuffer, 0);
+	D3DXMatrixTranspose(&data->View, &view);
+	D3DXMatrixTranspose(&data->Projection, &projection);
+
+	cameraBuffer->Unmap();
 
 	rect->Update();
 }
 
 void Game::Render()
 {
-	auto dc = graphics->GetDeviceContext();
-	dc->VSSetConstantBuffers(0, 1, &cbuffer); //cbuffer넘겨줌
-
+	cameraBuffer->BindPipeline(ShaderType::VS, 0);
 	rect->Render();
 }
 
 void Game::Destroy()
 {
+	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(rect);
 }

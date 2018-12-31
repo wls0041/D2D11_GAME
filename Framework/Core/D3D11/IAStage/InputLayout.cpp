@@ -11,10 +11,10 @@ InputLayout::~InputLayout()
 	Clear();
 }
  
-void InputLayout::Create(D3D11_INPUT_ELEMENT_DESC * desc, const uint & count, ID3D10Blob * blob)
+void InputLayout::Create(D3D11_INPUT_ELEMENT_DESC * descs, const uint & count, ID3D10Blob * blob)
 {
 	//layout을 만드는데 vertex shader가 들어가는 이유 : 셰이더의 시멘틱과 엘리먼트의 시멘틱이 일치하는지 확인하기 위함
-	HRESULT hr = graphics->GetDevice()->CreateInputLayout(VertexTexture::descs, VertexTexture::count, blob->GetBufferPointer(), blob->GetBufferSize(), &layout);
+	HRESULT hr = graphics->GetDevice()->CreateInputLayout(descs, count, blob->GetBufferPointer(), blob->GetBufferSize(), &layout);
 	assert(SUCCEEDED(hr));
 }
 
@@ -48,7 +48,7 @@ void InputLayout::Create(ID3D10Blob * blob)
 		//첫 parameter는 position인데 자료형은 float4이고 우리가 넣어주는 것은 vector3임
 		//이를 자동으로 맞춰주는데 시멘틱이 다르면 인식을 못하므로 position에 한해서 시멘틱을 맞춰줘야 함.
 		string temp = elementDesc.SemanticName;
-		if (temp == "POSITION") elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		if (temp == "POSITION") elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 		else if (paramDesc.ComponentType == 1) {
 			if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32_UINT;
 			else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32_SINT;
@@ -71,6 +71,8 @@ void InputLayout::Create(ID3D10Blob * blob)
 		}
 		inputLayoutDescs.push_back(elementDesc);
 	}
+
+	Create(inputLayoutDescs.data(), inputLayoutDescs.size(), blob);
 }
 
 void InputLayout::Clear()
