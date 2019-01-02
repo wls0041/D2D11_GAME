@@ -21,6 +21,7 @@
     <ClCompile Include="Framework\Utility\GeometryUtility.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
+    <ClCompile Include="Framework\Math\Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="Framework\Core\D3D11\BasicData\Config.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
+    <ClInclude Include="Framework\Math\Math.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

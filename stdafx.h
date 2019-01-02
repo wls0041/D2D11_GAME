@@ -58,3 +58,6 @@ typedef unsigned int uint;
 
 //Utility
 #include "./Framework/Utility/GeometryUtility.h"
+
+//Resource
+#include "./Framework/Resource/Texture.h"

@@ -8,6 +8,7 @@ App::App()
 	window->Initialize();
 
 	context = new Context();
+	context->RegisterSubsystem(new Timer(context));
 	context->RegisterSubsystem(new Input(context));
 	context->RegisterSubsystem(new Graphics(context));
 }

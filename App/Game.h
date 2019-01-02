@@ -16,6 +16,8 @@ public:
 
 private:
 	class Graphics *graphics;
+	class Timer *timer;
+	class Input *input;
 	class Rect *rect;
 	class ConstantBuffer *cameraBuffer; 
 

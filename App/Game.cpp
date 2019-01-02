@@ -5,6 +5,8 @@
 void Game::Initialize()
 {
 	graphics = context->GetSubsystem<Graphics>();
+	timer = context->GetSubsystem<Timer>();
+	input = context->GetSubsystem<Input>();
 
 	cameraBuffer = new ConstantBuffer(context);
 	cameraBuffer->Create<CameraData>();
@@ -30,12 +32,25 @@ void Game::Initialize()
 
 void Game::Update()
 {
+	timer->Update();
+	input->Update();
+
 	auto data = static_cast<CameraData*>(cameraBuffer->Map()); //꼬봉의 노트를 내보냄. 형식이 없으므로 cameraBuffer로 캐스팅
 
 	D3DXMatrixTranspose(&data->View, &view);
 	D3DXMatrixTranspose(&data->Projection, &projection);
 
 	cameraBuffer->Unmap();
+
+	D3DXVECTOR3 position = rect->GetPosition();
+
+	if (input->KeyPress('W')) position.y += 500.0f * timer->GetDeltaTimeSec();
+	else if (input->KeyPress('S')) position.y -= 500.0f * timer->GetDeltaTimeSec();
+	if (input->KeyPress('A')) position.x -= 500.0f * timer->GetDeltaTimeSec();
+	else if (input->KeyPress('D')) position.x += 500.0f * timer->GetDeltaTimeSec();
+	
+	rect->SetPosition(position);
+	rect->SetScale(D3DXVECTOR3(100, 100, 1));
 
 	rect->Update();
 }

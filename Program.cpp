@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpszCmdPar
 	Settings::Get().SetWindowInstance(hInstance);
 	Settings::Get().SetWidth(1280);
 	Settings::Get().SetHeight(720);
-	Settings::Get().SetIsVsync(true); //프레임을 일정으로 고정
+	Settings::Get().SetIsVsync(false); //프레임을 일정으로 고정
 	Settings::Get().SetIsFullScreen(false);
 
 	//Game 클래스로 넘어가 App이 가진 함수를 이용해 게임 실행 

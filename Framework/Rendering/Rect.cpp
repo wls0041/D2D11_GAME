@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Rect.h"
 
-Rect::Rect(Context *context)
+Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 
@@ -31,6 +31,10 @@ Rect::Rect(Context *context)
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
 
+	//Create Texture
+	texture = new Texture(context);
+	texture->CreateTextureFromFile("Tree.png");
+	
 
 	//Create Rasterizer State
 	{
@@ -41,15 +45,6 @@ Rect::Rect(Context *context)
 		desc.FillMode = D3D11_FILL_WIREFRAME; //WIREFRAME. 외곽선만 출력
 
 		HRESULT hr = graphics->GetDevice()->CreateRasterizerState(&desc, &rsState);
-		assert(SUCCEEDED(hr));
-	}
-
-	//Crate Texture
-	{
-		HRESULT hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Tree.png", nullptr, nullptr, &diffuseMap, nullptr);
-		assert(SUCCEEDED(hr));
-
-		hr = D3DX11CreateShaderResourceViewFromFile(graphics->GetDevice(), L"Forest.png", nullptr, nullptr, &diffuseMap2, nullptr);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -82,6 +77,7 @@ Rect::Rect(Context *context)
 
 Rect::~Rect()
 {
+	SAFE_DELETE(texture);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
@@ -93,11 +89,11 @@ Rect::~Rect()
 void Rect::Update()
 {
 	D3DXMATRIX S, R, T;
-	D3DXMatrixScaling(&S, 1280, 720, 1);
-	D3DXMatrixRotationZ(&R, static_cast<float>(D3DXToRadian(45)));
-	D3DXMatrixTranslation(&T, 0, 0, 0);
+	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
+	D3DXMatrixRotationYawPitchRoll(&R, rotate.y, rotate.x, rotate.z);
+	D3DXMatrixTranslation(&T, position.x, position.y, position.z);
 
-	world = S;// *R * T;
+	world = S * R * T;
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	//행우선을 열우선으로 바꿔줌(전치)
@@ -114,6 +110,7 @@ void Rect::Render()
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
+	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();
 
@@ -126,8 +123,6 @@ void Rect::Render()
 	//dc->RSSetState(rsState);
 
 	//PS단계
-	dc->PSSetShaderResources(0, 1, &diffuseMap); //일부 제외하고 PS단계에서 삽입
-	dc->PSSetShaderResources(1, 1, &diffuseMap2); 
 
 	//OM단계 -> back buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
 	dc->OMSetBlendState(blendState, nullptr, 0xff);
