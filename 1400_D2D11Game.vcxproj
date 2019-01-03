@@ -162,9 +162,11 @@
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\PixelShader.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\VertexShader.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Framework\Math\Math.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
+    <ClCompile Include="Framework\Resource\IResource.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Utility\GeometryUtility.cpp" />
     <ClCompile Include="Program.cpp" />
@@ -192,9 +194,11 @@
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\VertexShader.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ResourceManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
     <ClInclude Include="Framework\Math\Math.h" />
     <ClInclude Include="Framework\Rendering\Rect.h" />
+    <ClInclude Include="Framework\Resource\IResource.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
     <ClInclude Include="Framework\Utility\GeometryUtility.h" />
     <ClInclude Include="stdafx.h" />

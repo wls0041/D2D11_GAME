@@ -35,6 +35,8 @@ typedef unsigned int uint;
 #define SAFE_DELETE(p)       { if (p) { delete (p); (p) = nullptr; }}
 #define SAFE_DELETE_ARRAY(p) { if (p) { delete[] (p); (p) = nullptr; }}
 
+//Math
+#include "./Framework/Math/Math.h"
 
 //MainSystem
 #include "./Framework/Core/Settings.h"
