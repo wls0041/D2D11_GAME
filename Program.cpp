@@ -3,6 +3,8 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpszCmdParam, int nCmdShow) //진입점
 {
+	srand(time(NULL));
+
 	//settings에 값 입력
 	Settings::Get().SetAppName(L"D2D11Game");
 	Settings::Get().SetWindowInstance(hInstance);

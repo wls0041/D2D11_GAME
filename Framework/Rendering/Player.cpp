@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "Rect.h"
+#include "Player.h"
 
-Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
+Player::Player(Context *context) : scale(1, 1, 1), position(-300, 100, 0), rotate(0, 0, 0), IsJump(false), JumpTime(0.0f)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 
 	//Create Vertex Data, Create Index Data
-	GeometryUtility::CreateQuad(geometry);
+	GeometryUtility::CreateCircle(geometry);
 
 	//create vertex buffer
 	vertexBuffer = new VertexBuffer(context);
@@ -45,17 +45,17 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	}
 }
 
-Rect::~Rect()
+Player::~Player()
 {
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
-	SAFE_DELETE(vertexShader); 
+	SAFE_DELETE(vertexShader);
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
 }
 
-void Rect::Update()
+void Player::Update()
 {
 	D3DXMATRIX S, R, T;
 	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
@@ -68,19 +68,18 @@ void Rect::Update()
 	//행우선을 열우선으로 바꿔줌(전치)
 	D3DXMatrixTranspose(&data->World, &world);
 	worldBuffer->Unmap();
-
 }
 
-void Rect::Render()
+void Player::Render()
 {
+	auto dc = graphics->GetDeviceContext();
+
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
 	inputLayout->BindPipeline();
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
-
-	auto dc = graphics->GetDeviceContext();
 
 	//IA단계 세팅
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //정점을 어떻게 쓸것인가 -> 삼각형의 띠로 쓰겠다(정점을 공유하는 이어진 삼각형)

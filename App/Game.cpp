@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 #include "./Framework/Rendering/Rect.h"
+#include "./Framework/Rendering/Player.h"
 
 void Game::Initialize()
 {
@@ -27,7 +28,23 @@ void Game::Initialize()
 	}
 	//만들어진 공간을 변환시키는 것은 VS. 따라서 VS로 가서 만듬(color.hlsld의 cbuffer와 vs), 보낼 때 정보를 보내줘야함(id3d11buffer)
 
-	rect = new Rect(context);
+	player = new Player(context);
+	player->SetScale(D3DXVECTOR3(60, 60, 1)); 
+	player->Update();
+
+	for (int i = 0; i < 6; i++) {
+		D3DXVECTOR3 randPosition;
+		float randY = (rand() % 7) * 37 + 200;
+
+		randPosition.x = 1280 / 5 * (i + 3) - 640;
+		randPosition.y = randY / 2 - 360;
+		randPosition.z = 0;
+
+		rect[i] = new Rect(context);
+		rect[i]->SetScale(D3DXVECTOR3(80, randY, 1));
+		rect[i]->SetPosition(randPosition);
+		rect[i]->Update();
+	}
 }
 
 void Game::Update()
@@ -42,27 +59,113 @@ void Game::Update()
 
 	cameraBuffer->Unmap();
 
-	D3DXVECTOR3 position = rect->GetPosition();
+	if (input->KeyPress(VK_SPACE)) GameStart = true;
+	if (GameStart) {
+		D3DXVECTOR3 position[6];
+		for (int i = 0; i < 6; i++) position[i] = rect[i]->GetPosition();
 
-	if (input->KeyPress('W')) position.y += 500.0f * timer->GetDeltaTimeSec();
-	else if (input->KeyPress('S')) position.y -= 500.0f * timer->GetDeltaTimeSec();
-	if (input->KeyPress('A')) position.x -= 500.0f * timer->GetDeltaTimeSec();
-	else if (input->KeyPress('D')) position.x += 500.0f * timer->GetDeltaTimeSec();
-	
-	rect->SetPosition(position);
-	rect->SetScale(D3DXVECTOR3(100, 100, 1));
+		D3DXVECTOR3 position_p = player->GetPosition();
+		float jumpTimer = player->GetJumpTime();
 
-	rect->Update();
+		if (input->KeyDown(VK_SPACE)) player->SetJump(true);
+
+		if (!player->GetJump()) position_p.y -= 300.0f * timer->GetDeltaTimeSec();
+		else {
+			jumpTimer += 0.1f;
+			position_p.y += 400.0f * timer->GetDeltaTimeSec();
+			player->SetJumpTime(jumpTimer);
+		}
+		if (jumpTimer > 60) {
+			player->SetJump(false);
+			player->SetJumpTime(0.0f);
+		}
+
+		player->SetPosition(position_p);
+		player->Update();
+
+		for (int i = 0; i < 6; i++) {
+			position[i].x -= 300.0f * timer->GetDeltaTimeSec();
+			rect[i]->SetPosition(position[i]);
+			rect[i]->Update();
+
+			IsBoardOut(position[i], i);
+		}
+
+		IsCollision_CircleRect();
+	}
 }
 
 void Game::Render()
 {
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
-	rect->Render();
+	for (int i = 0; i < 6; i++) rect[i]->Render();
+	player->Render();
 }
 
 void Game::Destroy()
 {
+	SAFE_DELETE(player);
+	for (int i = 0; i < 6; i++) SAFE_DELETE(rect[i]);
 	SAFE_DELETE(cameraBuffer);
-	SAFE_DELETE(rect);
+}
+
+void Game::IsBoardOut(D3DXVECTOR3 position, int index)
+{
+	//화면 밖으로 나가면 삭제 후 재생성
+	if (position.x + 40.0f < -640.0f) {
+		float randNum = (rand() % 7) * 25 + 200;
+		SAFE_DELETE(rect[index]);
+
+		rect[index] = new Rect(context);
+		rect[index]->SetScale(D3DXVECTOR3(80, randNum, 1));
+		rect[index]->SetPosition(D3DXVECTOR3(1280 / 5 * 6 - 640, randNum / 2 - 360, 0));
+	}
+}
+
+void Game::IsCollision_CircleRect()
+{
+	float circle_X, circle_Y, circle_radius;
+	circle_X = player->GetPosition().x;
+	circle_Y = player->GetPosition().y;
+	circle_radius = player->GetScale().x;
+
+	bool IsEnd = false;
+
+	for (int i = 0; i < 6; i++) {
+		if (rect[i]->GetPosition().x > -400 && rect[i]->GetPosition().x < -200) { //계산 줄이기
+			float rect_left, rect_right, rect_top, rect_bottom;
+
+			rect_left = rect[i]->GetPosition().x - 40;
+			rect_right = rect[i]->GetPosition().x + 40;
+			rect_top = rect[i]->GetPosition().y + (rect[i]->GetPosition().y + 360);
+			rect_bottom = rect[i]->GetPosition().y - (rect[i]->GetPosition().y + 360);
+
+			if ((rect_left <= circle_X && circle_X <= rect_right) || (rect_top >= circle_Y && circle_Y >= rect_bottom)) {
+				float resize_left = rect_left - circle_radius;
+				float resize_top = rect_top + circle_radius;
+				float resize_right = rect_right + circle_radius;
+				float resize_bottom = rect_bottom - circle_radius;
+
+				if ((resize_left < circle_X && circle_X < resize_right) && (resize_top > circle_Y && circle_Y > resize_bottom)) IsEnd = true;
+			}
+			else {
+				if (IsCollision_CirclePoint(rect_left, rect_top)) IsEnd = true; //좌상단
+				if (IsCollision_CirclePoint(rect_right, rect_top)) IsEnd = true; //우상단
+				if (IsCollision_CirclePoint(rect_left, rect_bottom)) IsEnd = true; //좌하단
+				if (IsCollision_CirclePoint(rect_right, rect_bottom)) IsEnd = true; //우하단
+			}
+		}
+	}
+
+	if (IsEnd) MessageBoxA(NULL, "!! 장애물에 충돌 !!", "~~~~ THE END ~~~~", MB_OK);
+}
+
+bool Game::IsCollision_CirclePoint(float point_X, float point_Y)
+{
+	float deltaX = player->GetPosition().x - point_X;
+	float deltaY = player->GetPosition().y - point_Y;
+	float length = sqrt(deltaX * deltaX + deltaY * deltaY);
+
+	if (length > player->GetScale().x) return false;
+	return true;
 }

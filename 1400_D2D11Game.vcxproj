@@ -165,6 +165,7 @@
     <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Framework\Math\Math.cpp" />
+    <ClCompile Include="Framework\Rendering\Player.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Utility\FileSystem.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Framework\Core\Subsystem\ResourceManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
     <ClInclude Include="Framework\Math\Math.h" />
+    <ClInclude Include="Framework\Rendering\Player.h" />
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\IResource.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
