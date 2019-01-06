@@ -28,11 +28,12 @@ public:
 	template <typename T>
 	static const T Min(const T &lhs, const T &rhs) { return lhs < rhs ? lhs : rhs; }
 
-	template <typename T>
+	template <typename T> //부호함수
 	static const int Sign(const T &value) { return (T(0) < value) - (value < T(0)); }
+	// 양수 : 1 - 0 = 1, 음수 : 0 - 1 = -1, 0 : 0 - 0 = 0.  주어진 값의 부호를 반환
 
 	template <typename T>
 	static const bool Equals(const T &lhs, const T &rhs, const T &e = numeric_limits<T>::epsilon()) { 
 		return lhs + e >= rhs && lhs - e <= rhs;
-	}
+	}//lhs에 극히 작은 값 e를 더하거나 빼는 것으로 rhs와의 우위가 바뀐다면 두 값을 같은 값으로 간주한다.
 };

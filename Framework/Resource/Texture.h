@@ -1,10 +1,14 @@
 #pragma once
+#include "IResource.h"
 
-class Texture
+class Texture : public IResource
 {
 public:
 	Texture(class Context *context);
 	virtual ~Texture();
+	
+	void SaveToFile(const string &filePath);
+	void LoadFromFile(const string &filePath);
 
 	void CreateTextureFromFile(const string &filePath);
 	void CreateTexture2D(const float &width, const float &height, const DXGI_FORMAT &format);

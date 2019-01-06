@@ -4,6 +4,7 @@
 Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
+	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 
 	//Create Vertex Data, Create Index Data
 	GeometryUtility::CreateQuad(geometry);
@@ -17,10 +18,10 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("TexCoord.hlsl");
+	vertexShader->Create("../_Assets/Shader/TexCoord.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("TexCoord.hlsl");
+	pixelShader->Create("../_Assets/Shader/TexCoord.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -28,13 +29,11 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	worldBuffer = new ConstantBuffer(context);
 	worldBuffer->Create<WorldData>();
 
+	//Create Texture
+	texture = resourceMgr->Load<Texture>("Tree.png");
+
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
-
-	//Create Texture
-	texture = new Texture(context);
-	texture->CreateTextureFromFile("Tree.png");
-	
 
 	//Create Rasterizer State
 	{
@@ -77,7 +76,6 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 
 Rect::~Rect()
 {
-	SAFE_DELETE(texture);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);

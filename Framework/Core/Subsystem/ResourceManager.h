@@ -28,7 +28,21 @@ private:
 template<typename T>
 inline T * ResourceManager::Load(const string & filePath)
 {
-	return NULL;
+	auto *resource = GetResourceFromPath<T>(filePath);
+
+	if (!resource) { //찾아서 없으면 만들고 있으면 그대로 반환
+		auto type = IResource::DeduceResourceType<T>();
+		auto directory = resourceDirectories[type];
+
+		resource = new T(context);
+		resource->SetResourceType(type);
+		resource->SetResourcePath(filePath);
+		resource->SetResourceName(FileSystem::GetIntactFileNameFromFilePath(filePath));
+		resource->LoadFromFile(directory + filePath);
+
+		RegisterResource(resource);
+	}
+	return resource;
 }
 
 template<typename T>

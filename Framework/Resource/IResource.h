@@ -19,9 +19,9 @@ public:
 	const string &GetResourcePath() const { return filePath; }
 	const ResourceType &GetResourceType() const { return resourceType; }
 	
-	const string &SetResourceName(const string &name) { this->name = name; }
-	const string &SetResourcePath(const string &filePath) { this->filePath = filePath; }
-	const ResourceType &SetResourceType(const ResourceType &type) { this->resourceType = type; }
+	void SetResourceName(const string &name) { this->name = name; }
+	void SetResourcePath(const string &filePath) { this->filePath = filePath; }
+	void SetResourceType(const ResourceType &type) { this->resourceType = type; }
 
 	virtual void SaveToFile(const string &filePath) = 0;
 	virtual void LoadFromFile(const string &filePath) = 0;

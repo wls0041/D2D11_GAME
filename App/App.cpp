@@ -11,6 +11,7 @@ App::App()
 	context->RegisterSubsystem(new Timer(context));
 	context->RegisterSubsystem(new Input(context));
 	context->RegisterSubsystem(new Graphics(context));
+	context->RegisterSubsystem(new ResourceManager(context));
 }
 
 App::~App()

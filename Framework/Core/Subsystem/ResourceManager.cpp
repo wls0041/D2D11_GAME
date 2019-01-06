@@ -1,16 +1,27 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
 
-ResourceManager::ResourceManager(Context * context)
+ResourceManager::ResourceManager(Context * context) : ISubsystem(context)
 {
 }
 
 ResourceManager::~ResourceManager()
 {
+	//map<type, vector<>> --> resourceGroups
+	//pair<type, vector<>> --> resourceGroup
+	for (auto resourceGroup : resourceGroups) {
+		for (auto resource : resourceGroup.second) SAFE_DELETE(resource);
+	}
 }
 
 void ResourceManager::Initialize()
 {
+	RegisterDirectory(ResourceType::Texture, "../_Assets/Texture/");
+	RegisterDirectory(ResourceType::Shader, "../_Assets/Shader/");
+	RegisterDirectory(ResourceType::Mesh, "../_Assets/Mesh/");
+	RegisterDirectory(ResourceType::Animation, "../_Assets/Animation/");
+	RegisterDirectory(ResourceType::Audio, "../_Assets/Audio/");
+	RegisterDirectory(ResourceType::Material, "../_Assets/Material/");
 }
 
 vector<IResource*> ResourceManager::GetAllResource()

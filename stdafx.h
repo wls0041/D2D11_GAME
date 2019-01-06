@@ -42,24 +42,28 @@ typedef unsigned int uint;
 #include "./Framework/Core/Settings.h"
 #include "./Framework/Core/Context.h"
 
+//BasicData
+#include "./Framework/Core/D3D11/BasicData/Config.h"
+#include "./Framework/Core/D3D11/BasicData/Vertex.h"
+#include "./Framework/Core/D3D11/BasicData/Geometry.h"
+
+//Utility
+#include "./Framework/Utility/GeometryUtility.h"
+#include "./Framework/Utility/FileSystem.h"
+
 //SubSystem
 #include "./Framework/Core/Subsystem/Timer.h"
 #include "./Framework/Core/Subsystem/Input.h"
 #include "./Framework/Core/Subsystem/Graphics.h"
+#include "./Framework/Core/Subsystem/ResourceManager.h"
 
 //Wrapper Class
-#include "./Framework/Core/D3D11/BasicData/Config.h"
-#include "./Framework/Core/D3D11/BasicData/Vertex.h"
-#include "./Framework/Core/D3D11/BasicData/Geometry.h"
 #include "./Framework/Core/D3D11/IAStage/VertexBuffer.h"
 #include "./Framework/Core/D3D11/IAStage/IndexBuffer.h"
 #include "./Framework/Core/D3D11/IAStage/InputLayout.h"
 #include "./Framework/Core/D3D11/ShaderStage/VertexShader.h"
 #include "./Framework/Core/D3D11/ShaderStage/PixelShader.h"
 #include "./Framework/Core/D3D11/ShaderStage/ConstantBuffer.h"
-
-//Utility
-#include "./Framework/Utility/GeometryUtility.h"
 
 //Resource
 #include "./Framework/Resource/Texture.h"

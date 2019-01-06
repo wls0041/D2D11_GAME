@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Texture.h"
 
-Texture::Texture(Context * context) : srv(nullptr), format(DXGI_FORMAT_R8G8B8A8_UNORM), filePath(""), width(0), height(0)
+Texture::Texture(Context * context) : IResource(context), srv(nullptr), format(DXGI_FORMAT_R8G8B8A8_UNORM), filePath(""), width(0), height(0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 }
@@ -9,6 +9,15 @@ Texture::Texture(Context * context) : srv(nullptr), format(DXGI_FORMAT_R8G8B8A8_
 Texture::~Texture()
 {
 	Clear();
+}
+
+void Texture::SaveToFile(const string & filePath)
+{
+}
+
+void Texture::LoadFromFile(const string & filePath)
+{
+	CreateTextureFromFile(filePath);
 }
 
 void Texture::CreateTextureFromFile(const string & filePath)

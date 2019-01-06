@@ -166,8 +166,8 @@
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Framework\Math\Math.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
-    <ClCompile Include="Framework\Resource\IResource.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
+    <ClCompile Include="Framework\Utility\FileSystem.cpp" />
     <ClCompile Include="Framework\Utility\GeometryUtility.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -200,6 +200,7 @@
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\IResource.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
+    <ClInclude Include="Framework\Utility\FileSystem.h" />
     <ClInclude Include="Framework\Utility\GeometryUtility.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
