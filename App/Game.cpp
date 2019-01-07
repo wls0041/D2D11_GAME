@@ -157,7 +157,10 @@ void Game::IsCollision_CircleRect()
 		}
 	}
 
-	if (IsEnd) MessageBoxA(NULL, "!! 장애물에 충돌 !!", "~~~~ THE END ~~~~", MB_OK);
+	if (IsEnd) {
+		MessageBoxA(NULL, "!! 장애물에 충돌 !!", "~~~~ THE END ~~~~", MB_OK);
+		PostQuitMessage(0);
+	}
 }
 
 bool Game::IsCollision_CirclePoint(float point_X, float point_Y)
