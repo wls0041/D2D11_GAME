@@ -12,6 +12,7 @@ App::App()
 	context->RegisterSubsystem(new Input(context));
 	context->RegisterSubsystem(new Graphics(context));
 	context->RegisterSubsystem(new ResourceManager(context));
+	context->RegisterSubsystem(new SceneManager(context));
 }
 
 App::~App()

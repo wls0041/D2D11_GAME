@@ -16,6 +16,15 @@ LRESULT CALLBACK WndProc
 
 	switch (message)
 	{
+	case WM_KEYDOWN:
+	{
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			PostQuitMessage(0);
+			break;
+		}
+	}
 	case WM_SIZE:
 		if (Window::OnResize != nullptr && wParam != SIZE_MINIMIZED)
 			Window::OnResize(lParam & 0xffff, (lParam >> 16) & 0xffff);

@@ -15,12 +15,7 @@ public:
 	virtual void Destroy() override;
 
 private:
-	class Graphics *graphics;
 	class Timer *timer;
 	class Input *input;
-	class Rect *rect;
-	class ConstantBuffer *cameraBuffer; 
-
-	D3DXMATRIX view; //시야공간
-	D3DXMATRIX projection; //투영공간
+	class SceneManager *sceneMgr;
 };
