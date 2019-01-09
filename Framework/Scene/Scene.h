@@ -15,4 +15,8 @@ public:
 private:
 	class Context *context;
 	string name;
+
+	class Camera *camera;
+	class ConstantBuffer *cameraBuffer;
+	class Rect *rect;
 };

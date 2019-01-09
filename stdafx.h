@@ -68,3 +68,4 @@ typedef unsigned int uint;
 
 //Resource
 #include "./Framework/Resource/Texture.h"
+#include "./Framework/Resource/Animation.h"

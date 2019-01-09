@@ -7,8 +7,8 @@ public:
 	Texture(class Context *context);
 	virtual ~Texture();
 	
-	void SaveToFile(const string &filePath);
-	void LoadFromFile(const string &filePath);
+	void SaveToFile(const string &filePath) override;
+	void LoadFromFile(const string &filePath) override;
 
 	void CreateTextureFromFile(const string &filePath);
 	void CreateTexture2D(const float &width, const float &height, const DXGI_FORMAT &format);

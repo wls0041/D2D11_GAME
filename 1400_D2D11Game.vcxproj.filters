@@ -27,6 +27,8 @@
     <ClCompile Include="Framework\Scene\Scene.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\SceneManager.cpp" />
     <ClCompile Include="Framework\Scene\Component\Camera.cpp" />
+    <ClCompile Include="Framework\Resource\Animation.cpp" />
+    <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -59,6 +61,8 @@
     <ClInclude Include="Framework\Scene\Scene.h" />
     <ClInclude Include="Framework\Core\Subsystem\SceneManager.h" />
     <ClInclude Include="Framework\Scene\Component\Camera.h" />
+    <ClInclude Include="Framework\Resource\Animation.h" />
+    <ClInclude Include="Framework\Scene\Component\Animator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

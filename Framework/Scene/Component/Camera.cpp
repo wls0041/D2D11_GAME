@@ -16,6 +16,13 @@ Camera::~Camera()
 
 void Camera::Update()
 {
+	if ((input->KeyPress(VK_SHIFT))) {
+		if (input->KeyPress('W')) position += up * 200.0f * timer->GetDeltaTimeSec();
+		else if (input->KeyPress('S')) position -= up * 200.0f * timer->GetDeltaTimeSec();
+		if (input->KeyPress('A')) position -= right * 200.0f * timer->GetDeltaTimeSec();
+		else if (input->KeyPress('D')) position += right * 200.0f * timer->GetDeltaTimeSec();
+	}
+
 	UpdateViewMatrix();
 	UpdateProjectionMatrix();
 }
