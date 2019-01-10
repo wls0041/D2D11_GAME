@@ -19,3 +19,10 @@ struct WorldData { //데이터를 넘기기 편하게 구조체로 선언
 struct ColorData {
 	D3DXCOLOR Color;
 };
+
+struct AnimationData {
+	D3DXVECTOR2 TextureSize;
+	D3DXVECTOR2 SpriteOffset;
+	D3DXVECTOR2 Spritesize;
+	float Padding[2]; //공간맞추기 24byte + 8byte
+};

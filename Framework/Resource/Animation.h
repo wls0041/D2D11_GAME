@@ -25,7 +25,7 @@ public:
 	Keyframe *GetKeyframeFromIndex(const uint &index);
 	const RepeatType &GetReapeatType() const { return repeatType; }
 	const vector<Keyframe> &GetKeyframes() const { return keyframes; }
-	const uint GetKeyframeCound() const { return keyframes.size(); }
+	const uint GetKeyframeCount() const { return keyframes.size(); }
 	
 	void SetRepeatType(const RepeatType &repeatType) { this->repeatType = repeatType; }
 

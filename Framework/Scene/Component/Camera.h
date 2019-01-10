@@ -28,4 +28,6 @@ private:
 
 	D3DXMATRIX view;
 	D3DXMATRIX projection;
+
+	float zoom;
 };

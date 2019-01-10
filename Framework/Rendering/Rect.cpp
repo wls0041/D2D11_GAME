@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Rect.h"
+#include "../Scene/Component/Animator.h"
 
 Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
 {
@@ -18,10 +19,10 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/TexCoord.hlsl");
+	vertexShader->Create("../_Assets/Shader/Animation.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/TexCoord.hlsl");
+	pixelShader->Create("../_Assets/Shader/Animation.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -30,7 +31,7 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Tree.png");
+	texture = resourceMgr->Load<Texture>("metalslug.png");
 
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
@@ -72,10 +73,27 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 		HRESULT hr = graphics->GetDevice()->CreateBlendState(&desc, &blendState);
 		assert(SUCCEEDED(hr));
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	animationBuffer = new ConstantBuffer(context);
+	animationBuffer->Create<AnimationData>();
+
+	animator = new Animator(context);
+
+	Animation *idle = new Animation(context);
+
+	idle->AddKeyframe("metalslug.png", { 5, 2 }, { 28, 38 }, 200.0f);
+	idle->AddKeyframe("metalslug.png", { 36, 2 }, { 28, 38 }, 200.0f);
+	idle->AddKeyframe("metalslug.png", { 65, 2 }, { 28, 38 }, 200.0f);
+	idle->SetResourceName("Idle");
+
+	animator->RegisterAnimation(idle);
+	animator->SetCurrentAnimation("Idle");
 }
 
 Rect::~Rect()
 {
+	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
@@ -98,6 +116,13 @@ void Rect::Update()
 	D3DXMatrixTranspose(&data->World, &world);
 	worldBuffer->Unmap();
 
+	animator->Update();
+
+	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
+	animData->TextureSize = texture->GetSize();
+	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
+	animData->Spritesize = animator->GetCurrentkeyframe()->size;
+	animationBuffer->Unmap();
 }
 
 void Rect::Render()
@@ -108,6 +133,7 @@ void Rect::Render()
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
+	animationBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();

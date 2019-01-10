@@ -10,7 +10,7 @@ Scene::Scene(class Context *context) : context(context)
 	cameraBuffer->Create<CameraData>();
 
 	rect = new Rect(context);
-	rect->SetScale({ 100, 100, 1 });
+	rect->SetScale({ 1, 1, 1 });
 }
 
 Scene::~Scene()

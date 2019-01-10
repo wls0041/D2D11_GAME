@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Camera.h"
 
-Camera::Camera(Context * context) : context(context), position(0, 0, 0), right(1, 0, 0), up(0, 1, 0), forward(0, 0, 1)
+Camera::Camera(Context * context) : context(context), position(0, 0, 0), right(1, 0, 0), up(0, 1, 0), forward(0, 0, 1), zoom(1.0f)
 {
 	timer = context->GetSubsystem<Timer>();
 	input = context->GetSubsystem<Input>();
@@ -21,6 +21,16 @@ void Camera::Update()
 		else if (input->KeyPress('S')) position -= up * 200.0f * timer->GetDeltaTimeSec();
 		if (input->KeyPress('A')) position -= right * 200.0f * timer->GetDeltaTimeSec();
 		else if (input->KeyPress('D')) position += right * 200.0f * timer->GetDeltaTimeSec();
+		
+		float delta = input->GetMouseMoveValue().z;
+		if (Math::Abs(delta) >= WHEEL_DELTA) {
+			float deltaZoom = 1.0f - Math::Abs(delta) / WHEEL_DELTA / 10.0f;
+
+			if (delta < 0) zoom *= deltaZoom;
+			else zoom /= deltaZoom;
+
+			zoom = Math::clamp(zoom, 0.1f, 100.0f);
+		}
 	}
 
 	UpdateViewMatrix();
@@ -36,7 +46,7 @@ void Camera::UpdateViewMatrix()
 void Camera::UpdateProjectionMatrix()
 {
 	auto viewport = Settings::Get().GetViewPort();
-	D3DXMatrixOrthoLH(&projection, viewport.Width, viewport.Height, 0.0f, 1.0f);
+	D3DXMatrixOrthoLH(&projection, viewport.Width / zoom, viewport.Height / zoom, 0.0f, 1.0f);
 	//D3DXMatrixOrthoOffCenterLH(&projection, 0, 1280, 720, 0, 0,  1); //반환 받을 변수, 카메라 위치, 바라보는 방향, 위 
 	//만들어진 공간을 변환시키는 것은 VS.따라서 VS로 가서 만듬(color.hlsld의 cbuffer와 vs), 보낼 때 정보를 보내줘야함(id3d11buffer)
 }

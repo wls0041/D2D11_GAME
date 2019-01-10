@@ -13,6 +13,31 @@ Animator::~Animator()
 
 void Animator::Update()
 {
+	bool bCheck = true;
+	bCheck &= curAnimation != nullptr;
+	bCheck &= IsPlay();
+
+	if (bCheck) {
+		frameTimer += timer->GetDeltaTimeMs();
+		if (frameTimer > curAnimation->GetKeyframeFromIndex(curFrameNumber)->time) {
+			curFrameNumber++;
+
+			switch (curAnimation->GetReapeatType())
+			{
+			case RepeatType::Once:
+				if (curFrameNumber >= curAnimation->GetKeyframeCount()) {
+					curFrameNumber = curAnimation->GetKeyframeCount() - 1;
+					Pause();
+				}
+				break;
+			case RepeatType::Loop:
+				curFrameNumber %= curAnimation->GetKeyframeCount();
+				break;
+			}
+
+			frameTimer = 0.0f;
+		}
+	}
 }
 
 Keyframe * Animator::GetCurrentkeyframe()
@@ -45,12 +70,18 @@ void Animator::RegisterAnimation(Animation * animation)
 
 void Animator::Play()
 {
+	mode = AnimationMode::Play;
+	frameTimer = 0.0f;
 }
 
 void Animator::Stop()
 {
+	mode = AnimationMode::Stop;
 }
 
 void Animator::Pause()
 {
+	mode = AnimationMode::Pause;
+	frameTimer = 0.0f;
+	curFrameNumber = 0;
 }

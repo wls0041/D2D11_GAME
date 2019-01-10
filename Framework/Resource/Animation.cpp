@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Animation.h"
 
-Animation::Animation(Context * context) : IResource(context), repeatType(RepeatType::Once)
+Animation::Animation(Context * context) : IResource(context), repeatType(RepeatType::Loop)
 {
 }
 
