@@ -80,14 +80,7 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 
 	animator = new Animator(context);
 
-	Animation *idle = new Animation(context);
-
-	idle->AddKeyframe("metalslug.png", { 5, 2 }, { 28, 38 }, 200.0f);
-	idle->AddKeyframe("metalslug.png", { 36, 2 }, { 28, 38 }, 200.0f);
-	idle->AddKeyframe("metalslug.png", { 65, 2 }, { 28, 38 }, 200.0f);
-	idle->SetResourceName("Idle");
-
-	animator->RegisterAnimation(idle);
+	animator->RegisterAnimation("Idle.xml");
 	animator->SetCurrentAnimation("Idle");
 }
 

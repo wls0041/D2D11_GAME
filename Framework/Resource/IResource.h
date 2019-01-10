@@ -27,7 +27,7 @@ public:
 	virtual void LoadFromFile(const string &filePath) = 0;
 
 
-private:
+protected:
 	class Context *context;
 	
 	string name;

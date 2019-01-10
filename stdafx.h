@@ -50,6 +50,7 @@ typedef unsigned int uint;
 //Utility
 #include "./Framework/Utility/GeometryUtility.h"
 #include "./Framework/Utility/FileSystem.h"
+#include "./Framework/Utility/Xml.h"
 
 //SubSystem
 #include "./Framework/Core/Subsystem/Timer.h"
