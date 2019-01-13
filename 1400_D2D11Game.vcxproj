@@ -168,6 +168,7 @@
     <ClCompile Include="Framework\Math\Math.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
     <ClCompile Include="Framework\Resource\Animation.cpp" />
+    <ClCompile Include="Framework\Resource\Material.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
     <ClCompile Include="Framework\Scene\Component\Camera.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\Animation.h" />
     <ClInclude Include="Framework\Resource\IResource.h" />
+    <ClInclude Include="Framework\Resource\Material.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
     <ClInclude Include="Framework\Scene\Component\Animator.h" />
     <ClInclude Include="Framework\Scene\Component\Camera.h" />

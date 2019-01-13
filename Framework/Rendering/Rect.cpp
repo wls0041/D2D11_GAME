@@ -31,7 +31,7 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("metalslug.png");
+	texture = resourceMgr->Load<Texture>("bird.png");
 
 	//공간 단위행렬 초기화
 	D3DXMatrixIdentity(&world);
@@ -80,13 +80,23 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 
 	animator = new Animator(context);
 
-	animator->RegisterAnimation("Idle.xml");
-	animator->SetCurrentAnimation("Idle");
+	//animator->RegisterAnimation("Idle.xml");
+	//animator->SetCurrentAnimation("Idle");
+
+	Animation *bird = new Animation(context);
+	bird->SetResourceName("Bird");
+	bird->AddKeyframe("bird.png", { 264, 90 }, { 17, 12 }, 200.0f);
+	bird->AddKeyframe("bird.png", { 264, 64 }, { 17, 12 }, 200.0f);
+	bird->AddKeyframe("bird.png", { 223, 124 }, { 17, 12 }, 200.0f);
+
+	animator->RegisterAnimation(bird);
+	animator->SetCurrentAnimation("Bird");
+
+	animator->SaveToFile("Flappy_Bird.xml");
 }
 
 Rect::~Rect()
 {
-	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);

@@ -19,4 +19,10 @@ private:
 	class Camera *camera;
 	class ConstantBuffer *cameraBuffer;
 	class Rect *rect;
+
+	class Rect *message[3];
+	class Rect *rect;
+	class Rect *rect;
+	class Rect *rect;
+	class Rect *rect;
 };

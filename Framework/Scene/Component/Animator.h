@@ -18,6 +18,9 @@ public:
 	void RegisterAnimation(const string &filePath);
 	void RegisterAnimation(class Animation *animation);
 
+	void SaveToFile(const string &filePath);
+	void LoadFromFile(const string &filePath);
+
 	void Play();
 	void Stop();
 	void Pause();
