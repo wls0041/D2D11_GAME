@@ -30,6 +30,7 @@
     <ClCompile Include="Framework\Resource\Animation.cpp" />
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
     <ClCompile Include="Framework\Utility\Xml.cpp" />
+    <ClCompile Include="Framework\Resource\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -65,6 +66,7 @@
     <ClInclude Include="Framework\Resource\Animation.h" />
     <ClInclude Include="Framework\Scene\Component\Animator.h" />
     <ClInclude Include="Framework\Utility\Xml.h" />
+    <ClInclude Include="Framework\Resource\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

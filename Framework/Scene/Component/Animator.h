@@ -1,6 +1,6 @@
 #pragma once
 
-enum class AnimationMode : uint {Play, Pause, Stop};
+enum class AnimationMode : uint { Play, Pause, Stop };
 
 class Animator
 {
@@ -14,9 +14,12 @@ public:
 	struct Keyframe *GetCurrentkeyframe();
 
 	void SetCurrentAnimation(const string &animationName);
-	
+
 	void RegisterAnimation(const string &filePath);
 	void RegisterAnimation(class Animation *animation);
+
+	void SaveToFile(const string &filePath);
+	void LoadFromFile(const string &filePath);
 
 	void Play();
 	void Stop();
