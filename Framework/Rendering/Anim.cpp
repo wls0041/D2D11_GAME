@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Rect.h"
+#include "Anim.h"
 #include "../Scene/Component/Animator.h"
 
-Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
+Anim::Anim(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0), size(0, 0), offset(0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -19,10 +19,10 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/Animation.hlsl");
+	vertexShader->Create("../_Assets/Shader/SpriteTexture.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/Animation.hlsl");
+	pixelShader->Create("../_Assets/Shader/SpriteTexture.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -75,39 +75,25 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	animationBuffer = new ConstantBuffer(context);
-	animationBuffer->Create<AnimationData>();
-
-	animator = new Animator(context);
-
-	//animator->RegisterAnimation("Idle.xml");
-	//animator->SetCurrentAnimation("Idle");
-
-	//Animation *bird = new Animation(context);
-	//bird->SetResourceName("Bird");
-	//bird->AddKeyframe("bird.png", { 264, 90 }, { 17, 12 }, 200.0f);
-	//bird->AddKeyframe("bird.png", { 264, 64 }, { 17, 12 }, 200.0f);
-	//bird->AddKeyframe("bird.png", { 223, 124 }, { 17, 12 }, 200.0f);
-	//bird->SetResourceType(ResourceType::Animation);
-
-	animator->LoadFromFile("Flappy_Bird.xml");
-	animator->SetCurrentAnimation("Bird");
-
-	//animator->SaveToFile("Flappy_Bird.xml");
+	spriteBuffer = new ConstantBuffer(context);
+	spriteBuffer->Create<AnimationData>();
 }
 
-Rect::~Rect()
+Anim::~Anim()
 {
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
-	SAFE_DELETE(vertexShader); 
+	SAFE_DELETE(vertexShader);
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
 }
 
-void Rect::Update()
+void Anim::Update()
 {
+	scale.x = 1280 / size.y;
+	scale.y = 720 / size.y;
+
 	D3DXMATRIX S, R, T;
 	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
 	D3DXMatrixRotationYawPitchRoll(&R, rotate.y, rotate.x, rotate.z);
@@ -120,16 +106,14 @@ void Rect::Update()
 	D3DXMatrixTranspose(&data->World, &world);
 	worldBuffer->Unmap();
 
-	animator->Update();
-
-	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
+	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
-	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->Spritesize = animator->GetCurrentkeyframe()->size;
-	animationBuffer->Unmap();
+	animData->SpriteOffset = offset;
+	animData->Spritesize = size;
+	spriteBuffer->Unmap();
 }
 
-void Rect::Render()
+void Anim::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
@@ -137,7 +121,7 @@ void Rect::Render()
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
-	animationBuffer->BindPipeline(ShaderType::VS, 2);
+	spriteBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();

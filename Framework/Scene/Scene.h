@@ -18,7 +18,7 @@ private:
 
 	class Camera *camera;
 	class ConstantBuffer *cameraBuffer;
-	class Rect *rect;
+	class Rect *bird;
 
-	class Rect *message[3];
+	class Anim *anim;
 };
