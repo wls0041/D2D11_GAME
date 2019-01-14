@@ -28,6 +28,11 @@ using namespace std;
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+//FMOD(사운드 라이브러리)
+#include <FMOD/fmod.hpp>
+#include <FMOD/fmod_errors.h>
+#pragma comment(lib, "fmod_vc.lib")
+
 typedef unsigned int uint;
 
 //macro function
@@ -55,6 +60,7 @@ typedef unsigned int uint;
 //SubSystem
 #include "./Framework/Core/Subsystem/Timer.h"
 #include "./Framework/Core/Subsystem/Input.h"
+#include "./Framework/Core/Subsystem/Audio.h"
 #include "./Framework/Core/Subsystem/Graphics.h"
 #include "./Framework/Core/Subsystem/ResourceManager.h"
 #include "./Framework/Core/Subsystem/SceneManager.h"

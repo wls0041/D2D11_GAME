@@ -10,6 +10,7 @@ App::App()
 	context = new Context();
 	context->RegisterSubsystem(new Timer(context));
 	context->RegisterSubsystem(new Input(context));
+	context->RegisterSubsystem(new Audio(context));
 	context->RegisterSubsystem(new Graphics(context));
 	context->RegisterSubsystem(new ResourceManager(context));
 	context->RegisterSubsystem(new SceneManager(context));
@@ -32,13 +33,13 @@ WPARAM App::Run() //실행 후 계속해서 도는 루프
 	while (true) {
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) { //peek.무시하고 지나감, get.기다림
 			if (msg.message == WM_QUIT) break;
-			
+
 			TranslateMessage(&msg); //특정 message로 가공
 			DispatchMessage(&msg); //wndProc으로 msg를 보내줌
 		}
 		else {
 			Update();
-			
+
 			graphics->BeginScene(); //..clear
 			{
 				Render();

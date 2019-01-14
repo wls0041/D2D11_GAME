@@ -6,6 +6,7 @@ void Game::Initialize()
 {
 	timer = context->GetSubsystem<Timer>();
 	input = context->GetSubsystem<Input>();
+	audio = context->GetSubsystem<Audio>();
 	sceneMgr = context->GetSubsystem<SceneManager>();
 }
 
@@ -13,6 +14,7 @@ void Game::Update()
 {
 	timer->Update();
 	input->Update();
+	audio->Update();
 	sceneMgr->Update();
 }
 

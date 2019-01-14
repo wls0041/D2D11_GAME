@@ -35,7 +35,7 @@ void Animation::SaveToFile(const string & filePath)
 		firstElem->SetAttribute("Time", keyframe.time);
 	}
 
-	doc.SaveFile(filePath.c_str());
+	doc.SaveFile(("../_Assets/Animation/" + filePath).c_str());
 }
 
 void Animation::LoadFromFile(const string & filePath)
