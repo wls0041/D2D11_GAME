@@ -83,16 +83,17 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	//animator->RegisterAnimation("Idle.xml");
 	//animator->SetCurrentAnimation("Idle");
 
-	Animation *bird = new Animation(context);
-	bird->SetResourceName("Bird");
-	bird->AddKeyframe("bird.png", { 264, 90 }, { 17, 12 }, 200.0f);
-	bird->AddKeyframe("bird.png", { 264, 64 }, { 17, 12 }, 200.0f);
-	bird->AddKeyframe("bird.png", { 223, 124 }, { 17, 12 }, 200.0f);
+	//Animation *bird = new Animation(context);
+	//bird->SetResourceName("Bird");
+	//bird->AddKeyframe("bird.png", { 264, 90 }, { 17, 12 }, 200.0f);
+	//bird->AddKeyframe("bird.png", { 264, 64 }, { 17, 12 }, 200.0f);
+	//bird->AddKeyframe("bird.png", { 223, 124 }, { 17, 12 }, 200.0f);
+	//bird->SetResourceType(ResourceType::Animation);
+	
+	//animator->SaveToFile("Flappy_Bird.xml");
 
-	animator->RegisterAnimation(bird);
+	animator->LoadFromFile("Flappy_Bird.xml");
 	animator->SetCurrentAnimation("Bird");
-
-	animator->SaveToFile("Flappy_Bird.xml");
 }
 
 Rect::~Rect()

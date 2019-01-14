@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "./Component/Camera.h"
 #include "../Rendering/Rect.h"
+#include "../Resource/AudioClip.h"
 
 Scene::Scene(class Context *context) : context(context)
 {
@@ -11,6 +12,10 @@ Scene::Scene(class Context *context) : context(context)
 
 	rect = new Rect(context);
 	rect->SetScale({ 1, 1, 1 });
+
+	auto resourceMgr = context->GetSubsystem<ResourceManager>();
+	auto clip = resourceMgr->Load<AudioClip>("Stage1.mp3");
+	clip->Play();
 }
 
 Scene::~Scene()

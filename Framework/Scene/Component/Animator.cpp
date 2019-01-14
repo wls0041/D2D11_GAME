@@ -88,7 +88,7 @@ void Animator::SaveToFile(const string & filePath)
 		root->LinkEndChild(firstElem);
 		
 		firstElem->SetAttribute("Name", animation.second->GetResourceName().c_str()); //root의 속성
-		firstElem->SetAttribute("Type", static_cast<int>(animation.second->GetResourceType()));
+		firstElem->SetAttribute("Type", static_cast<int>(animation.second->GetReapeatType()));
 		
 		for (auto &keyframe : animation.second->GetKeyframes()) {
 			Xml::XMLElement *secondElem = doc.NewElement("keyframe");
@@ -103,13 +103,13 @@ void Animator::SaveToFile(const string & filePath)
 		}
 	}
 
-	doc.SaveFile(filePath.c_str());
+	doc.SaveFile(("../_Assets/Animation/" + filePath).c_str());
 }
 
 void Animator::LoadFromFile(const string & filePath)
 {
 	Xml::XMLDocument doc;
-	Xml::XMLError error = doc.LoadFile(filePath.c_str());
+	Xml::XMLError error = doc.LoadFile(("../_Assets/Animation/" + filePath).c_str());
 	assert(error == Xml::XMLError::XML_SUCCESS);//실패하면 그이유도 같이 나옴
 
 	Xml::XMLElement *root = doc.FirstChildElement();
