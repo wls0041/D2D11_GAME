@@ -20,6 +20,8 @@ Scene::Scene(class Context *context) : context(context)
 
 Scene::~Scene()
 {
+	for (auto audioClip : clips) SAFE_DELETE(audioClip);
+
 	SAFE_DELETE(rect);
 	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(camera);
@@ -34,6 +36,24 @@ void Scene::Update()
 	cameraBuffer->Unmap();
 
 	rect->Update();
+
+	auto input = context->GetSubsystem<Input>();
+	auto resourceMgr = context->GetSubsystem<ResourceManager>();
+	auto clip = resourceMgr->Load<AudioClip>("Stage1.mp3");
+	
+	if (input->KeyDown('Q')) clip->Play();
+	else if (input->KeyDown('W')) clip->Pause();
+	else if (input->KeyDown('E')) clip->Stop();
+
+
+	/////////////////////오디오 복사 생성자 테스트코드//////////////////////////
+	static auto shoot = resourceMgr->Load<AudioClip>("Shoot1.wav");
+	
+	if (input->BtnDown(0)) { //좌클릭
+		clips.push_back(new AudioClip(*shoot));
+		clips.back()->Play();
+	}
+
 }
 
 void Scene::Render()

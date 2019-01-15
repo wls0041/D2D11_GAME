@@ -19,4 +19,6 @@ private:
 	class Camera *camera;
 	class ConstantBuffer *cameraBuffer;
 	class Rect *rect;
+
+	vector<class AudioClip*> clips;
 };
