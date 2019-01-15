@@ -9,6 +9,7 @@ public:
 	const D3DXVECTOR3 &GetScale() const { return scale; }
 	const D3DXVECTOR3 &GetRotate() const { return rotate; }
 	const D3DXVECTOR3 &GetPosition() const { return position; }
+	const D3DXVECTOR2 &GetReSize() const { return { scale.x * size.x / 2.0f, scale.y * size.y / 2.0f }; }
 
 	void SetScale(const D3DXVECTOR3 &scale) { this->scale = scale; }
 	void SetRotate(const D3DXVECTOR3 &rotate) { this->rotate = rotate; }

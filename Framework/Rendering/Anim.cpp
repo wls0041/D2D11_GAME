@@ -91,9 +91,6 @@ Anim::~Anim()
 
 void Anim::Update()
 {
-	scale.x = 1280 / size.y;
-	scale.y = 720 / size.y;
-
 	D3DXMATRIX S, R, T;
 	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
 	D3DXMatrixRotationYawPitchRoll(&R, rotate.y, rotate.x, rotate.z);
