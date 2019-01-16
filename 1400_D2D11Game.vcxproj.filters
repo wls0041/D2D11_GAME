@@ -34,6 +34,7 @@
     <ClCompile Include="Framework\Resource\AudioClip.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Rendering\Anim.cpp" />
+    <ClCompile Include="Framework\Scene\Component\AudioSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -73,6 +74,7 @@
     <ClInclude Include="Framework\Resource\AudioClip.h" />
     <ClInclude Include="Framework\Core\Subsystem\Audio.h" />
     <ClInclude Include="Framework\Rendering\Anim.h" />
+    <ClInclude Include="Framework\Scene\Component\AudioSource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />
