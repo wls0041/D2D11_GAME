@@ -12,20 +12,20 @@ Scene::Scene(class Context *context) : context(context), GameStart(false), bJump
 	cameraBuffer = new ConstantBuffer(context);
 	cameraBuffer->Create<CameraData>();
 
-	boardScale = { 720.0f, 720.0f / 256.0f };
+	boardScale = { 720.0f, 720.0f };
 	backPosition[0] = { 0.0f, 0.0f };
 	backPosition[1] = { boardScale.x, 0.0f };
 
 	for (int i = 0; i < 2; i++) {
 		ground[i] = new Anim(context);
-		ground[i]->SetScale({ boardScale.x / 148.0f, boardScale.y, 1 });
-		ground[i]->SetPosition({ boardScale.x * i, -285, 0 });
+		ground[i]->SetScale({ boardScale.x, boardScale.y * 0.2f, 1 });
+		ground[i]->SetPosition({ boardScale.x * i, -360 + boardScale.y * 0.07f, 0 });
 		ground[i]->SetOffset({ 148, 0 });
 		ground[i]->SetSize({ 148.0f, 55.0f });
 		ground[i]->Update();
 
 		back[i] = new Anim(context);
-		back[i]->SetScale({ boardScale.x / 142.0f, boardScale.y, 1 });
+		back[i]->SetScale({ boardScale.x, boardScale.y, 1 });
 		back[i]->SetPosition({ boardScale.x * i, 0, 0 });
 		back[i]->SetOffset({ 0, 0 });
 		back[i]->SetSize({ 142.0f, 256.0f });
@@ -33,17 +33,17 @@ Scene::Scene(class Context *context) : context(context), GameStart(false), bJump
 	}
 
 	for (int i = 0; i < 5; i++) {
-		pipePosition_top[i] = { boardScale.x + boardScale.x / 3 * (i + 1), 720 / 2 -  121.0f * 3.0f / 2.0f + 150.0f};
+		pipePosition_top[i] = { boardScale.x / 3 * (i + 4), 360};
 
 		pipe_top[i] = new Anim(context);
-		pipe_top[i]->SetScale({ 2, 3, 1 });
-		pipe_top[i]->SetPosition({ pipePosition_top[i].x,  pipePosition_top[i].y + rand() % 5 * 40 , 0 });
+		pipe_top[i]->SetScale({ 55, 360, 1 });
+		pipe_top[i]->SetPosition({ pipePosition_top[i].x,  pipePosition_top[i].y - rand() % 4 * 40 , 0 });
 		pipe_top[i]->SetOffset({ 302, 14 });
 		pipe_top[i]->SetSize({ 26.0f, 121.0f });
 		pipe_top[i]->Update();
 
 		pipe_bot[i] = new Anim(context);
-		pipe_bot[i]->SetScale({ 2, 3, 1 });
+		pipe_bot[i]->SetScale({ 55, 360, 1 });
 		pipe_bot[i]->SetPosition({ pipePosition_top[i].x, -pipePosition_top[i].y + rand() % 5 * 40 , 0 });
 		pipe_bot[i]->SetOffset({ 330, 0 });
 		pipe_bot[i]->SetSize({ 26.0f, 121.0f });
@@ -58,15 +58,18 @@ Scene::Scene(class Context *context) : context(context), GameStart(false), bJump
 	bird = new Rect(context);
 	bird->SetScale({ 2.5f, 2.5f, 1 });
 	bird->SetPosition({ -200, 0, 0 });
+	bird->SaveCurPosition();
 	bird->Update();
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
-	auto clip = resourceMgr->Load<AudioClip>("Stage1.mp3");
+	auto clip = resourceMgr->Load<AudioClip>("flap_back.mp3");
 	clip->Play();
 }
 
 Scene::~Scene()
 {
+	for (auto audioClip : clips) SAFE_DELETE(audioClip);
+
 	SAFE_DELETE(bird);
 	for (int i = 0; i < 5; i++) {
 		SAFE_DELETE(pipe_top[i]);
@@ -103,12 +106,16 @@ void Scene::Update()
 			birdPosition.y += 3.0f;
 		}
 
-		birdPosition.y = Math::clamp(birdPosition.y, boardScale.y * 55.0f - 350, 360.0f - 10);
-
 		if (jumpTimer > 20) {
 			bJump = false;
 			jumpTimer = 0.0f;
 		}
+
+		birdPosition.y = Math::clamp(birdPosition.y, -360 + boardScale.y * 0.17f, boardScale.y * 0.5f - 12 * 2.5f / 2);
+		bird->SetRotate(bird->GetCurMove());
+		bird->SetPosition({ birdPosition.x, birdPosition.y, 0 });
+		bird->SaveCurPosition();
+		bird->Update();
 
 		for (int i = 0; i < 2; i++) {
 			backPosition[i].x = back[i]->GetPosition().x - 5.0f;
@@ -138,9 +145,21 @@ void Scene::Update()
 			IsBoardOutPipe({ pipePosition_top[i].x, pipePosition_top[i].y, 0 }, i);
 		}
 
-		if (birdPosition.y <= boardScale.y * 55.0f - 350.0f) GameEnd();
-		bird->SetPosition({ birdPosition.x, birdPosition.y, 0 });
-		bird->Update();
+		if (birdPosition.y - 12 * 2.5f / 2 + 3 <= -360 + boardScale.y * 0.17f) GameEnd();
+	}
+	/////////////////////오디오 복사 생성자 테스트코드//////////////////////////	auto input = context->GetSubsystem<Input>();
+	auto resourceMgr = context->GetSubsystem<ResourceManager>();
+	auto clip = resourceMgr->Load<AudioClip>("flap_back.mp3");
+
+	if (input->KeyDown('Q')) clip->Play();
+	else if (input->KeyDown('W')) clip->Pause();
+	else if (input->KeyDown('E')) clip->Stop();
+
+	static auto shoot = resourceMgr->Load<AudioClip>("Shoot1.wav");
+
+	if (input->BtnDown(0)) { //좌클릭
+		clips.push_back(new AudioClip(*shoot));
+		clips.back()->Play();
 	}
 }
 
@@ -168,13 +187,13 @@ void Scene::IsBoardOutBack(D3DXVECTOR3 position, int index)
 		backPosition[index].x = boardScale.x;
 
 		ground[index] = new Anim(context);
-		ground[index]->SetScale({ boardScale.x / 148.0f, boardScale.y, 1 });
-		ground[index]->SetPosition({ boardScale.x - 10.0f, -285, 0 });
+		ground[index]->SetScale({ boardScale.x, boardScale.y * 0.2f, 1 });
+		ground[index]->SetPosition({ boardScale.x - 10.0f, -360 + boardScale.y * 0.07f, 0 });
 		ground[index]->SetOffset({ 148, 0 });
 		ground[index]->SetSize({ 148.0f, 55.0f });
 
 		back[index] = new Anim(context);
-		back[index]->SetScale({ boardScale.x / 142.0f, boardScale.y, 1 });
+		back[index]->SetScale({ boardScale.x, boardScale.y, 1 });
 		back[index]->SetPosition({ boardScale.x -10.0f, 0, 0 });
 		back[index]->SetOffset({ 0, 0 });
 		back[index]->SetSize({ 142.0f, 256.0f });
@@ -183,21 +202,21 @@ void Scene::IsBoardOutBack(D3DXVECTOR3 position, int index)
 
 void Scene::IsBoardOutPipe(D3DXVECTOR3 position, int index)
 {
-	if (position.x + 52.0f / 2.0f < -boardScale.x / 2.0f) {
+	if (position.x + 55.0f * 0.5f < -boardScale.x / 2.0f) {
 		SAFE_DELETE(pipe_top[index]);
 		SAFE_DELETE(pipe_bot[index]);
 
-		pipePosition_top[index] = { boardScale.x / 3 * 5 - 360, 720 / 2 - 121.0f * 3.0f / 2.0f + 150.0f };
+		pipePosition_top[index] = { pipePosition_top[(index + 1) % 5].x + boardScale.x / 3 * 4, 360};
 
 		pipe_top[index] = new Anim(context);
-		pipe_top[index]->SetScale({ 2, 3, 1 });
-		pipe_top[index]->SetPosition({ pipePosition_top[index].x,  pipePosition_top[index].y + rand() % 5 * 40 , 0 });
+		pipe_top[index]->SetScale({ 55, 360, 1 });
+		pipe_top[index]->SetPosition({ pipePosition_top[index].x,  pipePosition_top[index].y - rand() % 4 * 40 , 0 });
 		pipe_top[index]->SetOffset({ 302, 14 });
 		pipe_top[index]->SetSize({ 26.0f, 121.0f });
 
 		pipe_bot[index] = new Anim(context);
-		pipe_bot[index]->SetScale({ 2, 3, 1 });
-		pipe_bot[index]->SetPosition({ pipePosition_top[index].x,  -pipePosition_top[index].y + rand() % 5 * 40 , 0 });
+		pipe_bot[index]->SetScale({ 55, 360, 1 });
+		pipe_bot[index]->SetPosition({ pipePosition_top[index].x, -pipePosition_top[index].y + rand() % 5 * 40 , 0 });
 		pipe_bot[index]->SetOffset({ 330, 0 });
 		pipe_bot[index]->SetSize({ 26.0f, 121.0f });
 
@@ -216,13 +235,10 @@ bool Scene::IsCollision(D3DXVECTOR2 first, D3DXVECTOR3 second, D3DXVECTOR2 scale
 	float l_right = first.x + dis1_x, l_left = first.x - dis1_x, l_bottom = first.y - dis1_y, l_top = first.y + dis1_y;
 	float r_right = second.x + scale.x, r_left = second.x - scale.x, r_bottom = second.y - scale.y, r_top = second.y + scale.y;
 
-	if (l_left <= r_right && l_right >= r_left) { 
-		bVertical = true;
-  	}if (l_top >= r_bottom && l_bottom <= r_top) {
-		bHorizon = true;
-	}
-
+	if (l_left <= r_right && l_right >= r_left) bVertical = true;
+	if (l_top <= r_bottom && l_bottom >= r_top) bHorizon = true;
 	if (bVertical && bHorizon) return true;
+
 	return false;
 }			
 

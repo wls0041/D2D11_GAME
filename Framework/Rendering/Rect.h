@@ -9,10 +9,12 @@ public:
 	const D3DXVECTOR3 &GetScale() const { return scale; }
 	const D3DXVECTOR3 &GetRotate() const { return rotate; }
 	const D3DXVECTOR3 &GetPosition() const { return position; }
+	const D3DXVECTOR3 &GetCurMove() const { return position - curposition; }
 
 	void SetScale(const D3DXVECTOR3 &scale) { this->scale = scale; }
 	void SetRotate(const D3DXVECTOR3 &rotate) { this->rotate = rotate; }
 	void SetPosition(const D3DXVECTOR3 &position) { this->position = position; }
+	void SaveCurPosition() { curposition = position; }
 
 	void Update();
 	void Render();
@@ -33,6 +35,7 @@ private:
 
 	D3DXVECTOR3 scale;
 	D3DXVECTOR3 position;
+	D3DXVECTOR3 curposition;
 	D3DXVECTOR3 rotate;
 	D3DXMATRIX world; //세계공간
 

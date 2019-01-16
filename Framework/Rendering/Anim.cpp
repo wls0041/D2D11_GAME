@@ -19,10 +19,10 @@ Anim::Anim(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/SpriteTexture.hlsl");
+	vertexShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/SpriteTexture.hlsl");
+	pixelShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());

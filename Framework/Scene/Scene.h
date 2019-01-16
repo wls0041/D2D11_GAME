@@ -35,6 +35,8 @@ private:
 	class Anim *pipe_top[5];
 	class Anim *pipe_bot[5];
 
+	vector<class AudioClip*> clips;
+
 	D3DXVECTOR2 backPosition[2];
 	D3DXVECTOR2 pipePosition_top[5];
 	D3DXVECTOR2 pipePosition_bot[5];

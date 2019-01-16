@@ -2,7 +2,7 @@
 #include "Rect.h"
 #include "../Scene/Component/Animator.h"
 
-Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
+Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), curposition(0, 0, 0), rotate(0, 0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
