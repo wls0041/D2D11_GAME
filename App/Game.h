@@ -16,7 +16,7 @@ public:
 
 private:
 	class Timer *timer;
-	//class Input *input;
+	class Input *input;
 	class Audio *audio;
 	class SceneManager *sceneMgr;
 };

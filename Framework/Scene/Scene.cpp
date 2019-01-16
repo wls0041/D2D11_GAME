@@ -82,7 +82,6 @@ Scene::~Scene()
 
 void Scene::Update()
 {
-	input->Update();
 	camera->Update();
 	auto cameraData = static_cast<CameraData*>(cameraBuffer->Map());
 	D3DXMatrixTranspose(&cameraData->View, &camera->GetViewMatrix()); //쉐이더는 열우선이므로 전치 필요
