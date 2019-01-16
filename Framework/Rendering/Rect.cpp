@@ -2,7 +2,7 @@
 #include "Rect.h"
 #include "../Scene/Component/Animator.h"
 
-Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0)
+Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0), isRun(false)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -80,7 +80,8 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0
 
 	animator = new Animator(context);
 
-	animator->RegisterAnimation("Idle.xml");
+	//animator->RegisterAnimation("Idle.xml");
+	animator->LoadFromFile("Player.xml");
 	animator->SetCurrentAnimation("Idle");
 }
 
@@ -108,6 +109,22 @@ void Rect::Update()
 	//행우선을 열우선으로 바꿔줌(전치)
 	D3DXMatrixTranspose(&data->World, &world);
 	worldBuffer->Unmap();
+	
+	////////////////////////////////////////////////////////////////
+	auto input = context->GetSubsystem<Input>();
+	if (input->KeyDown(VK_RIGHT)) { 
+		isRun = true;
+		animator->SetCurrentAnimation("Run"); 
+	}
+	else if (input->KeyUp(VK_RIGHT)) {
+		animator->SetCurrentAnimation("Idle");
+		isRun = false;
+	}
+	if (isRun) {
+		position.x += 0.1f;
+	}
+	//else animator->SetCurrentAnimation("Idle");
+	////////////////////////////////////////////////////////////////////
 
 	animator->Update();
 

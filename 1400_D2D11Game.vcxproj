@@ -173,6 +173,7 @@
     <ClCompile Include="Framework\Resource\Material.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
+    <ClCompile Include="Framework\Scene\Component\AudioSource.cpp" />
     <ClCompile Include="Framework\Scene\Component\Camera.cpp" />
     <ClCompile Include="Framework\Scene\Scene.cpp" />
     <ClCompile Include="Framework\Utility\FileSystem.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Framework\Resource\Material.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />
     <ClInclude Include="Framework\Scene\Component\Animator.h" />
+    <ClInclude Include="Framework\Scene\Component\AudioSource.h" />
     <ClInclude Include="Framework\Scene\Component\Camera.h" />
     <ClInclude Include="Framework\Scene\Scene.h" />
     <ClInclude Include="Framework\Utility\FileSystem.h" />
