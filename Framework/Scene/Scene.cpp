@@ -17,7 +17,7 @@ Scene::Scene(class Context *context) : context(context), GameStart(false), bJump
 	backPosition[0] = { 0.0f, 0.0f };
 	backPosition[1] = { boardScale.x, 0.0f };
 	
-	numberScale = { 14, 20 };
+	numberScale = { 1, 1 };
 
 	for (int i = 0; i < 2; i++) {
 		ground[i] = new Anim(context);
@@ -57,17 +57,11 @@ Scene::Scene(class Context *context) : context(context), GameStart(false), bJump
 		pipePosition_bot[i].x = pipe_bot[i]->GetPosition().x;
 		pipePosition_bot[i].y = pipe_bot[i]->GetPosition().y;
 	}
-	D3DXVECTOR2 offset[10] = { {288,100},{291,118}, {289,134}, {289,150}, {287,173},
-							  {287,185}, {165,245}, {175,245}, {185,245}, {195,245} };
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 3; i++) {
 		number[i] = new Anim(context);
 		number[i]->SetScale({ numberScale.x, numberScale.y, 0 });
 		number[i]->SetPosition({ 0, 0, 0 });
-		number[i]->SetOffset(offset[i]);
-
-		if (i == 1) number[i]->SetSize({ 5, 10 });
-		else number[i]->SetSize({ 7, 10 });
 	}
 
 	message[0] = new Anim(context); //타이틀
@@ -114,7 +108,7 @@ Scene::~Scene()
 {
 	for (auto audioClip : clips) SAFE_DELETE(audioClip);
 	SAFE_DELETE(bird);	
-	for (int i = 0; i < 10; i++) SAFE_DELETE(number[i])
+	for (int i = 0; i < 3; i++) SAFE_DELETE(number[i])
 	for (int i = 0; i < 5; i++) {
 		SAFE_DELETE(pipe_top[i]);
 		SAFE_DELETE(pipe_bot[i]);
@@ -232,6 +226,9 @@ void Scene::Update()
 
 				if (birdPosition.y - 12 * 2.5f / 2 + 3 <= -360 + boardScale.y * 0.17f) GameEnd();
 			}
+			if (bEnd) {
+				if (input->KeyDown(VK_SPACE)) PostQuitMessage(0);
+			}
 		}
 		else {//별도의 처리
 			bird->SetPosition({ -200, 0, 0 });
@@ -345,46 +342,58 @@ void Scene::RenderPlayScore(float width, float height, float x, float y)
 
 	int curScore = score;
 	int one = -1, ten = -1, hund = -1;
-	if (curScore / 100 > 0) { hund = curScore / 100; curScore %= hund; }
-	if (curScore / 10 > 0) { ten = curScore / 10; curScore %= ten; }
+	if (curScore / 100 > 0) { hund = curScore / 100; curScore %= 100; }
+	if (curScore / 10 > 0) { ten = curScore / 10; curScore %= 10; }
 	one = curScore;
 
 	if (hund > 0) {
-		number[hund]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[hund]->SetPosition({ numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[2]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[2]->SetPosition({ -numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[2]->SetOffset(offset[hund]);
+		number[2]->SetSize(numSize[hund]);
 
-		number[ten]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[ten]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[1]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[1]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[1]->SetOffset(offset[ten]);
+		number[1]->SetSize(numSize[ten]);
 
-		number[one]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[one]->SetPosition({ -numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[0]->SetPosition({ numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[0]->SetOffset(offset[one]);
+		number[0]->SetSize(numSize[one]);
 
-		number[hund]->Update();
-		number[ten]->Update();
-		number[one]->Update();
+		number[2]->Update();
+		number[1]->Update();
+		number[0]->Update();
 
-		number[hund]->Render();
-		number[ten]->Render();
-		number[one]->Render();
+		number[2]->Render();
+		number[1]->Render();
+		number[0]->Render();
 	}
 	else if (ten > 0) {
-		number[ten]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[ten]->SetPosition({ -numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[1]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[1]->SetPosition({ -numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[1]->SetOffset(offset[ten]);
+		number[1]->SetSize(numSize[ten]);
 
-		number[one]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[one]->SetPosition({ numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[0]->SetPosition({ numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[0]->SetOffset(offset[one]);
+		number[0]->SetSize(numSize[one]);
 
-		number[ten]->Update();
-		number[one]->Update();
+		number[1]->Update();
+		number[0]->Update();
 
-		number[ten]->Render();
-		number[one]->Render();
+		number[1]->Render();
+		number[0]->Render();
 	}
 	else {
-		number[one]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[one]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[one]->Update();
-		number[one]->Render();
+		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[0]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[0]->SetOffset(offset[one]);
+		number[0]->SetSize(numSize[one]);
+		number[0]->Update();
+		number[0]->Render();
 	}
 }
 

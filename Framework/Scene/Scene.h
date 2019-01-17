@@ -44,7 +44,13 @@ private:
 	class Anim *message[3];
 	class Anim *pipe_top[5];
 	class Anim *pipe_bot[5];
-	class Anim *number[10];
+	class Anim *number[3];
+
+	D3DXVECTOR2 offset[10] = { {288,100},{291,118}, {289,134}, {289,150}, {287,173},
+							  {287,185}, {165,245}, {175,245}, {185,245}, {195,245} };
+
+	D3DXVECTOR2 numSize[10] = { { 7, 10 }, { 5, 10 }, { 7, 10 }, { 7, 10 }, { 7, 10 }, 
+							  { 7, 10 }, { 7, 10 }, { 7, 10 }, { 7, 10 }, { 7, 10 } };
 
 	vector<class AudioClip*> clips;
 
