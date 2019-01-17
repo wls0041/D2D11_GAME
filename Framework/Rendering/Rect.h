@@ -9,15 +9,20 @@ public:
 	const D3DXVECTOR3 &GetScale() const { return scale; }
 	const D3DXVECTOR3 &GetRotate() const { return rotate; }
 	const D3DXVECTOR3 &GetPosition() const { return position; }
-	const D3DXVECTOR3 &GetCurMove() const { return position - curposition; }
 
 	void SetScale(const D3DXVECTOR3 &scale) { this->scale = scale; }
 	void SetRotate(const D3DXVECTOR3 &rotate) { this->rotate = rotate; }
 	void SetPosition(const D3DXVECTOR3 &position) { this->position = position; }
-	void SaveCurPosition() { curposition = position; }
+
+	void SaveCurPosition(const float &x, const float &y) { curposition.x = x; curposition.y = y; }
+	void SaveCurPosition_x(const float &x) { curposition.x = x; }
+	void SaveCurPosition_y(const float &y) { curposition.y = y; }
 
 	void Update();
 	void Render();
+
+	void Pause();
+	void CalcTheta();
 
 private:
 	class Graphics *graphics;

@@ -92,7 +92,6 @@ Rect::Rect(Context *context) : scale(1, 1, 1), position(0, 0, 0), curposition(0,
 
 	animator->LoadFromFile("Flappy_Bird.xml");
 	animator->SetCurrentAnimation("Bird");
-
 	//animator->SaveToFile("Flappy_Bird.xml");
 }
 
@@ -108,11 +107,14 @@ Rect::~Rect()
 
 void Rect::Update()
 {
+	CalcTheta();
+
 	D3DXMATRIX S, R, T;
 	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
 	D3DXMatrixRotationYawPitchRoll(&R, rotate.y, rotate.x, rotate.z);
 	D3DXMatrixTranslation(&T, position.x, position.y, position.z);
 
+	//D3DXMatrixRotationZ(&R, static_cast<float>(D3DXToRadian(45)));
 	world = S * R * T;
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
@@ -157,4 +159,14 @@ void Rect::Render()
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
+}
+
+void Rect::Pause()
+{
+	animator->Pause();
+}
+
+void Rect::CalcTheta()
+{
+	rotate.z = static_cast<float>(atan2f(curposition.y, curposition.x));
 }
