@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "./Component/Camera.h"
+#include "./Component/AudioSource.h"
 #include "../Rendering/Rect.h"
-#include "../Resource/AudioClip.h"
 
 Scene::Scene(class Context *context) : context(context)
 {
@@ -14,13 +14,14 @@ Scene::Scene(class Context *context) : context(context)
 	rect->SetScale({ 1, 1, 1 });
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
-	auto clip = resourceMgr->Load<AudioClip>("Stage1.mp3");
-	clip->Play();
+	bgm = new AudioSource(context);
+	bgm->SetAudioClip("Stage1.mp3");
+	bgm->Play();
 }
 
 Scene::~Scene()
 {
-	for (auto audioClip : clips) SAFE_DELETE(audioClip);
+	for (auto source : sources) SAFE_DELETE(source);
 
 	SAFE_DELETE(rect);
 	SAFE_DELETE(cameraBuffer);
@@ -38,21 +39,25 @@ void Scene::Update()
 	rect->Update();
 
 	auto input = context->GetSubsystem<Input>();
-	auto resourceMgr = context->GetSubsystem<ResourceManager>();
-	auto clip = resourceMgr->Load<AudioClip>("Stage1.mp3");
-	
-	if (input->KeyDown('Q')) clip->Play();
-	else if (input->KeyDown('W')) clip->Pause();
-	else if (input->KeyDown('E')) clip->Stop();
+
+	if (input->KeyDown('Q')) bgm->Play();
+	else if (input->KeyDown('W')) bgm->Pause();
+	else if (input->KeyDown('E')) bgm->Stop();
 
 
-	/////////////////////오디오 복사 생성자 테스트코드//////////////////////////
-	static auto shoot = resourceMgr->Load<AudioClip>("Shoot1.wav");
-	
-	if (input->BtnDown(0)) { //좌클릭
-		clips.push_back(new AudioClip(*shoot));
-		clips.back()->Play();
-	}
+	///////////////////////////////////////////////
+	static float volume = 1.0f;
+	if (input->KeyDown('A')) volume -= 0.1f;
+	else if (input->KeyDown('S')) volume += 0.1f;
+
+	bgm->SetVolume(volume);
+
+	///////////////////////////////////////////////
+	static float pitch = 1.0f;
+	if (input->KeyDown('Z')) pitch += 0.1f;
+	else if (input->KeyDown('X')) pitch -= 0.1f;
+
+	bgm->SetPitch(pitch);
 
 }
 
