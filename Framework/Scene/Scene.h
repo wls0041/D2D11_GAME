@@ -15,6 +15,8 @@ public:
 	void IsBoardOutBack(D3DXVECTOR3 position, int index);
 	void IsBoardOutPipe(D3DXVECTOR3 position, int index);
 	void GetScore(float position);
+	const bool &GetRestart() const { return bRestart; }
+	const int &GetBest() const { return bestScore; }
 
 	void GameEnd();
 	void RenderPlayScore(float width = 30.0f, float height = 50.0f, float x = 0.0f, float y = 0.0f);
@@ -31,7 +33,9 @@ private:
 	bool bReady;
 	bool bJump;
 	bool bEnd;
+	bool bRestart;
 	int score;
+	int bestScore;
 	string name;
 
 	class Camera *camera;

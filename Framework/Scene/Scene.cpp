@@ -5,8 +5,8 @@
 #include "../Rendering/Anim.h"
 #include "../Resource/AudioClip.h"
 
-Scene::Scene(class Context *context) : context(context), GameStart(false), bJump(false), bReady(false), bEnd(false),
-	score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberScale(0, 0), moveTitle(2.0f), titleTimer(0.0f)
+Scene::Scene(class Context *context) : context(context), GameStart(false), bJump(false), bReady(false), bEnd(false), bRestart(false),
+score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberScale(0, 0), moveTitle(2.0f), titleTimer(0.0f), bestScore(0);
 {
 	input = context->GetSubsystem<Input>();
 	camera = new Camera(context);
@@ -123,6 +123,7 @@ Scene::~Scene()
 
 void Scene::Update()
 {
+
 	/////////////////////오디오 복사 생성자 테스트코드//////////////////////////	
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	auto clip = resourceMgr->Load<AudioClip>("flap_back.mp3");
@@ -148,9 +149,11 @@ void Scene::Update()
 			moveTitle = -moveTitle;
 		}
 		else titleTimer += 1.0f;
-		message[0]->SetPosition({ message[0]->GetPosition().x, message[0]->GetPosition().y + moveTitle, 0 });
-		bird->SetPosition({ 170, bird->GetPosition().y + moveTitle, 0 });
-		message[0]->Update(); bird->Update();
+		if (!GameStart) {
+			message[0]->SetPosition({ message[0]->GetPosition().x, message[0]->GetPosition().y + moveTitle, 0 });
+			bird->SetPosition({ 170, bird->GetPosition().y + moveTitle, 0 });
+			message[0]->Update(); bird->Update();
+		}
 	}
 	if (GameStart) {
 		if (input->KeyDown(VK_SPACE)) bReady = true;
@@ -177,7 +180,6 @@ void Scene::Update()
 				bJump = false;
 				jumpTimer = 0.0f;
 			}
-
 			birdPosition.y = Math::clamp(birdPosition.y, -360 + boardScale.y * 0.17f, boardScale.y * 0.5f - 12 * 2.5f / 2);
 			bird->SetPosition({ birdPosition.x, birdPosition.y, 0 });
 			if (bEnd) {
@@ -227,14 +229,11 @@ void Scene::Update()
 				if (birdPosition.y - 12 * 2.5f / 2 + 3 <= -360 + boardScale.y * 0.17f) GameEnd();
 			}
 			if (bEnd) {
-				if (input->KeyDown(VK_SPACE)) PostQuitMessage(0);
+				if (input->KeyDown(VK_SPACE)) bRestart = true;
 			}
 		}
-		else {//별도의 처리
-			bird->SetPosition({ -200, 0, 0 });
-			bird->Update();
-		}
 	}
+	if (input->KeyDown(VK_ESCAPE)) PostQuitMessage(0);
 }
 
 void Scene::Render()
