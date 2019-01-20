@@ -5,8 +5,8 @@
 #include "../Rendering/Anim.h"
 #include "../Resource/AudioClip.h"
 
-Scene::Scene(class Context *context) : context(context), GameStart(false), bJump(false), bReady(false), bEnd(false), bRestart(false),
-score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberScale(0, 0), moveTitle(2.0f), titleTimer(0.0f), bestScore(0);
+Scene::Scene(class Context *context) : context(context), GameStart(false), bJump(false), bReady(false), bEnd(false), bRestart(false), bBestPlay(false),
+score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberScale(0, 0), moveTitle(2.0f), titleTimer(0.0f), bestScore(0)
 {
 	input = context->GetSubsystem<Input>();
 	camera = new Camera(context);
@@ -58,7 +58,7 @@ score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberSc
 		pipePosition_bot[i].y = pipe_bot[i]->GetPosition().y;
 	}
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 6; i++) {
 		number[i] = new Anim(context);
 		number[i]->SetScale({ numberScale.x, numberScale.y, 0 });
 		number[i]->SetPosition({ 0, 0, 0 });
@@ -82,9 +82,16 @@ score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberSc
 	message[2]->SetOffset({ 147, 200 });
 	message[2]->SetSize({ 92, 17 });
 
+	message[3] = new Anim(context); //기록 갱신 new
+	message[3]->SetScale({ 20, 10, 1 });
+	message[3]->SetPosition({ 73.0f, boardScale.y * 0.4f - 267, 0 });
+	message[3]->SetOffset({ 146, 245 });
+	message[3]->SetSize({ 16, 7 });
+
 	message[0]->Update();
 	message[1]->Update();
 	message[2]->Update();
+	message[3]->Update();
 
 	board = new Anim(context);
 	board->SetScale({ 300, 150, 1 });
@@ -107,8 +114,8 @@ score(0), jumpTimer(0.0f), hitTimer(0.0f), birdPosition(-200.0f, 0.0f), numberSc
 Scene::~Scene()
 {
 	for (auto audioClip : clips) SAFE_DELETE(audioClip);
-	SAFE_DELETE(bird);	
-	for (int i = 0; i < 3; i++) SAFE_DELETE(number[i])
+	for (int i = 0; i < 6; i++) SAFE_DELETE(number[i]);
+	for (int i = 0; i < 4; i++) SAFE_DELETE(message[i]);
 	for (int i = 0; i < 5; i++) {
 		SAFE_DELETE(pipe_top[i]);
 		SAFE_DELETE(pipe_bot[i]);
@@ -117,6 +124,7 @@ Scene::~Scene()
 		SAFE_DELETE(back[i]);
 		SAFE_DELETE(ground[i]);
 	}
+	SAFE_DELETE(bird);	
 	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(camera);
 }
@@ -139,6 +147,10 @@ void Scene::Update()
 	cameraBuffer->Unmap();
 
 	if (!GameStart) {
+		message[0]->SetPosition({ message[0]->GetPosition().x, message[0]->GetPosition().y + moveTitle, 0 });
+		bird->SetPosition({ 170, bird->GetPosition().y + moveTitle, 0 });
+		message[0]->Update(); bird->Update();
+
 		if (input->KeyPress(VK_SPACE)) {
 			GameStart = true;
 			bird->SetPosition({ -200, 0, 0 });
@@ -149,11 +161,6 @@ void Scene::Update()
 			moveTitle = -moveTitle;
 		}
 		else titleTimer += 1.0f;
-		if (!GameStart) {
-			message[0]->SetPosition({ message[0]->GetPosition().x, message[0]->GetPosition().y + moveTitle, 0 });
-			bird->SetPosition({ 170, bird->GetPosition().y + moveTitle, 0 });
-			message[0]->Update(); bird->Update();
-		}
 	}
 	if (GameStart) {
 		if (input->KeyDown(VK_SPACE)) bReady = true;
@@ -212,7 +219,7 @@ void Scene::Update()
 				for (int i = 0; i < 5; i++) {
 					if (IsCollision(birdPosition, pipe_top[i]->GetPosition())) GameEnd();
 					if (IsCollision(birdPosition, pipe_bot[i]->GetPosition())) GameEnd();
-					GetScore(pipe_top[i]->GetPosition().x);
+					AddScore(pipe_top[i]->GetPosition().x);
 
 					pipePosition_top[i].x = pipe_top[i]->GetPosition().x - 5.0f;
 					pipePosition_bot[i].x = pipe_top[i]->GetPosition().x - 5.0f;
@@ -242,10 +249,13 @@ void Scene::Render()
 
 	if (!GameStart) message[0]->Render();//시작 화면
 	if (GameStart && !bReady) message[1]->Render(); //ready출력
-	if (GameStart && !bEnd) RenderPlayScore();//게임 중 점수 출력
+	if (GameStart && !bEnd) RenderPlayScore(false);//게임 중 점수 출력
+
 	if (bEnd) { //끝난 후 점수판 출력
 		message[2]->Render();
-		RenderPlayScore(10.0f, 20.0f, 90.0f, -220.0f);
+		RenderPlayScore(false, 10.0f, 20.0f, 100.0f, -220.0f);
+		RenderPlayScore(true, 10.0f, 20.0f, 100.0f, -270.0f);
+		if (bBestPlay) message[3]->Render();
 		board->Render();
 	}
 	bird->Render();
@@ -330,73 +340,77 @@ void Scene::GameEnd()
 	static auto hit = resourceMgr->Load<AudioClip>("flap_hit.wav");
 	clips.push_back(new AudioClip(*hit));
 	clips.back()->Play();
+	bestScore = score;
 
 	bEnd = true;
 }
 
-void Scene::RenderPlayScore(float width, float height, float x, float y)
+void Scene::RenderPlayScore(bool bBest, float width, float height, float x, float y)
 {
 	numberScale = { width, height };
 	D3DXVECTOR2 numberPos{ x, y };
 
-	int curScore = score;
-	int one = -1, ten = -1, hund = -1;
+	int index, curScore, one = -1, ten = -1, hund = -1;
+
+	if (bBest) { index = 0; curScore = bestScore; }
+	else { index = 3; curScore = score; }
+
 	if (curScore / 100 > 0) { hund = curScore / 100; curScore %= 100; }
 	if (curScore / 10 > 0) { ten = curScore / 10; curScore %= 10; }
 	one = curScore;
 
 	if (hund > 0) {
-		number[2]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[2]->SetPosition({ -numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[2]->SetOffset(offset[hund]);
-		number[2]->SetSize(numSize[hund]);
+		number[index + 2]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index + 2]->SetPosition({ -numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index + 2]->SetOffset(offset[hund]);
+		number[index + 2]->SetSize(numSize[hund]);
 
-		number[1]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[1]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[1]->SetOffset(offset[ten]);
-		number[1]->SetSize(numSize[ten]);
+		number[index + 1]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index + 1]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index + 1]->SetOffset(offset[ten]);
+		number[index + 1]->SetSize(numSize[ten]);
 
-		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[0]->SetPosition({ numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[0]->SetOffset(offset[one]);
-		number[0]->SetSize(numSize[one]);
+		number[index]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index]->SetPosition({ numberScale.x * 1.05f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index]->SetOffset(offset[one]);
+		number[index]->SetSize(numSize[one]);
 
-		number[2]->Update();
-		number[1]->Update();
-		number[0]->Update();
+		number[index + 2]->Update();
+		number[index + 1]->Update();
+		number[index]->Update();
 
-		number[2]->Render();
-		number[1]->Render();
-		number[0]->Render();
+		number[index + 2]->Render();
+		number[index + 1]->Render();
+		number[index]->Render();
 	}
 	else if (ten > 0) {
-		number[1]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[1]->SetPosition({ -numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[1]->SetOffset(offset[ten]);
-		number[1]->SetSize(numSize[ten]);
+		number[index + 1]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index + 1]->SetPosition({ -numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index + 1]->SetOffset(offset[ten]);
+		number[index + 1]->SetSize(numSize[ten]);
 
-		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[0]->SetPosition({ numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[0]->SetOffset(offset[one]);
-		number[0]->SetSize(numSize[one]);
+		number[index]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index]->SetPosition({ numberScale.x * 0.55f + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index]->SetOffset(offset[one]);
+		number[index]->SetSize(numSize[one]);
 
-		number[1]->Update();
-		number[0]->Update();
+		number[index + 1]->Update();
+		number[index]->Update();
 
-		number[1]->Render();
-		number[0]->Render();
+		number[index + 1]->Render();
+		number[index]->Render();
 	}
 	else {
-		number[0]->SetScale({ numberScale.x, numberScale.y, 0 });
-		number[0]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
-		number[0]->SetOffset(offset[one]);
-		number[0]->SetSize(numSize[one]);
-		number[0]->Update();
-		number[0]->Render();
+		number[index]->SetScale({ numberScale.x, numberScale.y, 0 });
+		number[index]->SetPosition({ 0 + numberPos.x, boardScale.y * 0.4f + numberPos.y, 0 });
+		number[index]->SetOffset(offset[one]);
+		number[index]->SetSize(numSize[one]);
+		number[index]->Update();
+		number[index]->Render();
 	}
 }
 
-void Scene::GetScore(float position)
+void Scene::AddScore(float position)
 {
 	if (position == -200) {
 		score++;

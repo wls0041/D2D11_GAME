@@ -11,6 +11,7 @@ public:
 
 	void Update();
 	void Render();
+	void CheckBest();
 
 	class Scene *GetCurrentScene() const { return currentScene; }
 	void SetCurrentScene(const string &name);

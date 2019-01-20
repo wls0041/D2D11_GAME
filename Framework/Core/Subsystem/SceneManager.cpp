@@ -2,7 +2,7 @@
 #include "SceneManager.h"
 #include "../../Scene/Scene.h"
 
-SceneManager::SceneManager(Context * context) : ISubsystem(context), currentScene(nullptr), bestScore(0), curBestScore(0)
+SceneManager::SceneManager(Context * context) : ISubsystem(context), currentScene(nullptr), bestScore(0), curBestScore(-1)
 {
 
 }
@@ -31,12 +31,21 @@ void SceneManager::Update()
 		scenes.clear();
 		Initialize();
 	}
-	bestScore = Math::clamp(bestScore, bestScore, currentScene->GetBest());
+	CheckBest();
+
 }
 
 void SceneManager::Render()
 {
 	if (currentScene) currentScene->Render();
+}
+
+void SceneManager::CheckBest()
+{
+	bestScore = currentScene->GetScore();
+	bestScore = Math::clamp(bestScore, curBestScore, 999);
+	currentScene->SetBest(bestScore);
+	if (bestScore > curBestScore) currentScene->IsBestPlay(true);
 }
 
 void SceneManager::SetCurrentScene(const string & name)
