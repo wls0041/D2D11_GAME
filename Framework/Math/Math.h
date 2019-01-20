@@ -1,5 +1,7 @@
 #pragma once
 
+enum class Intersection : uint { Outside, Inside, Intersect };
+
 class Math
 {
 public:
