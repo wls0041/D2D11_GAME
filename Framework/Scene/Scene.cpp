@@ -189,6 +189,7 @@ void Scene::Update()
 			}
 			birdPosition.y = Math::clamp(birdPosition.y, -360 + boardScale.y * 0.17f, boardScale.y * 0.5f - 12 * 2.5f / 2);
 			bird->SetPosition({ birdPosition.x, birdPosition.y, 0 });
+
 			if (bEnd) {
 				if (hitTimer < 22) hitTimer += 1.0f;
 				bird->SaveCurPosition(0, -4.0f);
@@ -272,18 +273,13 @@ void Scene::IsBoardOutBack(D3DXVECTOR3 position, int index)
 {
 	//화면 밖으로 나가면 삭제 후 재생성
 	if (position.x + boardScale.x / 2.0f < -boardScale.x / 2.0f) {
-		SAFE_DELETE(ground[index]);
-		SAFE_DELETE(back[index]);
-
 		backPosition[index].x = boardScale.x;
 
-		ground[index] = new Anim(context);
 		ground[index]->SetScale({ boardScale.x, boardScale.y * 0.2f, 1 });
 		ground[index]->SetPosition({ boardScale.x - 10.0f, -360 + boardScale.y * 0.07f, 0 });
 		ground[index]->SetOffset({ 148, 0 });
 		ground[index]->SetSize({ 148.0f, 55.0f });
 
-		back[index] = new Anim(context);
 		back[index]->SetScale({ boardScale.x, boardScale.y, 1 });
 		back[index]->SetPosition({ boardScale.x -10.0f, 0, 0 });
 		back[index]->SetOffset({ 0, 0 });
@@ -294,18 +290,13 @@ void Scene::IsBoardOutBack(D3DXVECTOR3 position, int index)
 void Scene::IsBoardOutPipe(D3DXVECTOR3 position, int index)
 {
 	if (position.x + 55.0f * 0.5f < -boardScale.x / 2.0f) {
-		SAFE_DELETE(pipe_top[index]);
-		SAFE_DELETE(pipe_bot[index]);
-
 		pipePosition_top[index] = { pipePosition_top[(index + 1) % 5].x + boardScale.x / 3 * 4, 360};
 
-		pipe_top[index] = new Anim(context);
 		pipe_top[index]->SetScale({ 55, 360, 1 });
 		pipe_top[index]->SetPosition({ pipePosition_top[index].x,  pipePosition_top[index].y - rand() % 4 * 40 , 0 });
 		pipe_top[index]->SetOffset({ 302, 14 });
 		pipe_top[index]->SetSize({ 26.0f, 121.0f });
 
-		pipe_bot[index] = new Anim(context);
 		pipe_bot[index]->SetScale({ 55, 360, 1 });
 		pipe_bot[index]->SetPosition({ pipePosition_top[index].x, -pipePosition_top[index].y + rand() % 5 * 40 , 0 });
 		pipe_bot[index]->SetOffset({ 330, 0 });
