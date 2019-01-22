@@ -35,6 +35,9 @@
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Scene\Component\AudioSource.cpp" />
     <ClCompile Include="Framework\Math\BoundBox.cpp" />
+    <ClCompile Include="Framework\Scene\Component\Transform.cpp" />
+    <ClCompile Include="Framework\Math\Vector2.cpp" />
+    <ClCompile Include="Framework\Math\Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -75,6 +78,9 @@
     <ClInclude Include="Framework\Core\Subsystem\Audio.h" />
     <ClInclude Include="Framework\Scene\Component\AudioSource.h" />
     <ClInclude Include="Framework\Math\BoundBox.h" />
+    <ClInclude Include="Framework\Scene\Component\Transform.h" />
+    <ClInclude Include="Framework\Math\Vector2.h" />
+    <ClInclude Include="Framework\Math\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

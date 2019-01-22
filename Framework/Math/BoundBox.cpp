@@ -11,7 +11,7 @@ const BoundBox BoundBox::Transformed(const BoundBox &box, const D3DXMATRIX &matr
 		Math::Abs(matrix._11) * oldEdge.x + Math::Abs(matrix._21) * oldEdge.y + Math::Abs(matrix._31) * oldEdge.z,
 		Math::Abs(matrix._12) * oldEdge.x + Math::Abs(matrix._22) * oldEdge.y + Math::Abs(matrix._32) * oldEdge.z,
 		Math::Abs(matrix._13) * oldEdge.x + Math::Abs(matrix._23) * oldEdge.y + Math::Abs(matrix._33) * oldEdge.z
-	)
+	);
 
 	return BoundBox(newCenter - newEdge, newCenter + newEdge);
 }
@@ -71,4 +71,16 @@ Intersection BoundBox::IsInside(const BoundBox & box)
 
 void BoundBox::Transformed(const D3DXMATRIX & matrix)
 {
+	D3DXVECTOR3 newCenter =GetCenter();
+	D3DXVec3TransformCoord(&newCenter, &newCenter, &matrix);
+
+	D3DXVECTOR3 oldEdge = GetExtents();
+	D3DXVECTOR3 newEdge = D3DXVECTOR3(
+		Math::Abs(matrix._11) * oldEdge.x + Math::Abs(matrix._21) * oldEdge.y + Math::Abs(matrix._31) * oldEdge.z,
+		Math::Abs(matrix._12) * oldEdge.x + Math::Abs(matrix._22) * oldEdge.y + Math::Abs(matrix._32) * oldEdge.z,
+		Math::Abs(matrix._13) * oldEdge.x + Math::Abs(matrix._23) * oldEdge.y + Math::Abs(matrix._33) * oldEdge.z
+	);
+
+	this->minBox = newCenter - newEdge;
+	this->maxBox = newCenter + newEdge;
 }
