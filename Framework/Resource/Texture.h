@@ -10,7 +10,7 @@ public:
 	void SaveToFile(const string &filePath) override;
 	void LoadFromFile(const string &filePath) override;
 
-	const D3DXVECTOR2 GetSize() const { return D3DXVECTOR2(width, height); }
+	const Vector2 GetSize() const { return Vector2(width, height); }
 
 	void CreateTextureFromFile(const string &filePath);
 	void CreateTexture2D(const float &width, const float &height, const DXGI_FORMAT &format);

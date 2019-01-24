@@ -38,6 +38,8 @@
     <ClCompile Include="Framework\Scene\Component\Transform.cpp" />
     <ClCompile Include="Framework\Math\Vector2.cpp" />
     <ClCompile Include="Framework\Math\Vector3.cpp" />
+    <ClCompile Include="Framework\Math\Matrix.cpp" />
+    <ClCompile Include="Framework\Math\Color.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -81,6 +83,8 @@
     <ClInclude Include="Framework\Scene\Component\Transform.h" />
     <ClInclude Include="Framework\Math\Vector2.h" />
     <ClInclude Include="Framework\Math\Vector3.h" />
+    <ClInclude Include="Framework\Math\Matrix.h" />
+    <ClInclude Include="Framework\Math\Color.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

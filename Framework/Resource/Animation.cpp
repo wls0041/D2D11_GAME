@@ -67,7 +67,7 @@ Keyframe * Animation::GetKeyframeFromIndex(const uint & index)
 	return &keyframes[index];
 }
 
-void Animation::AddKeyframe(const string & filePath, const D3DXVECTOR2 & offset, const D3DXVECTOR2 & size, const float & time)
+void Animation::AddKeyframe(const string & filePath, const Vector2 & offset, const Vector2 & size, const float & time)
 {
 	keyframes.emplace_back(filePath, offset, size, time);
 }

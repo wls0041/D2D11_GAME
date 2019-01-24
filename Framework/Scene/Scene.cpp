@@ -11,7 +11,7 @@ Scene::Scene(class Context *context) : context(context)
 	cameraBuffer->Create<CameraData>();
 
 	rect = new Rect(context);
-	rect->SetScale({ 1, 1, 1 });
+	//rect->SetScale({ 1, 1, 1 });
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
@@ -32,8 +32,8 @@ void Scene::Update()
 {
 	camera->Update();
 	auto cameraData = static_cast<CameraData*>(cameraBuffer->Map());
-	D3DXMatrixTranspose(&cameraData->View, &camera->GetViewMatrix()); //쉐이더는 열우선이므로 전치 필요
-	D3DXMatrixTranspose(&cameraData->Projection, &camera->GetProjectionMatrix());
+	cameraData->View = camera->GetViewMatrix();
+	cameraData->Projection = camera->GetProjectionMatrix();
 	cameraBuffer->Unmap();
 
 	rect->Update();

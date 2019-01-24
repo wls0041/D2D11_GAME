@@ -167,7 +167,9 @@
     <ClCompile Include="Framework\Core\Subsystem\SceneManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Framework\Math\BoundBox.cpp" />
+    <ClCompile Include="Framework\Math\Color.cpp" />
     <ClCompile Include="Framework\Math\Math.cpp" />
+    <ClCompile Include="Framework\Math\Matrix.cpp" />
     <ClCompile Include="Framework\Math\Vector2.cpp" />
     <ClCompile Include="Framework\Math\Vector3.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
@@ -215,7 +217,9 @@
     <ClInclude Include="Framework\Core\Subsystem\SceneManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
     <ClInclude Include="Framework\Math\BoundBox.h" />
+    <ClInclude Include="Framework\Math\Color.h" />
     <ClInclude Include="Framework\Math\Math.h" />
+    <ClInclude Include="Framework\Math\Matrix.h" />
     <ClInclude Include="Framework\Math\Vector2.h" />
     <ClInclude Include="Framework\Math\Vector3.h" />
     <ClInclude Include="Framework\Rendering\Rect.h" />

@@ -18,7 +18,11 @@ public:
 	static const float Distance(const Vector3 &lhs, const Vector3 &rhs); //루트연산 후 반환
 	static const float DistanceSq(const Vector3 &lhs, const Vector3 &rhs);//제곱 상태로 반환
 	static const float Dot(const Vector3 &lhs, const Vector3 &rhs);//ABcosTheta가 나옴
+
 	static const Vector3 Cross(const Vector3 &lhs, const Vector3 &rhs);//순서 중요, 수직 벡터, 처음-다음 감싸고 엄지방향, 왼손오른손좌표계중요
+	static const Vector3 Transform(const Vector3 &lhs, const class Matrix &rhs); //동차를 나누지 않고 뺌
+	static const Vector3 TransformCoord(const Vector3 &lhs, const class Matrix &rhs); //위치, 동차1
+	static const Vector3 TransformNormal(const Vector3 &lhs, const class Matrix &rhs);//벡터(방향), 동차0
 
 public:
 	Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
@@ -27,7 +31,10 @@ public:
 	Vector3(const Vector3 &rhs) : x(rhs.x), y(rhs.y), z(rhs.z) {} //복사생성자
 	~Vector3() {}
 
-	const float Length() const { return sqrt(x*x + y * y + z * z); } //벡터의 크기(원점부터의 길이)
+	operator float *() { return&x; } //암시적 변환 method
+	operator const float *() const { return&x; }
+
+	const float LengthSq() const { return sqrt(x*x + y * y + z * z); } //벡터의 크기(원점부터의 길이)
 	const float Length() const { return x*x + y * y + z * z; }
 	const float Volume() const { return x * y * z; }
 	const float Dot(const Vector3 &rhs) { return Dot(*this, rhs); }

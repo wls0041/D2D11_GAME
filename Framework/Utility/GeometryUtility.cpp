@@ -3,10 +3,10 @@
 
 void GeometryUtility::CreateQuad(Geometry<VertexColor>& geometry)
 {
-	geometry.AddVertex(VertexColor(D3DXVECTOR3(-0.5f, -0.5f, 0.0f), D3DXCOLOR(0, 0, 0, 1)));
-	geometry.AddVertex(VertexColor(D3DXVECTOR3(-0.5f, +0.5f, 0.0f), D3DXCOLOR(0, 0, 0, 1)));
-	geometry.AddVertex(VertexColor(D3DXVECTOR3(+0.5f, -0.5f, 0.0f), D3DXCOLOR(0, 0, 0, 1)));
-	geometry.AddVertex(VertexColor(D3DXVECTOR3(+0.5f, +0.5f, 0.0f), D3DXCOLOR(0, 0, 0, 1)));
+	geometry.AddVertex(VertexColor(Vector3(-0.5f, -0.5f, 0.0f), Color(0, 0, 0, 1)));
+	geometry.AddVertex(VertexColor(Vector3(-0.5f, +0.5f, 0.0f), Color(0, 0, 0, 1)));
+	geometry.AddVertex(VertexColor(Vector3(+0.5f, -0.5f, 0.0f), Color(0, 0, 0, 1)));
+	geometry.AddVertex(VertexColor(Vector3(+0.5f, +0.5f, 0.0f), Color(0, 0, 0, 1)));
 
 	geometry.AddIndex(0); geometry.AddIndex(1); geometry.AddIndex(2);
 	geometry.AddIndex(2); geometry.AddIndex(1); geometry.AddIndex(3);
@@ -14,10 +14,10 @@ void GeometryUtility::CreateQuad(Geometry<VertexColor>& geometry)
 
 void GeometryUtility::CreateQuad(Geometry<VertexTexture>& geometry)
 {
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(-0.5f, -0.5f, 0.0f), D3DXVECTOR2(0, 1)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(-0.5f, +0.5f, 0.0f), D3DXVECTOR2(0, 0)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(+0.5f, -0.5f, 0.0f), D3DXVECTOR2(1, 1)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(+0.5f, +0.5f, 0.0f), D3DXVECTOR2(1, 0)));
+	geometry.AddVertex(VertexTexture(Vector3(-0.5f, -0.5f, 0.0f), Vector2(0, 1)));
+	geometry.AddVertex(VertexTexture(Vector3(-0.5f, +0.5f, 0.0f), Vector2(0, 0)));
+	geometry.AddVertex(VertexTexture(Vector3(+0.5f, -0.5f, 0.0f), Vector2(1, 1)));
+	geometry.AddVertex(VertexTexture(Vector3(+0.5f, +0.5f, 0.0f), Vector2(1, 0)));
 
 	geometry.AddIndex(0); geometry.AddIndex(1); geometry.AddIndex(2);
 	geometry.AddIndex(2); geometry.AddIndex(1); geometry.AddIndex(3);
@@ -28,10 +28,10 @@ void GeometryUtility::CreateScreenQuad(Geometry<VertexTexture>& geometry)
 	float w = Settings::Get().GetWidth() * 0.5f;
 	float h = Settings::Get().GetHeight() * 0.5f;
 
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(-w, -h, 0.0f), D3DXVECTOR2(0, 1)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(-w, +h, 0.0f), D3DXVECTOR2(0, 0)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(+w, -h, 0.0f), D3DXVECTOR2(1, 1)));
-	geometry.AddVertex(VertexTexture(D3DXVECTOR3(+w, +h, 0.0f), D3DXVECTOR2(1, 0)));
+	geometry.AddVertex(VertexTexture(Vector3(-w, -h, 0.0f), Vector2(0, 1)));
+	geometry.AddVertex(VertexTexture(Vector3(-w, +h, 0.0f), Vector2(0, 0)));
+	geometry.AddVertex(VertexTexture(Vector3(+w, -h, 0.0f), Vector2(1, 1)));
+	geometry.AddVertex(VertexTexture(Vector3(+w, +h, 0.0f), Vector2(1, 0)));
 
 	geometry.AddIndex(0); geometry.AddIndex(1); geometry.AddIndex(2);
 	geometry.AddIndex(2); geometry.AddIndex(1); geometry.AddIndex(3);

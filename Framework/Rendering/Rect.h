@@ -6,13 +6,13 @@ public:
 	Rect(class Context *context);
 	virtual ~Rect();
 
-	const D3DXVECTOR3 &GetScale() const { return scale; }
-	const D3DXVECTOR3 &GetRotate() const { return rotate; }
-	const D3DXVECTOR3 &GetPosition() const { return position; }
+	const Vector3 &GetScale() const { return scale; }
+	const Vector3 &GetRotate() const { return rotate; }
+	const Vector3 &GetPosition() const { return position; }
 
-	void SetScale(const D3DXVECTOR3 &scale) { this->scale = scale; }
-	void SetRotate(const D3DXVECTOR3 &rotate) { this->rotate = rotate; }
-	void SetPosition(const D3DXVECTOR3 &position) { this->position = position; }
+	void SetScale(const Vector3 &scale) { this->scale = scale; }
+	void SetRotate(const Vector3 &rotate) { this->rotate = rotate; }
+	void SetPosition(const Vector3 &position) { this->position = position; }
 
 	void Update();
 	void Render();
@@ -32,10 +32,10 @@ private:
 	ConstantBuffer *worldBuffer;
 	Texture *texture;
 
-	D3DXVECTOR3 scale;
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 rotate;
-	D3DXMATRIX world; //세계공간
+	Vector3 scale;
+	Vector3 position;
+	Vector3 rotate;
+	Matrix world; //세계공간
 
 	ID3D11RasterizerState *rsState;
 	ID3D11BlendState *blendState; //OM단계에 들어감(이미 색이 찍혀져 있어야 하기 때문)

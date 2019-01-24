@@ -9,10 +9,10 @@ public:
 private:
 	class Context *context;
 
-	D3DXVECTOR3 localScale;
-	D3DXVECTOR3 localRotation;
-	D3DXVECTOR3 localPosition;
+	Vector3 localScale;
+	Vector3 localRotation;
+	Vector3 localPosition;
 
-	D3DXMATRIX local;
-	D3DXMATRIX world;
+	Matrix local;
+	Matrix world;
 };

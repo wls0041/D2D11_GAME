@@ -6,9 +6,9 @@ public:
 	Camera(class Context *context);
 	virtual ~Camera();
 
-	const D3DXMATRIX &GetViewMatrix() const { return view; }
-	const D3DXMATRIX &GetProjectionMatrix() const { return projection; }
-	const D3DXVECTOR3 &GetPosition() const { return position; }
+	const Matrix &GetViewMatrix() const { return view; }
+	const Matrix &GetProjectionMatrix() const { return projection; }
+	const Vector3 &GetPosition() const { return position; }
 
 	void Update();
 
@@ -21,13 +21,10 @@ private:
 	class Timer *timer;
 	class Input *input;
 
-	D3DXVECTOR3 position;
-	D3DXVECTOR3 right;
-	D3DXVECTOR3 up;
-	D3DXVECTOR3 forward;
+	Vector3 position;
 
-	D3DXMATRIX view;
-	D3DXMATRIX projection;
+	Matrix view;
+	Matrix projection;
 
 	float zoom;
 };

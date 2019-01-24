@@ -1,13 +1,11 @@
 #include "stdafx.h"
 #include "BoundBox.h"
 
-const BoundBox BoundBox::Transformed(const BoundBox &box, const D3DXMATRIX &matrix)
+const BoundBox BoundBox::Transformed(const BoundBox &box, const Matrix &matrix)
 {
-	D3DXVECTOR3 newCenter = box.GetCenter();
-	D3DXVec3TransformCoord(&newCenter, &newCenter, &matrix);
-	
-	D3DXVECTOR3 oldEdge = box.GetExtents();
-	D3DXVECTOR3 newEdge = D3DXVECTOR3(
+	Vector3 newCenter = Vector3::TransformCoord(box.GetCenter(), matrix);
+	Vector3 oldEdge = box.GetExtents();
+	Vector3 newEdge = Vector3(
 		Math::Abs(matrix._11) * oldEdge.x + Math::Abs(matrix._21) * oldEdge.y + Math::Abs(matrix._31) * oldEdge.z,
 		Math::Abs(matrix._12) * oldEdge.x + Math::Abs(matrix._22) * oldEdge.y + Math::Abs(matrix._32) * oldEdge.z,
 		Math::Abs(matrix._13) * oldEdge.x + Math::Abs(matrix._23) * oldEdge.y + Math::Abs(matrix._33) * oldEdge.z
@@ -18,18 +16,18 @@ const BoundBox BoundBox::Transformed(const BoundBox &box, const D3DXMATRIX &matr
 
 BoundBox::BoundBox()
 {
-	minBox = D3DXVECTOR3(numeric_limits<float>::infinity(), numeric_limits<float>::infinity(), numeric_limits<float>::infinity());
-	minBox = D3DXVECTOR3(-numeric_limits<float>::infinity(), -numeric_limits<float>::infinity(), -numeric_limits<float>::infinity());
+	minBox = Vector3(numeric_limits<float>::infinity(), numeric_limits<float>::infinity(), numeric_limits<float>::infinity());
+	minBox = Vector3(-numeric_limits<float>::infinity(), -numeric_limits<float>::infinity(), -numeric_limits<float>::infinity());
 }
 
-BoundBox::BoundBox(const D3DXVECTOR3 & minBox, const D3DXVECTOR3 & maxBox) : minBox(minBox), maxBox(maxBox)
+BoundBox::BoundBox(const Vector3 &minBox, const Vector3 &maxBox) : minBox(minBox), maxBox(maxBox)
 {
 }
 
 BoundBox::BoundBox(const vector<VertexTexture>& vertices)
 {
-	minBox = D3DXVECTOR3(numeric_limits<float>::infinity(), numeric_limits<float>::infinity(), numeric_limits<float>::infinity());
-	minBox = D3DXVECTOR3(-numeric_limits<float>::infinity(), -numeric_limits<float>::infinity(), -numeric_limits<float>::infinity());
+	minBox = Vector3(numeric_limits<float>::infinity(), numeric_limits<float>::infinity(), numeric_limits<float>::infinity());
+	minBox = Vector3(-numeric_limits<float>::infinity(), -numeric_limits<float>::infinity(), -numeric_limits<float>::infinity());
 
 	for (auto vertex : vertices) {
 		minBox.x = Math::Min(minBox.x, vertex.position.x);
@@ -46,7 +44,7 @@ BoundBox::~BoundBox()
 {
 }
 
-Intersection BoundBox::IsInside(const D3DXVECTOR3 & point)
+Intersection BoundBox::IsInside(const Vector3 & point)
 {
 	if (point.x < minBox.x || point.x > maxBox.x ||
 		point.y < minBox.y || point.y > maxBox.y ||
@@ -69,13 +67,12 @@ Intersection BoundBox::IsInside(const BoundBox & box)
 	else return Intersection::Inside;;
 }
 
-void BoundBox::Transformed(const D3DXMATRIX & matrix)
+void BoundBox::Transformed(const Matrix & matrix)
 {
-	D3DXVECTOR3 newCenter =GetCenter();
-	D3DXVec3TransformCoord(&newCenter, &newCenter, &matrix);
+	Vector3 newCenter = Vector3::TransformCoord(GetCenter(), matrix); ;
 
-	D3DXVECTOR3 oldEdge = GetExtents();
-	D3DXVECTOR3 newEdge = D3DXVECTOR3(
+	Vector3 oldEdge = GetExtents();
+	Vector3 newEdge = Vector3(
 		Math::Abs(matrix._11) * oldEdge.x + Math::Abs(matrix._21) * oldEdge.y + Math::Abs(matrix._31) * oldEdge.z,
 		Math::Abs(matrix._12) * oldEdge.x + Math::Abs(matrix._22) * oldEdge.y + Math::Abs(matrix._32) * oldEdge.z,
 		Math::Abs(matrix._13) * oldEdge.x + Math::Abs(matrix._23) * oldEdge.y + Math::Abs(matrix._33) * oldEdge.z

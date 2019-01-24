@@ -34,7 +34,7 @@ Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 
 	texture = resourceMgr->Load<Texture>("metalslug.png");
 
 	//공간 단위행렬 초기화
-	D3DXMatrixIdentity(&world);
+	world.SetIdentity();
 
 	//Create Rasterizer State
 	{
@@ -98,18 +98,15 @@ Rect::~Rect()
 
 void Rect::Update()
 {
-	D3DXMATRIX S, R, T;
-	D3DXMatrixScaling(&S, scale.x, scale.y, scale.z);
-	D3DXMatrixRotationYawPitchRoll(&R, rotate.y, rotate.x, rotate.z);
-	D3DXMatrixTranslation(&T, position.x, position.y, position.z);
-
+	Matrix S = Matrix::Scaling(scale);
+	Matrix R = Matrix::RotationYawPitchRoll(rotate);
+	Matrix T = Matrix::Translation(position);
 	world = S * R * T;
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	//행우선을 열우선으로 바꿔줌(전치)
-	D3DXMatrixTranspose(&data->World, &world);
+	data->World = world;
 	worldBuffer->Unmap();
-	
 	////////////////////////////////////////////////////////////////
 	auto input = context->GetSubsystem<Input>();
 	if (input->KeyDown(VK_RIGHT)) { 

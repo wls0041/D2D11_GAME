@@ -26,9 +26,9 @@
 //	
 //	/*
 //	I없이 d3dx붙는 놈들 D3DX(Direct용이다)
-//	D3DXVECTOR2 - 2차원 벡터
+//	Vector2 - 2차원 벡터
 //	D3DXVECTO3  - 3차원 벡터
-//	D3DXCOLOR   - rgba가지는 색
+//	Color   - rgba가지는 색
 //
 //	동차. 좌표와 벡터의 구분이 안되기 때문에 만든 개념
 //	현 차원에 하나의 차원을 추가함.(1차원->2차원, 2차원->3차원)
@@ -41,7 +41,7 @@
 //
 //	ID3D11RenderTargetView *rtv; //뭔가를 그리는 대상(도화지), view가 붙었다면->Texture
 //	D3D11_VIEWPORT viewport;     //랜더링할 구간, 구역을 지정
-//	D3DXCOLOR clearColor;        //directX10
+//	Color clearColor;        //directX10
 //};
 
 #pragma once
@@ -74,7 +74,7 @@ private:
 	uint numerator;
 	uint denominator;
 
-	D3DXCOLOR clearColor;
+	Color clearColor;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RenderTargetView* renderTargetView;
 	D3D11_VIEWPORT viewport;

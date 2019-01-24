@@ -13,6 +13,9 @@ public:
 	Vector2(const Vector2 &rhs) : x(rhs.x), y(rhs.y) {} //복사생성자
 	~Vector2() {}
 
+	operator float *() { return&x; } //암시적 변환 method
+	operator const float *() const { return&x; }
+
 	const Vector2 operator+(const Vector2 &rhs) { return Vector2(x + rhs.x, y + rhs.y); }
 	const Vector2 operator-(const Vector2 &rhs) { return Vector2(x - rhs.x, y - rhs.y);	}
 	const Vector2 operator*(const Vector2 &rhs) { return Vector2(x * rhs.x, y * rhs.y); }
