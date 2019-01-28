@@ -40,6 +40,7 @@
     <ClCompile Include="Framework\Math\Vector3.cpp" />
     <ClCompile Include="Framework\Math\Matrix.cpp" />
     <ClCompile Include="Framework\Math\Color.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -85,6 +86,7 @@
     <ClInclude Include="Framework\Math\Vector3.h" />
     <ClInclude Include="Framework\Math\Matrix.h" />
     <ClInclude Include="Framework\Math\Color.h" />
+    <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />
