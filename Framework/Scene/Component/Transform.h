@@ -22,9 +22,15 @@ public:
 	void SetLocalRotation(const Vector3 &localRotation);
 	void SetLocalPosition(const Vector3 &localPosition);
 
+	Transform *GetParent() const { return parent; }
+	Transform *GetRoot() { return HasParent() ? GetParent()->GetRoot() : this; }
+
 	void SetScale(const Vector3 &scale); //world, world가 곱해진 scale이 들어옴, 자식의 scale만 늘리면 parent를 침범할 수 있음. parent의 변화까지 적용된 scale이 필요
 	void SetRotation(const Vector3 &rotation);
 	void SetPosition(const Vector3 &position);
+
+	void SetParent(Transform *newParent);
+	void AddChild(Transform *child);
 
 	const bool HasParent() const { return parent ? true : false; } //class가 변수를 가지고 있지 않음. 지역변수이기 때문에 만들고 나가면 사라지는데 그 공간을 참조하게 되므로 &안붙음 
 	const bool HasChild() const { return !childs.empty(); } //empty->비어있으면 true

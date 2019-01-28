@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Rect.h"
 #include "../Scene/Component/Animator.h"
+#include "../Scene/Component/Transform.h"
 
-Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 0), rotate(0, 0, 0), isRun(false)
+Rect::Rect(Context *context) : context(context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -33,8 +34,8 @@ Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 
 	//Create Texture
 	texture = resourceMgr->Load<Texture>("metalslug.png");
 
-	//공간 단위행렬 초기화
-	world.SetIdentity();
+	//Set transform(scale, position, rotation, world)
+	transform = new Transform(context);
 
 	//Create Rasterizer State
 	{
@@ -42,7 +43,7 @@ Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 
 		ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
 		desc.FrontCounterClockwise = false; //앞면을 어떻게 판별할 것인가. false = 시계방향이 앞면
 		desc.CullMode = D3D11_CULL_NONE; //컬링. 원하지 않는 부분(BACK, FRONT, NONE)은 생략해 퍼포먼스를 높임
-		desc.FillMode = D3D11_FILL_WIREFRAME; //WIREFRAME. 외곽선만 출력
+		desc.FillMode = D3D11_FILL_SOLID; //WIREFRAME. 외곽선만 출력
 
 		HRESULT hr = graphics->GetDevice()->CreateRasterizerState(&desc, &rsState);
 		assert(SUCCEEDED(hr));
@@ -67,7 +68,6 @@ Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 
 		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		//
 
-
 		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; //그리는 곳에 주어진 색만 써라 
 
 		HRESULT hr = graphics->GetDevice()->CreateBlendState(&desc, &blendState);
@@ -87,6 +87,7 @@ Rect::Rect(Context *context) : context(context), scale(1, 1, 1), position(0, 0, 
 
 Rect::~Rect()
 {
+	SAFE_DELETE(transform);
 	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
@@ -98,30 +99,17 @@ Rect::~Rect()
 
 void Rect::Update()
 {
-	Matrix S = Matrix::Scaling(scale);
-	Matrix R = Matrix::RotationYawPitchRoll(rotate);
-	Matrix T = Matrix::Translation(position);
-	world = S * R * T;
-
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
-	//행우선을 열우선으로 바꿔줌(전치)
-	data->World = world;
+	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
-	////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////
 	auto input = context->GetSubsystem<Input>();
-	if (input->KeyDown(VK_RIGHT)) { 
-		isRun = true;
-		animator->SetCurrentAnimation("Run"); 
-	}
-	else if (input->KeyUp(VK_RIGHT)) {
+	if (input->KeyPress(VK_RIGHT))
+		animator->SetCurrentAnimation("Run");
+	else if (input->KeyUp(VK_LEFT))
 		animator->SetCurrentAnimation("Idle");
-		isRun = false;
-	}
-	if (isRun) {
-		position.x += 0.1f;
-	}
-	//else animator->SetCurrentAnimation("Idle");
-	////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////
 
 	animator->Update();
 
@@ -151,7 +139,7 @@ void Rect::Render()
 	//VS단계 세팅
 
 	//RS단계 -> 기본 세팅 되어있음
-	//dc->RSSetState(rsState);
+	dc->RSSetState(rsState);
 
 	//PS단계
 

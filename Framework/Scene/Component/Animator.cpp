@@ -49,6 +49,7 @@ Keyframe * Animator::GetCurrentkeyframe()
 void Animator::SetCurrentAnimation(const string & animationName)
 {
 	assert(animations.count(animationName) > 0);
+	if (curAnimation == animations[animationName]) return;
 
 	curFrameNumber = 0;
 	frameTimer = 0.0f;

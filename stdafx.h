@@ -11,13 +11,19 @@
 #include <chrono>
 using namespace std;
 
+//Direct Write
+#include <d2d1_1.h>
+#include <dwrite.h>
+
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+
 //DirectX
 #include <dxgi1_2.h>
 #include <d3dcommon.h>
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 #include <d3d11.h>
-#include <D3DX10math.h>
 #include <D3DX11async.h>
 
 #pragma comment(lib, "dxgi.lib")  //lib.동적 라이브러리, dll.정적 라이브러리

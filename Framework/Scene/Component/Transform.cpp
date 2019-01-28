@@ -27,9 +27,9 @@ const Matrix Transform::GetWorldRotationMatrix()
 	float factorZ = 1.0f / scale.z;
 
 	return Matrix(
-		world._11 * factorX, world._12 * factorX, world._13 * factorX, world._14 * factorX,
-		world._21 * factorY, world._22 * factorY, world._23 * factorY, world._24 * factorY,
-		world._31 * factorZ, world._32 * factorZ, world._33 * factorZ, world._34 * factorZ,
+		world._11 * factorX, world._12 * factorX, world._13 * factorX, 0.0f,
+		world._21 * factorY, world._22 * factorY, world._23 * factorY, 0.0f,
+		world._31 * factorZ, world._32 * factorZ, world._33 * factorZ, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 }
@@ -86,6 +86,17 @@ void Transform::SetPosition(const Vector3 & position)
 	else SetLocalPosition(position);
 }
 
+void Transform::SetParent(Transform * newParent)
+{
+	this->parent = newParent;
+	newParent->AddChild(this);
+}
+
+void Transform::AddChild(Transform * child)
+{
+	childs.emplace_back(child);
+}
+
 void Transform::UpdateTransform()
 {
 	Matrix S = Matrix::Scaling(localScale);
@@ -94,7 +105,7 @@ void Transform::UpdateTransform()
 
 	local = S * R * T; //자식만의 world,  world->parent행렬을 곱한 것
 
-	if (HasParent) world = local * parent->GetWorldMatrix();
+	if (HasParent()) world = local * parent->GetWorldMatrix();
 	else world = local;
 
 	//참조가 안붙어도 됨. 동적이므로. 정적이면 붙여야함. 우리는 childs의 복사를 만들지 않고 그 주소 그대로 쓰기 위해 &을 붙임

@@ -55,7 +55,7 @@ public:
 
 	ID3D11Device* GetDevice() const { return device; }
 	ID3D11DeviceContext* GetDeviceContext() const { return deviceContext; }
-	IDXGISwapChain* GetSwapChain() const { return swapChain; }
+	IDXGISwapChain* GetSwapChain() const { return swapChain; } //그려지는 정보 쥐고 있음
 
 	void Initialize() override;
 
