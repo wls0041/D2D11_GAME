@@ -32,7 +32,7 @@ Rect::Rect(Context *context) : context(context)
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("metalslug.png");
+	texture = resourceMgr->Load<Texture>("Pang_Player.png");
 
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
@@ -81,7 +81,7 @@ Rect::Rect(Context *context) : context(context)
 	animator = new Animator(context);
 
 	//animator->RegisterAnimation("Idle.xml");
-	animator->LoadFromFile("Player.xml");
+	animator->LoadFromFile("Pang.xml");
 	animator->SetCurrentAnimation("Idle");
 }
 
@@ -105,10 +105,25 @@ void Rect::Update()
 
 	///////////////////////////////////////////
 	auto input = context->GetSubsystem<Input>();
-	if (input->KeyPress(VK_RIGHT))
-		animator->SetCurrentAnimation("Run");
-	else if (input->KeyUp(VK_LEFT))
+
+	Vector3 position = transform->GetPosition();
+	Vector3 scale = transform->GetScale();
+
+	if (input->KeyPress(VK_RIGHT)) {
+		animator->SetCurrentAnimation("Move");
+		position.x += 0.07f;
+		if (scale.x < 0) scale.x = -scale.x;
+	}
+	else if (input->KeyPress(VK_LEFT)) {
+		animator->SetCurrentAnimation("Move");
+		position.x -= 0.07f;
+		if (scale.x > 0) scale.x = -scale.x;
+	}
+	else if (input->KeyUp(VK_LEFT) || input->KeyUp(VK_RIGHT))
 		animator->SetCurrentAnimation("Idle");
+
+	transform->SetPosition(position);
+	transform->SetScale(scale);
 	///////////////////////////////////////////
 
 	animator->Update();

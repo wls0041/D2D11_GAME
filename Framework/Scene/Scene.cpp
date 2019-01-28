@@ -12,10 +12,6 @@ Scene::Scene(class Context *context) : context(context)
 	cameraBuffer->Create<CameraData>();
 
 	rect = new Rect(context);
-	//rect->SetScale({ 1, 1, 1 });
-	rect1 = new Rect(context);
-	rect1->GetTransform()->SetPosition({ 50, 50, 0 });
-	rect1->GetTransform()->SetParent(rect->GetTransform());
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
@@ -27,7 +23,6 @@ Scene::~Scene()
 {
 	for (auto source : sources) SAFE_DELETE(source);
 
-	SAFE_DELETE(rect1);
 	SAFE_DELETE(rect);
 	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(camera);
@@ -43,18 +38,7 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
-	static Vector3 rotate;
-	if(input->KeyPress(VK_SPACE)) rotate.z += 0.2f;
-	rect->GetTransform()->SetRotation(rotate);
-
-	Vector3 position = rect->GetTransform()->GetPosition();
-	if (input->KeyPress(VK_RIGHT)) {
-		position.x += 0.1f;
-	}
-	rect->GetTransform()->SetPosition(position);
-
 	rect->Update();
-	rect1->Update();
 
 	if (input->KeyDown('Q')) bgm->Play();
 	else if (input->KeyDown('W')) bgm->Pause();
@@ -80,5 +64,4 @@ void Scene::Render()
 {
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
 	rect->Render();
-	rect1->Render();
 }

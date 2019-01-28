@@ -26,10 +26,11 @@ const Matrix Transform::GetWorldRotationMatrix()
 	float factorY = 1.0f / scale.y;
 	float factorZ = 1.0f / scale.z;
 
-	return Matrix(
-		world._11 * factorX, world._12 * factorX, world._13 * factorX, world._14 * factorX,
-		world._21 * factorY, world._22 * factorY, world._23 * factorY, world._24 * factorY,
-		world._31 * factorZ, world._32 * factorZ, world._33 * factorZ, world._34 * factorZ,
+	return Matrix
+	(
+		world._11 * factorX, world._12 * factorX, world._13 * factorX, 0.0f,
+		world._21 * factorY, world._22 * factorY, world._23 * factorY, 0.0f,
+		world._31 * factorZ, world._32 * factorZ, world._33 * factorZ, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	);
 }
