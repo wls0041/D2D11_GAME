@@ -81,4 +81,10 @@ void Scene::Render()
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
 	rect->Render();
 	rect1->Render();
+
+	auto dw = context->GetSubsystem<DirectWrite>();
+	dw->Text(L"Hello, DirectWrite!!", Vector2(0, 0));
+	dw->Text(L"수업끝!!", Vector2(100, 50), 50.0f);
+	dw->Text(L"컴퓨터 이상함!!", Vector2(200, 100), 50.0f, Color(1, 1, 0, 1), L"궁서체");
+
 }

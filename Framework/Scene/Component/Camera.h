@@ -10,6 +10,8 @@ public:
 	const Matrix &GetProjectionMatrix() const { return projection; }
 	const Vector3 &GetPosition() const { return position; }
 
+	const Vector3 ScreenToWorldPoint(const Vector2 &screenPoint);
+
 	void Update();
 
 private:

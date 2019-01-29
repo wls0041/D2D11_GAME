@@ -12,6 +12,7 @@ App::App()
 	context->RegisterSubsystem(new Input(context));
 	context->RegisterSubsystem(new Audio(context));
 	context->RegisterSubsystem(new Graphics(context));
+	context->RegisterSubsystem(new DirectWrite(context));
 	context->RegisterSubsystem(new ResourceManager(context));
 	context->RegisterSubsystem(new SceneManager(context));
 }
@@ -29,6 +30,7 @@ WPARAM App::Run() //실행 후 계속해서 도는 루프
 
 	Initialize();
 	auto graphics = context->GetSubsystem<Graphics>(); //template. 세팅하는 것은 모두 <> 안에 들어감
+	auto directWrite = context->GetSubsystem<DirectWrite>();
 
 	while (true) {
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) { //peek.무시하고 지나감, get.기다림
@@ -42,7 +44,11 @@ WPARAM App::Run() //실행 후 계속해서 도는 루프
 
 			graphics->BeginScene(); //..clear
 			{
-				Render();
+				directWrite->BeginTextDraw();
+				{
+					Render();
+				}
+				directWrite->EndTextDraw();
 			}
 			graphics->EndScene();  //..clipping   - double buffering
 		}
