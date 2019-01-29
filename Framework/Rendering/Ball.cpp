@@ -2,8 +2,9 @@
 #include "Ball.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
+#include "../Math/BoundBox.h"
 
-Ball::Ball(Context *context) : context(context)
+Ball::Ball(Context *context) : context(context), moveDir(0.0f, 0.0f, 0.0f)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -20,10 +21,10 @@ Ball::Ball(Context *context) : context(context)
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/Animation_Player.hlsl");
+	vertexShader->Create("../_Assets/Shader/Pang/Sprite_Ball.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/Animation_Player.hlsl");
+	pixelShader->Create("../_Assets/Shader/Pang/Sprite_Ball.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -32,10 +33,7 @@ Ball::Ball(Context *context) : context(context)
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Pang_Player.png");
-
-	//Set transform(scale, position, rotation, world)
-	transform = new Transform(context);
+	texture = resourceMgr->Load<Texture>("Pang_Bollon.png");
 
 	//Create Rasterizer State
 	{
@@ -75,20 +73,26 @@ Ball::Ball(Context *context) : context(context)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	animationBuffer = new ConstantBuffer(context);
-	animationBuffer->Create<AnimationData>();
+	spriteBuffer = new ConstantBuffer(context);
+	spriteBuffer->Create<AnimationData>();
 
-	animator = new Animator(context);
+	//Set transform(scale, position, rotation, world)
+	transform = new Transform(context);
 
-	//animator->RegisterAnimation("Idle.xml");
-	animator->LoadFromFile("Pang.xml");
-	animator->SetCurrentAnimation("Idle");
+	//Set BoundBox
+	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
+	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
+
+	boundbox = new BoundBox(minBox, maxBox);
+	boundbox->SetIsCircle(true);
+
 }
 
 Ball::~Ball()
 {
+	SAFE_DELETE(boundbox);
 	SAFE_DELETE(transform);
-	SAFE_DELETE(animationBuffer);
+	SAFE_DELETE(spriteBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
@@ -99,40 +103,27 @@ Ball::~Ball()
 
 void Ball::Update()
 {
+	//////////////////////공의 이동////////////////////////
+	Vector3 position = transform->GetPosition();
+	position.x += 0.1f * moveDir.x;
+
+	transform->SetPosition(position);
+
+	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
+	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
+
+	boundbox->Update(minBox, maxBox);
+	////////////////////////////////////////////////////////////////
+
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
 
-	///////////////////////////////////////////
-	auto input = context->GetSubsystem<Input>();
-
-	Vector3 position = transform->GetPosition();
-	Vector3 scale = transform->GetScale();
-
-	if (input->KeyPress(VK_RIGHT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x += 0.07f;
-		if (scale.x < 0) scale.x = -scale.x;
-	}
-	else if (input->KeyPress(VK_LEFT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x -= 0.07f;
-		if (scale.x > 0) scale.x = -scale.x;
-	}
-	else if (input->KeyUp(VK_LEFT) || input->KeyUp(VK_RIGHT))
-		animator->SetCurrentAnimation("Idle");
-
-	transform->SetPosition(position);
-	transform->SetScale(scale);
-	///////////////////////////////////////////
-
-	animator->Update();
-
-	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
+	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
-	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->Spritesize = animator->GetCurrentkeyframe()->size;
-	animationBuffer->Unmap();
+	animData->SpriteOffset = Vector2(0, 5);
+	animData->Spritesize = Vector2(50, 42);
+	spriteBuffer->Unmap();
 }
 
 void Ball::Render()
@@ -143,7 +134,7 @@ void Ball::Render()
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
-	animationBuffer->BindPipeline(ShaderType::VS, 2);
+	spriteBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();

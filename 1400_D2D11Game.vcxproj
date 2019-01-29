@@ -173,6 +173,7 @@
     <ClCompile Include="Framework\Math\Matrix.cpp" />
     <ClCompile Include="Framework\Math\Vector2.cpp" />
     <ClCompile Include="Framework\Math\Vector3.cpp" />
+    <ClCompile Include="Framework\Rendering\Back.cpp" />
     <ClCompile Include="Framework\Rendering\Ball.cpp" />
     <ClCompile Include="Framework\Rendering\Player.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Framework\Math\Matrix.h" />
     <ClInclude Include="Framework\Math\Vector2.h" />
     <ClInclude Include="Framework\Math\Vector3.h" />
+    <ClInclude Include="Framework\Rendering\Back.h" />
     <ClInclude Include="Framework\Rendering\Ball.h" />
     <ClInclude Include="Framework\Rendering\Player.h" />
     <ClInclude Include="Framework\Rendering\Rect.h" />

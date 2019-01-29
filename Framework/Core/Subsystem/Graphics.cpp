@@ -114,7 +114,7 @@ Graphics::Graphics(Context * context)
 	, gpuDescription(L"")
 	, numerator(0)
 	, denominator(0)
-	, clearColor(0xFF555566)
+	, clearColor(0xff000000)
 	, depthStencilView(nullptr)
 	, renderTargetView(nullptr)
 {
@@ -318,7 +318,7 @@ void Graphics::ResizeClient(const uint & width, const uint & height)
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = static_cast<float>(Settings::Get().GetWidth());
-	viewport.Height = static_cast<float>(Settings::Get().GetHeight());
+	viewport.Height = static_cast<float>(Settings::Get().GetHeight() - 150);
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 

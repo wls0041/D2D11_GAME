@@ -7,7 +7,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpszCmdPar
 	Settings::Get().SetAppName(L"D2D11Game");
 	Settings::Get().SetWindowInstance(hInstance);
 	Settings::Get().SetWidth(1280);
-	Settings::Get().SetHeight(720);
+	Settings::Get().SetHeight(720 + 150);
 	Settings::Get().SetIsVsync(false); //프레임을 일정으로 고정
 	Settings::Get().SetIsFullScreen(false);
 

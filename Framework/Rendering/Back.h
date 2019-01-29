@@ -1,13 +1,15 @@
 #pragma once
 
-class Player
+class Back
 {
 public:
-	Player(class Context *context);
-	virtual ~Player();
+	Back(class Context *context);
+	virtual ~Back();
 
 	class Transform *GetTransform() const { return transform; }
 	class BoundBox *GetBoundBox() const { return boundbox; }
+
+	void SetOffset(const Vector2 &offset) { this->offset = offset; }
 
 	void Update();
 	void Render();
@@ -33,9 +35,9 @@ private:
 	ID3D11RasterizerState *rsState;
 	ID3D11BlendState *blendState; //OM단계에 들어감(이미 색이 찍혀져 있어야 하기 때문)
 
-	class Animator *animator;
-	ConstantBuffer *animationBuffer;
+	ConstantBuffer *spriteBuffer;
 
+	Vector2 offset;
 	Vector3 minBox;
 	Vector3 maxBox;
 };

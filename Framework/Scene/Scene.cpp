@@ -3,7 +3,10 @@
 #include "./Component/Camera.h"
 #include "./Component/AudioSource.h"
 #include "../Rendering/Player.h"
+#include "../Rendering/Ball.h"
+#include "../Rendering/Back.h"
 #include "../Scene/Component/Transform.h"
+#include "../Math/BoundBox.h"
 
 Scene::Scene(class Context *context) : context(context)
 {
@@ -14,16 +17,27 @@ Scene::Scene(class Context *context) : context(context)
 	player = new Player(context);
 	player->GetTransform()->SetScale({ 1.5f, 1.5f, 1 });
 
+	ball = new Ball(context);
+	ball->GetTransform()->SetScale({ 200, 200, 1 });
+	ball->GetTransform()->SetPosition({ 0, 50, 0 });
+	ball->SetMoveDir({ 1.0f, 0.0f, 0.0f });
+
+	back = new Back(context);
+	back->GetTransform()->SetScale({ 1280, 720, 1 });
+	back->GetTransform()->SetPosition({ 0, 0, 0 });
+	back->SetOffset({ 8, 1520 });
+
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
 	bgm->SetAudioClip("Stage1.mp3");
-	bgm->Play();
+	//bgm->Play();
 }
 
 Scene::~Scene()
 {
 	for (auto source : sources) SAFE_DELETE(source);
 
+	SAFE_DELETE(ball);
 	SAFE_DELETE(player);
 	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(camera);
@@ -39,30 +53,19 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
+	Intersection inter = ball->GetBoundBox()->IsCircleInside(*back->GetBoundBox());
+	if (inter == Intersection::Outside) ball->InvMoveDir();
+
+	ball->Update();
 	player->Update();
+	back->Update();
 
-	if (input->KeyDown('Q')) bgm->Play();
-	else if (input->KeyDown('W')) bgm->Pause();
-	else if (input->KeyDown('E')) bgm->Stop();
-
-	///////////////////////////////////////////////
-	static float volume = 1.0f;
-	if (input->KeyDown('A')) volume -= 0.1f;
-	else if (input->KeyDown('S')) volume += 0.1f;
-
-	bgm->SetVolume(volume);
-
-	///////////////////////////////////////////////
-	static float pitch = 1.0f;
-	if (input->KeyDown('Z')) pitch += 0.1f;
-	else if (input->KeyDown('X')) pitch -= 0.1f;
-
-	bgm->SetPitch(pitch);
-	////////////////////////////////////////////////////////////////
 }
 
 void Scene::Render()
 {
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
+	ball->Render();
 	player->Render();
+	back->Render();
 }

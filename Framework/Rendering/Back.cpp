@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Player.h"
+#include "Back.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 #include "../Math/BoundBox.h"
 
-Player::Player(Context *context) : context(context)
+Back::Back(Context *context) : context(context), offset(0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -21,10 +21,10 @@ Player::Player(Context *context) : context(context)
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	vertexShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	pixelShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -33,7 +33,7 @@ Player::Player(Context *context) : context(context)
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Pang_Player.png");
+	texture = resourceMgr->Load<Texture>("Pang_Back.png");
 
 	//Create Rasterizer State
 	{
@@ -73,32 +73,25 @@ Player::Player(Context *context) : context(context)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	animationBuffer = new ConstantBuffer(context);
-	animationBuffer->Create<AnimationData>();
-
-	animator = new Animator(context);
-
-	//animator->RegisterAnimation("Idle.xml");
-	animator->LoadFromFile("Pang.xml");
-	animator->SetCurrentAnimation("Idle");
+	spriteBuffer = new ConstantBuffer(context);
+	spriteBuffer->Create<AnimationData>();
 
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
 
 	//Set BoundBox
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
+	minBox = transform->GetPosition() - Vector3(640.0f, 360.0f, 0.0f);
+	maxBox = transform->GetPosition() + Vector3(640.0f, 360.0f, 0.0f);
 
 	boundbox = new BoundBox(minBox, maxBox);
-	boundbox->SetIsCircle(true);
+
 }
 
-Player::~Player()
+Back::~Back()
 {
 	SAFE_DELETE(boundbox);
 	SAFE_DELETE(transform);
-	SAFE_DELETE(animator);
-	SAFE_DELETE(animationBuffer);
+	SAFE_DELETE(spriteBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
@@ -107,50 +100,25 @@ Player::~Player()
 	SAFE_DELETE(vertexBuffer);
 }
 
-void Player::Update()
+void Back::Update()
 {
-	///////////////////////////////////////////
-	auto input = context->GetSubsystem<Input>();
-
-	Vector3 position = transform->GetPosition();
-	Vector3 scale = transform->GetScale();
-
-	if (input->KeyPress(VK_RIGHT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x += 0.07f;
-		if (scale.x < 0) scale.x = -scale.x;
-	}
-	else if (input->KeyPress(VK_LEFT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x -= 0.07f;
-		if (scale.x > 0) scale.x = -scale.x;
-	}
-	else if (input->KeyUp(VK_LEFT) || input->KeyUp(VK_RIGHT))
-		animator->SetCurrentAnimation("Idle");
-
-	transform->SetPosition(position);
-	transform->SetScale(scale);
-
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
+	minBox = transform->GetPosition() - Vector3(640.0f - 24.0f, 360.0f, 0.0f); //배경크기 - 배경테두리(벽돌)
+	maxBox = transform->GetPosition() + Vector3(640.0f - 24.0f, 360.0f, 0.0f);
 
 	boundbox->Update(minBox, maxBox);
-	///////////////////////////////////////////
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
 
-	animator->Update();
-
-	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
+	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
-	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->Spritesize = animator->GetCurrentkeyframe()->size;
-	animationBuffer->Unmap();
+	animData->SpriteOffset = offset;
+	animData->Spritesize = Vector2(384, 208);
+	spriteBuffer->Unmap();
 }
 
-void Player::Render()
+void Back::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
@@ -158,7 +126,7 @@ void Player::Render()
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
-	animationBuffer->BindPipeline(ShaderType::VS, 2);
+	spriteBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();
