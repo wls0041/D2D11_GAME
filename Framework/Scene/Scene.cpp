@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "./Component/Camera.h"
 #include "./Component/AudioSource.h"
-#include "../Rendering/Rect.h"
+#include "../Rendering/Player.h"
 #include "../Scene/Component/Transform.h"
 
 Scene::Scene(class Context *context) : context(context)
@@ -11,7 +11,8 @@ Scene::Scene(class Context *context) : context(context)
 	cameraBuffer = new ConstantBuffer(context);
 	cameraBuffer->Create<CameraData>();
 
-	rect = new Rect(context);
+	player = new Player(context);
+	player->GetTransform()->SetScale({ 1.5f, 1.5f, 1 });
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
@@ -23,7 +24,7 @@ Scene::~Scene()
 {
 	for (auto source : sources) SAFE_DELETE(source);
 
-	SAFE_DELETE(rect);
+	SAFE_DELETE(player);
 	SAFE_DELETE(cameraBuffer);
 	SAFE_DELETE(camera);
 }
@@ -38,7 +39,7 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
-	rect->Update();
+	player->Update();
 
 	if (input->KeyDown('Q')) bgm->Play();
 	else if (input->KeyDown('W')) bgm->Pause();
@@ -63,5 +64,5 @@ void Scene::Update()
 void Scene::Render()
 {
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
-	rect->Render();
+	player->Render();
 }

@@ -41,6 +41,8 @@
     <ClCompile Include="Framework\Math\Matrix.cpp" />
     <ClCompile Include="Framework\Math\Color.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
+    <ClCompile Include="Framework\Rendering\Player.cpp" />
+    <ClCompile Include="Framework\Rendering\Ball.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -87,6 +89,8 @@
     <ClInclude Include="Framework\Math\Matrix.h" />
     <ClInclude Include="Framework\Math\Color.h" />
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
+    <ClInclude Include="Framework\Rendering\Player.h" />
+    <ClInclude Include="Framework\Rendering\Ball.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

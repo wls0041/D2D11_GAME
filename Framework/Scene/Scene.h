@@ -18,7 +18,7 @@ private:
 
 	class Camera *camera;
 	class ConstantBuffer *cameraBuffer;
-	class Rect *rect;
+	class Player *player;
 
 	class AudioSource *bgm;
 	vector<class AudioSource*> sources;

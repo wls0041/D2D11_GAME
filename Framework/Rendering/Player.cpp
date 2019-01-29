@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Rect.h"
+#include "Player.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 
-Rect::Rect(Context *context) : context(context)
+Player::Player(Context *context) : context(context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -85,19 +85,19 @@ Rect::Rect(Context *context) : context(context)
 	animator->SetCurrentAnimation("Idle");
 }
 
-Rect::~Rect()
+Player::~Player()
 {
 	SAFE_DELETE(transform);
 	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
-	SAFE_DELETE(vertexShader); 
+	SAFE_DELETE(vertexShader);
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
 }
 
-void Rect::Update()
+void Player::Update()
 {
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
@@ -135,7 +135,7 @@ void Rect::Update()
 	animationBuffer->Unmap();
 }
 
-void Rect::Render()
+void Player::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
