@@ -16,6 +16,7 @@ Scene::Scene(class Context *context) : context(context)
 
 	player = new Player(context);
 	player->GetTransform()->SetScale({ 1.5f, 1.5f, 1 });
+	player->GetTransform()->SetPosition({ 0, -360 + 50.0f, 0 });
 
 	ball = new Ball(context);
 	ball->GetTransform()->SetScale({ 200, 200, 1 });
