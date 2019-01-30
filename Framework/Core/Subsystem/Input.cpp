@@ -5,10 +5,10 @@ function<LRESULT(const uint&, const WPARAM&, const LPARAM&)> Input::MouseProc = 
 
 Input::Input(Context * context)
 	: ISubsystem(context)
-	, mousePosition(0, 0, 0)
-	, wheelStatus(0, 0, 0)
-	, wheelOldStatus(0, 0, 0)
-	, wheelMoveValue(0, 0, 0)
+	, mousePosition(0)
+	, wheelStatus(0)
+	, wheelOldStatus(0)
+	, wheelMoveValue(0)
 {
 	//1번째 인자(함수)와 나머지 인자(함수의 매개변수)를 묶어준 함수를 만듬
 	MouseProc = bind(&Input::MsgProc, this, placeholders::_1, placeholders::_2, placeholders::_3);

@@ -7,6 +7,11 @@ DirectWrite::DirectWrite(Context * context) : ISubsystem(context), factory(nullp
 
 DirectWrite::~DirectWrite()
 {
+	DeleteSurface();
+	SAFE_RELEASE(writeDeviceContext);
+	SAFE_RELEASE(writeDevice);
+	SAFE_RELEASE(factory);
+	SAFE_RELEASE(writeFactory);
 }
 
 void DirectWrite::Initialize()
@@ -38,6 +43,7 @@ void DirectWrite::Initialize()
 	assert(SUCCEEDED(hr));
 
 	CreateSurface();
+	SAFE_RELEASE(dxgiDevice);
 }
 
 void DirectWrite::CreateSurface()
@@ -46,7 +52,7 @@ void DirectWrite::CreateSurface()
 	IDXGISurface *dxgiSurface = nullptr;
 	HRESULT hr = graphics->GetSwapChain()->GetBuffer(0, __uuidof(IDXGISurface), reinterpret_cast<void**>(&dxgiSurface));
 	assert(SUCCEEDED(hr));
-	
+
 	//Create d2d Backbuffer (surface)
 	D2D1_BITMAP_PROPERTIES1 bp; //¼Ó¼º, desc°°Àº ³ð
 	bp.pixelFormat.format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -65,12 +71,73 @@ void DirectWrite::CreateSurface()
 
 void DirectWrite::DeleteSurface()
 {
+	writeDeviceContext->SetTarget(nullptr);
+	SAFE_RELEASE(targetBitmap);
 }
 
 void DirectWrite::BeginTextDraw()
 {
+	writeDeviceContext->BeginDraw();
 }
 
 void DirectWrite::EndTextDraw()
 {
+	HRESULT hr = writeDeviceContext->EndDraw();
+	assert(SUCCEEDED(hr));
+}
+
+void DirectWrite::Text(const wstring & text, const Vector2 & position, const float & fontSize, const Color & fontColor, const wstring & fontName, const DWRITE_FONT_WEIGHT &fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
+{
+	D2D1_RECT_F range;
+	range.left = position.x; //¿ÞÂÊ»ó´ÜºÎÅÍ ¾¸
+	range.top = position.y;
+	range.right = position.x + text.length() * fontSize;
+	range.bottom = position.y + fontSize;
+
+	auto brush = RegisterBrush(fontColor);
+	auto format = RegisterFormat(fontName, fontSize, fontWeight, fontStyle, fontStretch);
+	writeDeviceContext->DrawTextW(text.c_str(), text.length(), format, range, brush);
+}
+
+ID2D1SolidColorBrush * DirectWrite::RegisterBrush(const Color & color)
+{
+	ID2D1SolidColorBrush *brush = FindBrush(color);
+	if (!brush) {
+		D2D1::ColorF brushColor = D2D1::ColorF(color.r, color.g, color.b);
+		HRESULT hr = writeDeviceContext->CreateSolidColorBrush(brushColor, &brush);
+		assert(SUCCEEDED(hr));
+
+		//brushes.push_back(make_pair(color, brush));
+		brushes.emplace_back(color, brush);
+	}
+	return brush;
+}
+
+IDWriteTextFormat * DirectWrite::RegisterFormat(const wstring & fontName, const float & fontSize, const DWRITE_FONT_WEIGHT & fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
+{
+	DW_FONT font = { fontName, fontSize, fontWeight, fontStyle, fontStretch };
+	IDWriteTextFormat *format = FindFormat(font);
+	if (!format) {
+		HRESULT hr = writeFactory->CreateTextFormat(font.Name.c_str(), nullptr, font.Weight, font.Style, font.Stretch, font.Size, L"ko", &format);
+		assert(SUCCEEDED(hr));
+
+		formats.emplace_back(font, format);
+	}
+	return format;
+}
+
+ID2D1SolidColorBrush * DirectWrite::FindBrush(const Color & color)
+{
+	for (auto &brush : brushes) {
+		if (brush.first == color) brush.second;
+	}
+	return nullptr;
+}
+
+IDWriteTextFormat * DirectWrite::FindFormat(const DW_FONT & font)
+{
+	for (auto &format : formats) {
+		if (format.first == font) format.second;
+	}
+	return nullptr;
 }

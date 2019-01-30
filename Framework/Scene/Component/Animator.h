@@ -12,6 +12,7 @@ public:
 
 	class Animation *GetCurrentAnimation() const { return curAnimation; }
 	struct Keyframe *GetCurrentkeyframe();
+	const bool &GetIsEnd() const { return isEnd; }
 
 	void SetCurrentAnimation(const string &animationName);
 
@@ -37,6 +38,7 @@ private:
 	AnimationMode mode;
 	uint curFrameNumber;
 	float frameTimer;
+	bool isEnd; //Once타입의 애니메이션을 1회 돌렸나 확인
 
 	class Animation *curAnimation;
 	map<string, class Animation*> animations; //animation이 iresource를 포인터로 상속 받고 있기 때문에 이에 맞추기 위함

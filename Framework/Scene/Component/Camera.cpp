@@ -14,6 +14,20 @@ Camera::~Camera()
 {
 }
 
+const Vector3 Camera::ScreenToWorldPoint(const Vector2 & screenPoint)
+{
+	auto viewport = Settings::Get().GetViewPort();
+
+	//화면좌표를 view공간으로 이동
+	float pointX = +2.0f * screenPoint.x / viewport.Width - 1.0f;
+	float pointY = -2.0f * screenPoint.y / viewport.Height + 1.0f;
+
+	//Unprojection
+	Matrix unprojection = (view * projection).Inverse();
+
+	return Vector3::TransformCoord(Vector3(pointX, pointY, 0.0f), unprojection);
+}
+
 void Camera::Update()
 {
 	if ((input->KeyPress(VK_SHIFT))) {

@@ -13,7 +13,7 @@ public:
 	Input(class Context* context);
 	virtual ~Input();
 
-	const Vector3& GetMousePosition() const { return mousePosition; }
+	const Vector2& GetMousePosition() const { return mousePosition; }
 	const Vector3& GetMouseMoveValue() const { return wheelMoveValue; }
 
 	LRESULT MsgProc(const uint& message, const WPARAM& wParam, const LPARAM& lParam);
@@ -65,7 +65,7 @@ private:
 	DWORD startDblClk[MAX_INPUT_MOUSE];
 	int buttonCount[MAX_INPUT_MOUSE];
 	DWORD timeDblClk;
-	Vector3 mousePosition; //마우스 위치
+	Vector2 mousePosition; //마우스 위치
 	Vector3 wheelStatus;
 	Vector3 wheelOldStatus;
 	Vector3 wheelMoveValue;

@@ -44,6 +44,8 @@
     <ClCompile Include="Framework\Rendering\Player.cpp" />
     <ClCompile Include="Framework\Rendering\Ball.cpp" />
     <ClCompile Include="Framework\Rendering\Back.cpp" />
+    <ClCompile Include="Framework\Scene\Component\Collider.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -93,6 +95,8 @@
     <ClInclude Include="Framework\Rendering\Player.h" />
     <ClInclude Include="Framework\Rendering\Ball.h" />
     <ClInclude Include="Framework\Rendering\Back.h" />
+    <ClInclude Include="Framework\Scene\Component\Collider.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

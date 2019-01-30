@@ -2,9 +2,9 @@
 #include "Ball.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
-#include "../Math/BoundBox.h"
+#include "../Scene/Component/Collider.h"
 
-Ball::Ball(Context *context) : context(context), moveDir(0.0f, 0.0f, 0.0f)
+Ball::Ball(Context *context) : context(context), moveDir(0.0f, 0.0f, 0.0f), jumpSpeed(12.0f), jumpAccel(0.4f), curCheck_X(true)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -78,19 +78,11 @@ Ball::Ball(Context *context) : context(context), moveDir(0.0f, 0.0f, 0.0f)
 
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
-
-	//Set BoundBox
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
-
-	boundbox = new BoundBox(minBox, maxBox);
-	boundbox->SetIsCircle(true);
-
 }
 
 Ball::~Ball()
 {
-	SAFE_DELETE(boundbox);
+	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(spriteBuffer);
 	SAFE_DELETE(worldBuffer);
@@ -101,19 +93,35 @@ Ball::~Ball()
 	SAFE_DELETE(vertexBuffer);
 }
 
+void Ball::SetCollider()
+{
+	//Collider
+	collider = new Collider(context);
+	collider->SetCenter(transform->GetPosition());
+	collider->SetSize(transform->GetScale());
+	collider->SetTransform(transform);
+	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+		InvMoveDir();
+		if (curCheck_X == false && transform->GetPosition().y - transform->GetScale().y * 0.5f < 50.0f) jumpSpeed = 18.9;
+	};
+}
+
 void Ball::Update()
 {
 	//////////////////////공의 이동////////////////////////
+	if (moveDir.y > 0 && jumpSpeed <= 0.0f) {
+		curCheck_X = false;
+		jumpSpeed = 0;
+		InvMoveDir();
+	}
+	moveDir.y > 0 ? jumpSpeed -= jumpAccel : jumpSpeed += jumpAccel;
+
 	Vector3 position = transform->GetPosition();
-	position.x += 0.1f * moveDir.x;
+	position.x += 3.5f * moveDir.x;
+	position.y += jumpSpeed * moveDir.y;
 
 	transform->SetPosition(position);
-
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
-
-	boundbox->Update(minBox, maxBox);
-	////////////////////////////////////////////////////////////////
+	collider->SetCenter(transform->GetPosition());
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();

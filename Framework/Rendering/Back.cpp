@@ -2,7 +2,7 @@
 #include "Back.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
-#include "../Math/BoundBox.h"
+#include "../Scene/Component/Collider.h"
 
 Back::Back(Context *context) : context(context), offset(0, 0)
 {
@@ -79,17 +79,11 @@ Back::Back(Context *context) : context(context), offset(0, 0)
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
 
-	//Set BoundBox
-	minBox = transform->GetPosition() - Vector3(640.0f, 360.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(640.0f, 360.0f, 0.0f);
-
-	boundbox = new BoundBox(minBox, maxBox);
-
 }
 
 Back::~Back()
 {
-	SAFE_DELETE(boundbox);
+	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(spriteBuffer);
 	SAFE_DELETE(worldBuffer);
@@ -100,13 +94,17 @@ Back::~Back()
 	SAFE_DELETE(vertexBuffer);
 }
 
+void Back::SetCollider()
+{	//Collider
+	collider = new Collider(context);
+	collider->SetCenter(transform->GetPosition());
+	collider->SetSize(transform->GetScale() - Vector3(50.0f, 54.0f, 0.0f));
+	collider->SetTransform(transform);
+	collider->Event = nullptr;
+}
+
 void Back::Update()
 {
-	minBox = transform->GetPosition() - Vector3(640.0f - 24.0f, 360.0f, 0.0f); //배경크기 - 배경테두리(벽돌)
-	maxBox = transform->GetPosition() + Vector3(640.0f - 24.0f, 360.0f, 0.0f);
-
-	boundbox->Update(minBox, maxBox);
-
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();

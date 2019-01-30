@@ -8,7 +8,7 @@ public:
 public:
 	BoundBox();
 	BoundBox(const Vector3 &minBox, const Vector3 &maxBox);
-	BoundBox(const vector<VertexTexture> &vertices);
+	BoundBox(const vector<struct VertexTexture> &vertices);
 	virtual ~BoundBox();
 
 	const Vector3 &GetMin() const { return minBox; }
@@ -18,14 +18,9 @@ public:
 	const Vector3 GetExtents() const { return (maxBox - minBox) * 0.5f; }
 
 	Intersection IsInside(const Vector3 &point);
-	Intersection IsInside(const BoundBox &box);
-	Intersection IsCircleInside(const BoundBox &box); //원이 배경을 나가는지 확인
+	Intersection IsInside(const BoundBox &box , const int &caseNum);
 
 	void Transformed(const Matrix &matrix); //내부용
-	void SetIsCircle(const bool &isCircle) { this->isCircle = isCircle; }
-
-	void Update(const Vector3 &minBox, const Vector3 &maxBox);
-	void Update(const vector<VertexTexture> &vertices);
 
 	const bool operator == (const BoundBox &rhs) const {
 		bool bCheck = true;
@@ -37,5 +32,4 @@ public:
 private:
 	Vector3	minBox;
 	Vector3	maxBox;
-	bool isCircle;
 };

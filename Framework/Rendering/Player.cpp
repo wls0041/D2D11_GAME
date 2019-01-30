@@ -2,9 +2,9 @@
 #include "Player.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
-#include "../Math/BoundBox.h"
+#include "../Scene/Component/Collider.h"
 
-Player::Player(Context *context) : context(context)
+Player::Player(Context *context) : context(context), life(2000), x_clamp(0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -85,17 +85,12 @@ Player::Player(Context *context) : context(context)
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
 
-	//Set BoundBox
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
-
-	boundbox = new BoundBox(minBox, maxBox);
-	boundbox->SetIsCircle(true);
+	x_clamp = (1280 - 150) * 0.5f;
 }
 
 Player::~Player()
 {
-	SAFE_DELETE(boundbox);
+	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(animator);
 	SAFE_DELETE(animationBuffer);
@@ -105,6 +100,29 @@ Player::~Player()
 	SAFE_DELETE(vertexShader);
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
+}
+
+Vector3 Player::GetSize()
+{
+	Vector3 size = { animator->GetCurrentkeyframe()->size.x, animator->GetCurrentkeyframe()->size.y, 0 };
+	return Vector3(transform->GetScale() * size);
+}
+
+void Player::SetCollider()
+{	
+	//Collider
+	collider = new Collider(context);
+	collider->SetCenter(transform->GetPosition());
+	collider->SetSize(GetSize());
+	collider->SetTransform(transform);
+	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+		LoseLife();
+	};
+}
+
+void Player::LoseLife()
+{
+	life--;
 }
 
 void Player::Update()
@@ -117,24 +135,22 @@ void Player::Update()
 
 	if (input->KeyPress(VK_RIGHT)) {
 		animator->SetCurrentAnimation("Move");
-		position.x += 0.07f;
+		position.x += 5.0f;
 		if (scale.x < 0) scale.x = -scale.x;
 	}
 	else if (input->KeyPress(VK_LEFT)) {
 		animator->SetCurrentAnimation("Move");
-		position.x -= 0.07f;
+		position.x -= 5.0f;
 		if (scale.x > 0) scale.x = -scale.x;
 	}
 	else if (input->KeyUp(VK_LEFT) || input->KeyUp(VK_RIGHT))
 		animator->SetCurrentAnimation("Idle");
+	position.x = Math::clamp(position.x, -x_clamp, x_clamp);
 
 	transform->SetPosition(position);
 	transform->SetScale(scale);
 
-	minBox = transform->GetPosition() - Vector3(100.0f, 100.0f, 0.0f);
-	maxBox = transform->GetPosition() + Vector3(100.0f, 100.0f, 0.0f);
-
-	boundbox->Update(minBox, maxBox);
+	collider->SetCenter(transform->GetPosition());
 	///////////////////////////////////////////
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
@@ -178,4 +194,10 @@ void Player::Render()
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
+
+	auto dw = context->GetSubsystem<DirectWrite>();
+	char tmp[1000] = { 0 };
+	itoa(life, tmp, 10);
+	dw->Text(reinterpret_cast<wchar_t*>(tmp), Vector2(0, 700), 100.0f, Color(1, 1, 0, 1));
+
 }

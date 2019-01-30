@@ -52,6 +52,7 @@ typedef unsigned int uint;
 #include "./Framework/Math/Vector3.h"
 #include "./Framework/Math/Matrix.h"
 #include "./Framework/Math/Color.h"
+#include "./Framework/Math/BoundBox.h"
 
 //MainSystem
 #include "./Framework/Core/Settings.h"
@@ -72,8 +73,10 @@ typedef unsigned int uint;
 #include "./Framework/Core/Subsystem/Input.h"
 #include "./Framework/Core/Subsystem/Audio.h"
 #include "./Framework/Core/Subsystem/Graphics.h"
+#include "./Framework/Core/Subsystem/DirectWrite.h"
 #include "./Framework/Core/Subsystem/ResourceManager.h"
 #include "./Framework/Core/Subsystem/SceneManager.h"
+#include "./Framework/Core/Subsystem/ColliderManager.h"
 
 //Wrapper Class
 #include "./Framework/Core/D3D11/IAStage/VertexBuffer.h"

@@ -58,7 +58,7 @@ void Transform::SetLocalPosition(const Vector3 & localPosition)
 
 void Transform::SetScale(const Vector3 & scale)
 {
-	if (GetScale() == scale) return;
+	//if (GetScale() == scale) return;
 	if (HasParent()) {
 		Vector3 parentScale = parent->GetScale();
 		Vector3 s = scale / parentScale;
