@@ -110,7 +110,7 @@ ID2D1SolidColorBrush * DirectWrite::RegisterBrush(const Color & color)
 		//brushes.push_back(make_pair(color, brush));
 		brushes.emplace_back(color, brush);
 	}
-	return nullptr;
+	return brush;
 }
 
 IDWriteTextFormat * DirectWrite::RegisterFormat(const wstring & fontName, const float & fontSize, const DWRITE_FONT_WEIGHT & fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)

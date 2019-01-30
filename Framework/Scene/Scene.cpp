@@ -43,36 +43,25 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
-	static Vector3 rotate;
-	if(input->KeyPress(VK_SPACE)) rotate.z += 0.2f;
-	rect->GetTransform()->SetRotation(rotate);
+	if (input->BtnDown(0)) { //마우스 충돌
+		Vector2 mousePos = input->GetMousePosition();
+		Vector3 mouseWorld = camera->ScreenToWorldPoint(mousePos);
 
-	Vector3 position = rect->GetTransform()->GetPosition();
-	if (input->KeyPress(VK_RIGHT)) {
-		position.x += 0.1f;
+		auto transform = rect->GetTransform();
+
+		bool bCheck = true;
+		bCheck &= (mouseWorld.x > transform->GetPosition().x - 14.0f);
+		bCheck &= (mouseWorld.x < transform->GetPosition().x + 14.0f);
+		bCheck &= (mouseWorld.x > transform->GetPosition().x - 19.0f);
+		bCheck &= (mouseWorld.x < transform->GetPosition().x + 19.0f);
+
+		if (bCheck) 
+			int a = 0;
 	}
-	rect->GetTransform()->SetPosition(position);
 
 	rect->Update();
 	rect1->Update();
 
-	if (input->KeyDown('Q')) bgm->Play();
-	else if (input->KeyDown('W')) bgm->Pause();
-	else if (input->KeyDown('E')) bgm->Stop();
-
-	///////////////////////////////////////////////
-	static float volume = 1.0f;
-	if (input->KeyDown('A')) volume -= 0.1f;
-	else if (input->KeyDown('S')) volume += 0.1f;
-
-	bgm->SetVolume(volume);
-
-	///////////////////////////////////////////////
-	static float pitch = 1.0f;
-	if (input->KeyDown('Z')) pitch += 0.1f;
-	else if (input->KeyDown('X')) pitch -= 0.1f;
-
-	bgm->SetPitch(pitch);
 	////////////////////////////////////////////////////////////////
 }
 
@@ -81,7 +70,7 @@ void Scene::Render()
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
 	rect->Render();
 	rect1->Render();
-
+	
 	auto dw = context->GetSubsystem<DirectWrite>();
 	dw->Text(L"Hello, DirectWrite!!", Vector2(0, 0));
 	dw->Text(L"수업끝!!", Vector2(100, 50), 50.0f);

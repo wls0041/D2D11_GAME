@@ -52,6 +52,7 @@ typedef unsigned int uint;
 #include "./Framework/Math/Vector3.h"
 #include "./Framework/Math/Matrix.h"
 #include "./Framework/Math/Color.h"
+#include "./Framework/Math/BoundBox.h"
 
 //MainSystem
 #include "./Framework/Core/Settings.h"

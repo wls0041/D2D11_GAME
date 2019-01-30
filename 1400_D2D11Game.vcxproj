@@ -164,6 +164,7 @@
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\Physics.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\SceneManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
     <ClCompile Include="Framework\Scene\Component\AudioSource.cpp" />
     <ClCompile Include="Framework\Scene\Component\Camera.cpp" />
+    <ClCompile Include="Framework\Scene\Component\Collider.cpp" />
     <ClCompile Include="Framework\Scene\Component\Transform.cpp" />
     <ClCompile Include="Framework\Scene\Scene.cpp" />
     <ClCompile Include="Framework\Utility\FileSystem.cpp" />
@@ -215,6 +217,7 @@
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
+    <ClInclude Include="Framework\Core\Subsystem\Physics.h" />
     <ClInclude Include="Framework\Core\Subsystem\ResourceManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\SceneManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />
@@ -233,6 +236,7 @@
     <ClInclude Include="Framework\Scene\Component\Animator.h" />
     <ClInclude Include="Framework\Scene\Component\AudioSource.h" />
     <ClInclude Include="Framework\Scene\Component\Camera.h" />
+    <ClInclude Include="Framework\Scene\Component\Collider.h" />
     <ClInclude Include="Framework\Scene\Component\Transform.h" />
     <ClInclude Include="Framework\Scene\Scene.h" />
     <ClInclude Include="Framework\Utility\FileSystem.h" />
