@@ -14,6 +14,7 @@ App::App()
 	context->RegisterSubsystem(new Graphics(context));
 	context->RegisterSubsystem(new DirectWrite(context));
 	context->RegisterSubsystem(new ResourceManager(context));
+	context->RegisterSubsystem(new ColliderManager(context));
 	context->RegisterSubsystem(new SceneManager(context));
 }
 

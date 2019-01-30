@@ -2,8 +2,9 @@
 #include "Rect.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
+#include "../Scene/Component/Collider.h"
 
-Rect::Rect(Context *context) : context(context)
+Rect::Rect(Context *context, const bool& bTest) : context(context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -33,9 +34,6 @@ Rect::Rect(Context *context) : context(context)
 
 	//Create Texture
 	texture = resourceMgr->Load<Texture>("metalslug.png");
-
-	//Set transform(scale, position, rotation, world)
-	transform = new Transform(context);
 
 	//Create Rasterizer State
 	{
@@ -83,10 +81,27 @@ Rect::Rect(Context *context) : context(context)
 	//animator->RegisterAnimation("Idle.xml");
 	animator->LoadFromFile("Player.xml");
 	animator->SetCurrentAnimation("Idle");
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	//Set transform(scale, position, rotation, world)
+	transform = new Transform(context);
+
+	//Collider
+	collider = new Collider(context);
+	if (bTest) collider->SetCenter({ 0, 0, 0 };
+	else { collider->SetCenter({ 100, 0, 0 }); }
+
+	//collider->SetCenter(transform->GetPosition());
+	collider->SetSize({ 28, 38, 1 });
+	collider->SetTransform(transform);
+	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+		assert(false);
+	};
 }
 
 Rect::~Rect()
 {
+	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "BoundBox.h"
+#include "../Core/D3D11/BasicData/Vertex.h"
 
 const BoundBox BoundBox::Transformed(const BoundBox &box, const Matrix &matrix)
 {

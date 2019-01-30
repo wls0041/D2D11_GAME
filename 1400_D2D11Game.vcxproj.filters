@@ -42,7 +42,7 @@
     <ClCompile Include="Framework\Math\Color.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
     <ClCompile Include="Framework\Scene\Component\Collider.cpp" />
-    <ClCompile Include="Framework\Core\Subsystem\Physics.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -90,7 +90,7 @@
     <ClInclude Include="Framework\Math\Color.h" />
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
     <ClInclude Include="Framework\Scene\Component\Collider.h" />
-    <ClInclude Include="Framework\Core\Subsystem\Physics.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

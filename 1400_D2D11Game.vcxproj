@@ -164,7 +164,7 @@
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
-    <ClCompile Include="Framework\Core\Subsystem\Physics.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\SceneManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
@@ -217,7 +217,7 @@
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
-    <ClInclude Include="Framework\Core\Subsystem\Physics.h" />
+    <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\ResourceManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\SceneManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Timer.h" />

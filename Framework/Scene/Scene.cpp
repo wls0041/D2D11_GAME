@@ -4,6 +4,7 @@
 #include "./Component/AudioSource.h"
 #include "../Rendering/Rect.h"
 #include "../Scene/Component/Transform.h"
+#include "./Component/Collider.h"
 
 Scene::Scene(class Context *context) : context(context)
 {
@@ -11,11 +12,15 @@ Scene::Scene(class Context *context) : context(context)
 	cameraBuffer = new ConstantBuffer(context);
 	cameraBuffer->Create<CameraData>();
 
-	rect = new Rect(context);
 	//rect->SetScale({ 1, 1, 1 });
-	rect1 = new Rect(context);
-	rect1->GetTransform()->SetPosition({ 50, 50, 0 });
-	rect1->GetTransform()->SetParent(rect->GetTransform());
+	rect = new Rect(context);
+	rect1 = new Rect(context, false);
+	rect1->GetTransform()->SetPosition({ 50, 0, 0 });
+	//rect1->GetTransform()->SetParent(rect->GetTransform());
+
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->RegisterCollider("Player", rect->GetCollider());
+	colliderMgr->RegisterCollider("Monster", rect1->GetCollider());
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
@@ -42,6 +47,14 @@ void Scene::Update()
 	cameraBuffer->Unmap();
 
 	auto input = context->GetSubsystem<Input>();
+
+	if (input->KeyPress(VK_RIGHT)) {
+		Vector3 pos = rect->GetTransform()->GetPosition();
+		pos.x += 10.0f;
+		rect->GetTransform()->SetPosition(pos);
+	}
+	auto colliderMgr = context->GetSubsystem <ColliderManager>();
+	colliderMgr->HitCheck_AABB("Player", "Monster");
 
 	if (input->BtnDown(0)) { //마우스 충돌
 		Vector2 mousePos = input->GetMousePosition();

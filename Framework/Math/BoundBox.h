@@ -8,7 +8,7 @@ public:
 public:
 	BoundBox();
 	BoundBox(const Vector3 &minBox, const Vector3 &maxBox);
-	BoundBox(const vector<VertexTexture> &vertices);
+	BoundBox(const vector<struct VertexTexture> &vertices);
 	virtual ~BoundBox();
 
 	const Vector3 &GetMin() const { return minBox; }
