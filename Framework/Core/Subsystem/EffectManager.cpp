@@ -43,6 +43,8 @@ void EffectManager::Update()
 
 	for (auto iter = effects.begin(); iter != effects.end();) { //resourceManager등록 안했다면. 사용 안하면 erase전에 delete해야함
 		auto effect = *iter;
+		effect->Update();
+
 		if (!effect->IsExist()) {
 			SAFE_DELETE(effect);
 			iter = effects.erase(iter); //iter -> 지우고 그 자리를 반환

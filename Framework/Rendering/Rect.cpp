@@ -4,19 +4,16 @@
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Rect::Rect(Context *context) : context(context)
+Rect::Rect(Context * context)
+	: context(context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 
-	//Create Vertex Data, Create Index Data
 	GeometryUtility::CreateQuad(geometry);
-
-	//create vertex buffer
 	vertexBuffer = new VertexBuffer(context);
 	vertexBuffer->Create<VertexTexture>(geometry.GetVertices());
 
-	//create index buffer
 	indexBuffer = new IndexBuffer(context);
 	indexBuffer->Create(geometry.GetIndices());
 
@@ -32,16 +29,17 @@ Rect::Rect(Context *context) : context(context)
 	worldBuffer = new ConstantBuffer(context);
 	worldBuffer->Create<WorldData>();
 
-	//Create Texture
 	texture = resourceMgr->Load<Texture>("metalslug.png");
+
+	transform = new Transform(context);
 
 	//Create Rasterizer State
 	{
 		D3D11_RASTERIZER_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
-		desc.FrontCounterClockwise = false; //앞면을 어떻게 판별할 것인가. false = 시계방향이 앞면
-		desc.CullMode = D3D11_CULL_NONE; //컬링. 원하지 않는 부분(BACK, FRONT, NONE)은 생략해 퍼포먼스를 높임
-		desc.FillMode = D3D11_FILL_SOLID; //WIREFRAME. 외곽선만 출력
+		desc.FrontCounterClockwise = false;
+		desc.CullMode = D3D11_CULL_NONE;
+		desc.FillMode = D3D11_FILL_WIREFRAME;
 
 		HRESULT hr = graphics->GetDevice()->CreateRasterizerState(&desc, &rsState);
 		assert(SUCCEEDED(hr));
@@ -51,58 +49,65 @@ Rect::Rect(Context *context) : context(context)
 	{
 		D3D11_BLEND_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_BLEND_DESC));
-		desc.AlphaToCoverageEnable = true; //alpha의 적용 범위
-		desc.IndependentBlendEnable = false; //여러 rendertarget을 사용할 경우 각각의 state의 설정을 따로 쓰겠는가. false면 0의 설정을 모두 적용
-		desc.RenderTarget[0].BlendEnable = false; //blend할 것인가
+		desc.AlphaToCoverageEnable = false;
+		desc.IndependentBlendEnable = false;
+		desc.RenderTarget[0].BlendEnable = true;
 
-
-		//일단 사용. 색들의 혼합
 		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 		desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD; //혼합공식에 나오는 두 색을 어떻게 섞을 것인가(두 개를 더하라)
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
 		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
 		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
 		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		//
 
-		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL; //그리는 곳에 주어진 색만 써라 
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 		HRESULT hr = graphics->GetDevice()->CreateBlendState(&desc, &blendState);
 		assert(SUCCEEDED(hr));
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////
+
 	animationBuffer = new ConstantBuffer(context);
 	animationBuffer->Create<AnimationData>();
 
 	animator = new Animator(context);
 
-	//animator->RegisterAnimation("Idle.xml");
 	animator->LoadFromFile("Player.xml");
 	animator->SetCurrentAnimation("Idle");
-	//////////////////////////////////////////////////////////////////////////////////////////
 
-	//Set transform(scale, position, rotation, world)
-	transform = new Transform(context);
+	/////////////////////////////////////////////////////////////////////
 
-	//Collider
 	collider = new Collider(context);
 	collider->SetTransform(transform);
-	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+	collider->Event = [this]()
+	{
 		assert(false);
 	};
+
+	//람다식, 람다함수, 무명함수
+	//[변수캡쳐](파라미터)->리턴타입 { 함수 구현부 }(넘길인자)
+
+	//변수캡쳐 : 현재 함수에서 사용하는 외부변수
+	// = 을 넣으면 해당함수의 모든 변수를 전부 사용
+	// & 을 넣으면 모든 변수를 참조로 받음
+	// 비워두면 아무것도 사용하지 않음
+	// 전역변수는 캠쳐할 필요가 없음
+
+	// 파라미터 : 함수에서 받을 인자 ex) Add(int a, int b);
+	// 리턴타입 : 리턴할 타입을 지정, 리턴값이 void 일때는 ->와 함께 생략가능
+	// 함수 구현부 : 함수 몸체
+	// 넘길인자 : 호출하는 함수에 넘겨줄 값 ex) Add(50, 70);
 }
 
 Rect::~Rect()
 {
-	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
-	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
-	SAFE_DELETE(vertexShader); 
+	SAFE_DELETE(vertexShader);
 	SAFE_DELETE(indexBuffer);
 	SAFE_DELETE(vertexBuffer);
 }
@@ -110,7 +115,7 @@ Rect::~Rect()
 void Rect::Update()
 {
 	collider->SetCenter(transform->GetPosition());
-	collider->SetSize({ 28,38,1 });
+	collider->SetSize({ 28, 38, 1 });
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
@@ -118,9 +123,9 @@ void Rect::Update()
 
 	///////////////////////////////////////////
 	auto input = context->GetSubsystem<Input>();
-	if (input->KeyPress(VK_RIGHT))
+	if (input->KeyDown(VK_RIGHT))
 		animator->SetCurrentAnimation("Run");
-	else if (input->KeyUp(VK_LEFT))
+	else if (input->KeyDown(VK_LEFT))
 		animator->SetCurrentAnimation("Idle");
 	///////////////////////////////////////////
 
@@ -140,25 +145,17 @@ void Rect::Render()
 	inputLayout->BindPipeline();
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
-	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
+	worldBuffer->BindPipeline(ShaderType::VS, 1);
 	animationBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();
 
-	//IA단계 세팅
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //정점을 어떻게 쓸것인가 -> 삼각형의 띠로 쓰겠다(정점을 공유하는 이어진 삼각형)
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//VS단계 세팅
+	//dc->RSSetState(rsState);
 
-	//RS단계 -> 기본 세팅 되어있음
-	dc->RSSetState(rsState);
-
-	//PS단계
-
-	//OM단계 -> back buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
 	dc->OMSetBlendState(blendState, nullptr, 0xff);
 
-	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
-	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
+	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0);
 }

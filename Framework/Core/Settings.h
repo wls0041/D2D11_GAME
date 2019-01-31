@@ -30,7 +30,7 @@ public:
 	void SetViewPort(D3D11_VIEWPORT viewport) { this->viewport = viewport; }
 
 private:
-	Settings() {}
+	Settings();
 	virtual ~Settings() {}
 
 private:

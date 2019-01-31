@@ -3,7 +3,7 @@
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 
-Effect::Effect(Context * context) : IResource(context), bExist(false)
+Effect::Effect(Context * context) : IResource(context), texture(nullptr), bExist(false)
 {
 	GeometryUtility::CreateQuad(geometry);
 	

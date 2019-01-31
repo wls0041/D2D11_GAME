@@ -41,19 +41,19 @@ const Vector3 Vector3::Cross(const Vector3 & lhs, const Vector3 & rhs)
 
 const Vector3 Vector3::Transform(const Vector3 & lhs, const Matrix & rhs)
 {
-	float num1 = lhs.x * rhs._11 + lhs.x * rhs._21 + lhs.x * rhs._31 + rhs._41;
-	float num2 = lhs.x * rhs._12 + lhs.x * rhs._22 + lhs.x * rhs._32 + rhs._42;
-	float num3 = lhs.x * rhs._13 + lhs.x * rhs._23 + lhs.x * rhs._33 + rhs._43;
+	float num1 = lhs.x * rhs._11 + lhs.y * rhs._21 + lhs.z * rhs._31 + rhs._41;
+	float num2 = lhs.x * rhs._12 + lhs.y * rhs._22 + lhs.z * rhs._32 + rhs._42;
+	float num3 = lhs.x * rhs._13 + lhs.y * rhs._23 + lhs.z * rhs._33 + rhs._43;
 
 	return Vector3(num1, num2, num3);
 }
 
 const Vector3 Vector3::TransformCoord(const Vector3 & lhs, const Matrix & rhs)
 {
-	float num1 = lhs.x * rhs._11 + lhs.x * rhs._21 + lhs.x * rhs._31 + rhs._41;
-	float num2 = lhs.x * rhs._12 + lhs.x * rhs._22 + lhs.x * rhs._32 + rhs._42;
-	float num3 = lhs.x * rhs._13 + lhs.x * rhs._23 + lhs.x * rhs._33 + rhs._43;
-	float num4 = lhs.x * rhs._14 + lhs.x * rhs._24 + lhs.x * rhs._34 + rhs._44;
+	float num1 = lhs.x * rhs._11 + lhs.y * rhs._21 + lhs.z * rhs._31 + rhs._41;
+	float num2 = lhs.x * rhs._12 + lhs.y * rhs._22 + lhs.z * rhs._32 + rhs._42;
+	float num3 = lhs.x * rhs._13 + lhs.y * rhs._23 + lhs.z * rhs._33 + rhs._43;
+	float num4 = lhs.x * rhs._14 + lhs.y * rhs._24 + lhs.z * rhs._34 + rhs._44;
 	
 	float factor = 1.0f / num4;
 

@@ -16,7 +16,6 @@ Scene::Scene(class Context *context) : context(context)
 	rect = new Rect(context);
 	rect1 = new Rect(context);
 	rect1->GetTransform()->SetPosition({ 50, 0, 0 });
-	//rect1->GetTransform()->SetParent(rect->GetTransform());
 
 	auto colliderMgr = context->GetSubsystem<ColliderManager>();
 	colliderMgr->RegisterCollider("Player", rect->GetCollider());
