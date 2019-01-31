@@ -1,19 +1,16 @@
 #pragma once
 
-class Ball
+class Block
 {
 public:
-	Ball(class Context *context);
-	virtual ~Ball();
+	Block(class Context *context);
+	virtual ~Block();
 
 	class Transform *GetTransform() const { return transform; }
 	class Collider *GetCollider() const { return collider; }
 
 	void SetCollider();
-
-	void SetMoveDir(const Vector3 &moveDir) { this->moveDir = moveDir; }
-	void SetCurCheck(const bool &curCheck_X) { this->curCheck_X = curCheck_X; }
-	void InvMoveDir();
+	void SetOffset(const Vector2 &offset) { this->offset = offset; }
 
 	void Update();
 	void Render();
@@ -41,11 +38,6 @@ private:
 
 	ConstantBuffer *spriteBuffer;
 
-	Vector3 moveDir; //공의 x, y움직임이 양방향, 음방향인지 결정
-	Vector3 tempPos;
-	float jumpSpeed;
-	float jumpAccel;
-	bool curCheck_X;
-	bool bRepos;
-	bool canMoveY;
+	int count;
+	Vector2 offset;
 };

@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Player.h"
+#include "Block.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Player::Player(Context *context) : context(context), life(2000), x_clamp(0)
+Block::Block(Context *context) : context(context), offset(0, 0), count(10000)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -21,10 +21,10 @@ Player::Player(Context *context) : context(context), life(2000), x_clamp(0)
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	vertexShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	pixelShader->Create("../_Assets/Shader/Sprite.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -33,14 +33,14 @@ Player::Player(Context *context) : context(context), life(2000), x_clamp(0)
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Pang_Player.png");
+	texture = resourceMgr->Load<Texture>("Pang_Back.png");
 
 	//Create Rasterizer State
 	{
 		D3D11_RASTERIZER_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
 		desc.FrontCounterClockwise = false; //앞면을 어떻게 판별할 것인가. false = 시계방향이 앞면
-		desc.CullMode = D3D11_CULL_NONE; //컬링. 원하지 않는 부분(BACK, FRONT, NONE)은 생략해 퍼포먼스를 높임
+		desc.CullMode = D3D11_CULL_NONE; //컬링. 원하지 않는 부분(Back, FRONT, NONE)은 생략해 퍼포먼스를 높임
 		desc.FillMode = D3D11_FILL_SOLID; //WIREFRAME. 외곽선만 출력
 
 		HRESULT hr = graphics->GetDevice()->CreateRasterizerState(&desc, &rsState);
@@ -73,27 +73,19 @@ Player::Player(Context *context) : context(context), life(2000), x_clamp(0)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
-	animationBuffer = new ConstantBuffer(context);
-	animationBuffer->Create<AnimationData>();
-
-	animator = new Animator(context);
-
-	//animator->RegisterAnimation("Idle.xml");
-	animator->LoadFromFile("Pang.xml");
-	animator->SetCurrentAnimation("Idle");
+	spriteBuffer = new ConstantBuffer(context);
+	spriteBuffer->Create<AnimationData>();
 
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
 
-	x_clamp = (1280 - 150) * 0.5f;
 }
 
-Player::~Player()
+Block::~Block()
 {
 	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
-	SAFE_DELETE(animator);
-	SAFE_DELETE(animationBuffer);
+	SAFE_DELETE(spriteBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
 	SAFE_DELETE(pixelShader);
@@ -102,79 +94,42 @@ Player::~Player()
 	SAFE_DELETE(vertexBuffer);
 }
 
-Vector3 Player::GetSize()
-{
-	Vector3 size = { animator->GetCurrentkeyframe()->size.x, animator->GetCurrentkeyframe()->size.y, 0 };
-	return Vector3(transform->GetScale() * size);
-}
-
-void Player::SetCollider()
-{	
-	//Collider
+void Block::SetCollider()
+{	//Collider
 	collider = new Collider(context);
 	collider->SetCenter(transform->GetPosition());
-	collider->SetSize(GetSize());
+	collider->SetSize(transform->GetScale());
 	collider->SetTransform(transform);
 	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		LoseLife();
+		count--;
 	};
 }
 
-void Player::LoseLife()
+void Block::Update()
 {
-	life--;
-}
-
-void Player::Update()
-{
-	///////////////////////////////////////////
-	auto input = context->GetSubsystem<Input>();
-
-	Vector3 position = transform->GetPosition();
-	Vector3 scale = transform->GetScale();
-
-	if (input->KeyPress(VK_RIGHT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x += 5.0f;
-		if (scale.x < 0) scale.x = -scale.x;
-	}
-	else if (input->KeyPress(VK_LEFT)) {
-		animator->SetCurrentAnimation("Move");
-		position.x -= 5.0f;
-		if (scale.x > 0) scale.x = -scale.x;
-	}
-	else if (input->KeyUp(VK_LEFT) || input->KeyUp(VK_RIGHT))
-		animator->SetCurrentAnimation("Idle");
-	position.x = Math::clamp(position.x, -x_clamp, x_clamp);
-
-	transform->SetPosition(position);
-	transform->SetScale(scale);
-
-	collider->SetCenter(position);
-	///////////////////////////////////////////
-
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
 
-	animator->Update();
-
-	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
+	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
-	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->SpriteSize = animator->GetCurrentkeyframe()->size;
-	animationBuffer->Unmap();
+	animData->SpriteOffset = offset;
+	animData->SpriteSize = Vector2(384, 208);
+	spriteBuffer->Unmap();
 }
 
-void Player::Render()
+void Block::Render()
 {
+	auto dw = context->GetSubsystem<DirectWrite>();
+	dw->Text(to_wstring(count), Vector2(900, 700), 100.0f, Color(1, 1, 0, 1));
+
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
 	inputLayout->BindPipeline();
 	vertexShader->BindPipeline();
 	pixelShader->BindPipeline();
 	worldBuffer->BindPipeline(ShaderType::VS, 1); //0 : camera
-	animationBuffer->BindPipeline(ShaderType::VS, 2);
+	spriteBuffer->BindPipeline(ShaderType::VS, 2);
 	texture->BindPipeline(ShaderType::PS, 0);
 
 	auto dc = graphics->GetDeviceContext();
@@ -189,7 +144,7 @@ void Player::Render()
 
 	//PS단계
 
-	//OM단계 -> back buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
+	//OM단계 -> Block buffer를 가진 graphic클래스에서 OMSet을 해주고 있음
 	dc->OMSetBlendState(blendState, nullptr, 0xff);
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)

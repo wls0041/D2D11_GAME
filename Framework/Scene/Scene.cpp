@@ -5,6 +5,7 @@
 #include "../Rendering/Player.h"
 #include "../Rendering/Ball.h"
 #include "../Rendering/Back.h"
+#include "../Rendering/Block.h"
 #include "../Scene/Component/Transform.h"
 #include "./Component/Collider.h"
 
@@ -31,6 +32,12 @@ Scene::Scene(class Context *context) : context(context)
 	back->SetOffset({ 8, 1520 });
 	back->SetCollider();
 
+	block = new Block(context);
+	block->GetTransform()->SetScale({ 100, 50, 1 });
+	block->GetTransform()->SetPosition({ 0, 0, 0 });
+	block->SetOffset({ 8, 1520 });
+	block->SetCollider();
+
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
 	bgm->SetAudioClip("Stage1.mp3");
@@ -40,12 +47,14 @@ Scene::Scene(class Context *context) : context(context)
 	colliderMgr->RegisterCollider("Player", player->GetCollider());
 	colliderMgr->RegisterCollider("Ball", ball->GetCollider());
 	colliderMgr->RegisterCollider("Back", back->GetCollider());
+	colliderMgr->RegisterCollider("Block", block->GetCollider());
 }
 
 Scene::~Scene()
 {
 	for (auto source : sources) SAFE_DELETE(source);
 
+	SAFE_DELETE(back);
 	SAFE_DELETE(ball);
 	SAFE_DELETE(player);
 	SAFE_DELETE(cameraBuffer);
@@ -62,18 +71,19 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
-	auto colliderMgr = context->GetSubsystem <ColliderManager>();
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
 	ball->SetCurCheck(true);
 	colliderMgr->HitCheck_AABB("Back", "Ball", 2); //Ball이 배경 밖으로 나가는가(x측)
-
 	ball->SetCurCheck(false);
 	colliderMgr->HitCheck_AABB("Back", "Ball", 3); //Ball이 배경 밖으로 나가는가(y축)
 
 	colliderMgr->HitCheck_AABB("Ball", "Player", 1); //Ball Player충돌
+	colliderMgr->HitCheck_AABB("Ball", "Block", 1); //Ball Player충돌
 
 	ball->Update();
 	player->Update();
 	back->Update();
+	block->Update();
 }
 
 void Scene::Render()
@@ -81,6 +91,7 @@ void Scene::Render()
 	cameraBuffer->BindPipeline(ShaderType::VS, 0);
 	ball->Render();
 	player->Render();
+	block->Render();
 
 	auto dw = context->GetSubsystem<DirectWrite>();
 	dw->Text(to_wstring(player->GetLife()), Vector2(0, 700), 100.0f, Color(1, 1, 0, 1));

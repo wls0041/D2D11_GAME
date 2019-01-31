@@ -177,6 +177,7 @@
     <ClCompile Include="Framework\Math\Vector3.cpp" />
     <ClCompile Include="Framework\Rendering\Back.cpp" />
     <ClCompile Include="Framework\Rendering\Ball.cpp" />
+    <ClCompile Include="Framework\Rendering\Block.cpp" />
     <ClCompile Include="Framework\Rendering\Player.cpp" />
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
     <ClCompile Include="Framework\Resource\Animation.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="Framework\Math\Vector3.h" />
     <ClInclude Include="Framework\Rendering\Back.h" />
     <ClInclude Include="Framework\Rendering\Ball.h" />
+    <ClInclude Include="Framework\Rendering\Block.h" />
     <ClInclude Include="Framework\Rendering\Player.h" />
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\Animation.h" />

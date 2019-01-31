@@ -4,7 +4,7 @@
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Ball::Ball(Context *context) : context(context), moveDir(0.0f, 0.0f, 0.0f), jumpSpeed(12.0f), jumpAccel(0.4f), curCheck_X(true)
+Ball::Ball(Context *context) : context(context), moveDir(0.0f), jumpSpeed(12.0f), jumpAccel(0.5f), tempPos(0.0f), curCheck_X(true), bRepos(false), canMoveY(true)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -101,27 +101,46 @@ void Ball::SetCollider()
 	collider->SetSize(transform->GetScale());
 	collider->SetTransform(transform);
 	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		InvMoveDir();
-		if (curCheck_X == false && transform->GetPosition().y - transform->GetScale().y * 0.5f < 50.0f) jumpSpeed = 18.9f;
+		InvMoveDir();	
 	};
+}
+
+void Ball::InvMoveDir()
+{
+	Vector3 position = transform->GetPosition();
+
+	//충돌 후 한틱의 움직임이 있어 Collision 버그가 발생. 한틱의 움직임을 되돌림
+	curCheck_X == true ? moveDir.x = -moveDir.x : moveDir.y = -moveDir.y; 
+	curCheck_X == true ? position.x += 4.0f * moveDir.x : position.y += jumpSpeed * moveDir.y; //canMoveY = false; 
+	//if (curCheck_X == false && moveDir.y < 0) 
+	//	bRepos = true;
+
+	transform->SetPosition(position);
+	collider->SetCenter(position);
+
 }
 
 void Ball::Update()
 {
-	//////////////////////공의 이동////////////////////////
-	if (moveDir.y > 0 && jumpSpeed <= 0.0f) {
-		curCheck_X = false;
-		jumpSpeed = 0;
-		InvMoveDir();
-	}
-	moveDir.y > 0 ? jumpSpeed -= jumpAccel : jumpSpeed += jumpAccel;
+	//if (moveDir.y < 0 && jumpSpeed <= 0.0f) {
+	//	curCheck_X = false;
+	//	jumpSpeed = -jumpSpeed;
+	//	InvMoveDir();
+	//}
+	//float speed = transform->GetPosition.y
+
+
+	////////////////////공의 이동////////////////////////
+	//jumpSpeed < 0 ? moveDir.y = -1.0f : moveDir.y = 1.0f;
+	jumpSpeed -= jumpAccel * moveDir.y;
 
 	Vector3 position = transform->GetPosition();
-	position.x += 3.5f * moveDir.x;
+	position.x += 4.0f * moveDir.x;
 	position.y += jumpSpeed * moveDir.y;
 
+	collider->SetCenter(position);
+
 	transform->SetPosition(position);
-	collider->SetCenter(transform->GetPosition());
 
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();

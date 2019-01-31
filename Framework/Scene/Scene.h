@@ -21,6 +21,7 @@ private:
 	class Player *player;
 	class Back *back;
 	class Ball *ball;
+	class Block *block;
 
 	class AudioSource *bgm;
 	vector<class AudioSource*> sources;
