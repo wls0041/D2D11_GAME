@@ -162,7 +162,7 @@ void Player::Update()
 	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
 	animData->TextureSize = texture->GetSize();
 	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->Spritesize = animator->GetCurrentkeyframe()->size;
+	animData->SpriteSize = animator->GetCurrentkeyframe()->size;
 	animationBuffer->Unmap();
 }
 
@@ -194,10 +194,4 @@ void Player::Render()
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
-
-	auto dw = context->GetSubsystem<DirectWrite>();
-	char tmp[1000] = { 0 };
-	itoa(life, tmp, 10);
-	dw->Text(reinterpret_cast<wchar_t*>(tmp), Vector2(0, 700), 100.0f, Color(1, 1, 0, 1));
-
 }

@@ -46,6 +46,8 @@
     <ClCompile Include="Framework\Rendering\Back.cpp" />
     <ClCompile Include="Framework\Scene\Component\Collider.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
+    <ClCompile Include="Framework\Resource\Effect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -97,6 +99,8 @@
     <ClInclude Include="Framework\Rendering\Back.h" />
     <ClInclude Include="Framework\Scene\Component\Collider.h" />
     <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />
+    <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
+    <ClInclude Include="Framework\Resource\Effect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

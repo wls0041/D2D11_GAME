@@ -16,6 +16,7 @@ App::App()
 	context->RegisterSubsystem(new ResourceManager(context));
 	context->RegisterSubsystem(new ColliderManager(context));
 	context->RegisterSubsystem(new SceneManager(context));
+	context->RegisterSubsystem(new EffectManager(context));
 }
 
 App::~App()

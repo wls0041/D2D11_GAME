@@ -102,7 +102,7 @@ void Ball::SetCollider()
 	collider->SetTransform(transform);
 	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
 		InvMoveDir();
-		if (curCheck_X == false && transform->GetPosition().y - transform->GetScale().y * 0.5f < 50.0f) jumpSpeed = 18.9;
+		if (curCheck_X == false && transform->GetPosition().y - transform->GetScale().y * 0.5f < 50.0f) jumpSpeed = 18.9f;
 	};
 }
 
@@ -130,7 +130,7 @@ void Ball::Update()
 	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
 	animData->SpriteOffset = Vector2(0, 5);
-	animData->Spritesize = Vector2(50, 42);
+	animData->SpriteSize = Vector2(50, 42);
 	spriteBuffer->Unmap();
 }
 

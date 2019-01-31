@@ -112,7 +112,7 @@ void Back::Update()
 	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
 	animData->SpriteOffset = offset;
-	animData->Spritesize = Vector2(384, 208);
+	animData->SpriteSize = Vector2(384, 208);
 	spriteBuffer->Unmap();
 }
 

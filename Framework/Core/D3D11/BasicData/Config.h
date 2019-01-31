@@ -23,6 +23,6 @@ struct ColorData {
 struct AnimationData {
 	Vector2 TextureSize;
 	Vector2 SpriteOffset;
-	Vector2 Spritesize;
+	Vector2 SpriteSize;
 	float Padding[2]; //공간맞추기 24byte + 8byte
 };

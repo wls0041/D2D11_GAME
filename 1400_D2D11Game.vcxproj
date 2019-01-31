@@ -164,6 +164,7 @@
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\SceneManager.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
     <ClCompile Include="Framework\Resource\Animation.cpp" />
     <ClCompile Include="Framework\Resource\AudioClip.cpp" />
+    <ClCompile Include="Framework\Resource\Effect.cpp" />
     <ClCompile Include="Framework\Resource\Material.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
@@ -219,6 +221,7 @@
     <ClInclude Include="Framework\Core\Subsystem\Audio.h" />
     <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
+    <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
     <ClInclude Include="Framework\Core\Subsystem\ResourceManager.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\Animation.h" />
     <ClInclude Include="Framework\Resource\AudioClip.h" />
+    <ClInclude Include="Framework\Resource\Effect.h" />
     <ClInclude Include="Framework\Resource\IResource.h" />
     <ClInclude Include="Framework\Resource\Material.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />

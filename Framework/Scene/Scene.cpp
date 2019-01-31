@@ -74,7 +74,6 @@ void Scene::Update()
 	ball->Update();
 	player->Update();
 	back->Update();
-
 }
 
 void Scene::Render()
