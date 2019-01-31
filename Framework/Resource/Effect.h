@@ -12,7 +12,7 @@ public:
 
 	const bool &IsExist() const { return bExist; }
 
-	void SetIsExist(const bool &bExist);
+	void SetIsExist(const bool &bExist) { this->bExist = bExist; }
 	void SetPosition(const Vector3 &position);
 	void SetScale(const Vector3 &scale);
 	void SetTexture(const string &filePath);

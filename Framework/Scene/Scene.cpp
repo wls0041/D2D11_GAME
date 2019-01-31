@@ -58,16 +58,19 @@ void Scene::Update()
 		Vector2 mousePos = input->GetMousePosition();
 		Vector3 mouseWorld = camera->ScreenToWorldPoint(mousePos);
 
-		auto transform = rect->GetTransform();
+		auto effectMgr = context->GetSubsystem<EffectManager>();
+		effectMgr->AddEffect("metalslug.png", "Idle.xml", mouseWorld);
 
-		bool bCheck = true;
-		bCheck &= (mouseWorld.x > transform->GetPosition().x - 14.0f);
-		bCheck &= (mouseWorld.x < transform->GetPosition().x + 14.0f);
-		bCheck &= (mouseWorld.x > transform->GetPosition().x - 19.0f);
-		bCheck &= (mouseWorld.x < transform->GetPosition().x + 19.0f);
+		//auto transform = rect->GetTransform();
 
-		if (bCheck) 
-			int a = 0;
+		//bool bCheck = true;
+		//bCheck &= (mouseWorld.x > transform->GetPosition().x - 14.0f);
+		//bCheck &= (mouseWorld.x < transform->GetPosition().x + 14.0f);
+		//bCheck &= (mouseWorld.x > transform->GetPosition().x - 19.0f);
+		//bCheck &= (mouseWorld.x < transform->GetPosition().x + 19.0f);
+
+		//if (bCheck) 
+		//	int a = 0;
 	}
 
 	rect->Update();

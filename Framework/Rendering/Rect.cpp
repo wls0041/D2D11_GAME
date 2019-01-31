@@ -129,7 +129,7 @@ void Rect::Update()
 	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
 	animData->TextureSize = texture->GetSize();
 	animData->SpriteOffset = animator->GetCurrentkeyframe()->offset;
-	animData->Spritesize = animator->GetCurrentkeyframe()->size;
+	animData->SpriteSize = animator->GetCurrentkeyframe()->size;
 	animationBuffer->Unmap();
 }
 

@@ -19,4 +19,5 @@ private:
 	class Input *input;
 	class Audio *audio;
 	class SceneManager *sceneMgr;
+	class EffectManager *effectMgr;
 };

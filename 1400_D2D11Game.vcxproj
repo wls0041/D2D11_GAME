@@ -163,6 +163,7 @@
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\VertexShader.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Audio.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\DirectWrite.cpp" />
+    <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ColliderManager.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\ResourceManager.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\VertexShader.h" />
     <ClInclude Include="Framework\Core\Subsystem\Audio.h" />
     <ClInclude Include="Framework\Core\Subsystem\DirectWrite.h" />
+    <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
     <ClInclude Include="Framework\Core\Subsystem\Input.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
     <ClInclude Include="Framework\Core\Subsystem\ColliderManager.h" />

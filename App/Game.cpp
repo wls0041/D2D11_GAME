@@ -8,6 +8,7 @@ void Game::Initialize()
 	input = context->GetSubsystem<Input>();
 	audio = context->GetSubsystem<Audio>();
 	sceneMgr = context->GetSubsystem<SceneManager>();
+	effectMgr = context->GetSubsystem<EffectManager>();
 }
 
 void Game::Update()
@@ -15,11 +16,13 @@ void Game::Update()
 	timer->Update();
 	input->Update();
 	audio->Update();
+	effectMgr->Update();
 	sceneMgr->Update();
 }
 
 void Game::Render()
 {
+	effectMgr->Render();
 	sceneMgr->Render();
 }
 
