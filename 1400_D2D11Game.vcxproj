@@ -177,6 +177,7 @@
     <ClCompile Include="Framework\Rendering\Rect.cpp" />
     <ClCompile Include="Framework\Resource\Animation.cpp" />
     <ClCompile Include="Framework\Resource\AudioClip.cpp" />
+    <ClCompile Include="Framework\Resource\Effect.cpp" />
     <ClCompile Include="Framework\Resource\Material.cpp" />
     <ClCompile Include="Framework\Resource\Texture.cpp" />
     <ClCompile Include="Framework\Scene\Component\Animator.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="Framework\Rendering\Rect.h" />
     <ClInclude Include="Framework\Resource\Animation.h" />
     <ClInclude Include="Framework\Resource\AudioClip.h" />
+    <ClInclude Include="Framework\Resource\Effect.h" />
     <ClInclude Include="Framework\Resource\IResource.h" />
     <ClInclude Include="Framework\Resource\Material.h" />
     <ClInclude Include="Framework\Resource\Texture.h" />

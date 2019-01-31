@@ -4,7 +4,7 @@
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Rect::Rect(Context *context, const bool& bTest) : context(context)
+Rect::Rect(Context *context) : context(context)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -88,11 +88,6 @@ Rect::Rect(Context *context, const bool& bTest) : context(context)
 
 	//Collider
 	collider = new Collider(context);
-	if (bTest) collider->SetCenter({ 0, 0, 0 };
-	else { collider->SetCenter({ 100, 0, 0 }); }
-
-	//collider->SetCenter(transform->GetPosition());
-	collider->SetSize({ 28, 38, 1 });
 	collider->SetTransform(transform);
 	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
 		assert(false);
@@ -114,6 +109,9 @@ Rect::~Rect()
 
 void Rect::Update()
 {
+	collider->SetCenter(transform->GetPosition());
+	collider->SetSize({ 28,38,1 });
+
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();

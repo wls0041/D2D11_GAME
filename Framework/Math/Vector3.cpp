@@ -16,13 +16,13 @@ const Vector3 Vector3::NegInfinity(-numeric_limits<float>::infinity());
 const float Vector3::Distance(const Vector3 & lhs, const Vector3 & rhs)
 {
 	Vector3 delta = lhs - rhs;
-	return sqrt(pow(delta.x, 2) + (delta.y, 2) + (delta.z, 2));
+	return sqrt(pow(delta.x, 2) + pow(delta.y, 2) + pow(delta.z, 2));
 }
 
 const float Vector3::DistanceSq(const Vector3 & lhs, const Vector3 & rhs)
 {
 	Vector3 delta = lhs - rhs;
-	return pow(delta.x, 2) + (delta.y, 2) + (delta.z, 2);
+	return pow(delta.x, 2) + pow(delta.y, 2) + pow(delta.z, 2);
 }
 
 const float Vector3::Dot(const Vector3 & lhs, const Vector3 & rhs)

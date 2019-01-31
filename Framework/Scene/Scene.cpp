@@ -14,7 +14,7 @@ Scene::Scene(class Context *context) : context(context)
 
 	//rect->SetScale({ 1, 1, 1 });
 	rect = new Rect(context);
-	rect1 = new Rect(context, false);
+	rect1 = new Rect(context);
 	rect1->GetTransform()->SetPosition({ 50, 0, 0 });
 	//rect1->GetTransform()->SetParent(rect->GetTransform());
 
@@ -53,8 +53,6 @@ void Scene::Update()
 		pos.x += 10.0f;
 		rect->GetTransform()->SetPosition(pos);
 	}
-	auto colliderMgr = context->GetSubsystem <ColliderManager>();
-	colliderMgr->HitCheck_AABB("Player", "Monster");
 
 	if (input->BtnDown(0)) { //마우스 충돌
 		Vector2 mousePos = input->GetMousePosition();
@@ -76,6 +74,9 @@ void Scene::Update()
 	rect1->Update();
 
 	////////////////////////////////////////////////////////////////
+
+	auto colliderMgr = context->GetSubsystem <ColliderManager>();
+	colliderMgr->HitCheck_AABB("Player", "Monster");
 }
 
 void Scene::Render()

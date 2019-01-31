@@ -10,8 +10,8 @@ public:
 	static ResourceType DeduceResourceType();
 
 public:
-	IResource(class Context *context) : context(context) {
-
+	IResource(class Context *context) : context(context), name(""), filePath(""), resourceType(ResourceType::Unknown)  {
+		resourceMgr = context->GetSubsystem<class ResourceManager>();
 	}
 	virtual ~IResource() {}
 
@@ -26,10 +26,10 @@ public:
 	virtual void SaveToFile(const string &filePath) = 0;
 	virtual void LoadFromFile(const string &filePath) = 0;
 
-
 protected:
 	class Context *context;
-	
+	class ResourceManager *resourceMgr;
+
 	string name;
 	string filePath;
 	ResourceType resourceType;

@@ -3,7 +3,7 @@
 class Rect
 {
 public:
-	Rect(class Context *context, const bool& bTest = true);
+	Rect(class Context *context);
 	virtual ~Rect();
 
 	class Transform *GetTransform() const { return transform; }
