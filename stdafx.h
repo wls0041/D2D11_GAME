@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <assert.h>
 #include <time.h>
+#include <string>
 
 //STL
 #include <vector>

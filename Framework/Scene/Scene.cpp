@@ -84,9 +84,7 @@ void Scene::Render()
 	player->Render();
 
 	auto dw = context->GetSubsystem<DirectWrite>();
-	char tmp[1000] = { 0 };
-	itoa(player->GetLife(), tmp, 10); 
-	dw->Text(reinterpret_cast<wchar_t*>(tmp), Vector2(0, 700), 100.0f, Color(1, 1, 0, 1));
+	dw->Text(to_wstring(player->GetLife()), Vector2(0, 700), 100.0f, Color(1, 1, 0, 1));
 	
 	back->Render();
 }
