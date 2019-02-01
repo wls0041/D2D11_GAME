@@ -86,6 +86,7 @@ typedef unsigned int uint;
 #include "./Framework/Core/D3D11/ShaderStage/VertexShader.h"
 #include "./Framework/Core/D3D11/ShaderStage/PixelShader.h"
 #include "./Framework/Core/D3D11/ShaderStage/ConstantBuffer.h"
+#include "./Framework/Core/D3D11/OMStage/RenderTexture.h"
 
 //Resource
 #include "./Framework/Resource/Texture.h"

@@ -62,9 +62,9 @@ const Vector3 Vector3::TransformCoord(const Vector3 & lhs, const Matrix & rhs)
 
 const Vector3 Vector3::TransformNormal(const Vector3 & lhs, const Matrix & rhs)
 {
-	float num1 = lhs.x * rhs._11 + lhs.x * rhs._21 + lhs.x * rhs._31;
-	float num2 = lhs.x * rhs._12 + lhs.x * rhs._22 + lhs.x * rhs._32;
-	float num3 = lhs.x * rhs._13 + lhs.x * rhs._23 + lhs.x * rhs._33;
+	float num1 = lhs.x * rhs._11 + lhs.y * rhs._21 + lhs.z * rhs._31;
+	float num2 = lhs.x * rhs._12 + lhs.y * rhs._22 + lhs.z * rhs._32;
+	float num3 = lhs.x * rhs._13 + lhs.y * rhs._23 + lhs.z * rhs._33;
 
 	return Vector3(num1, num2, num3);
 }

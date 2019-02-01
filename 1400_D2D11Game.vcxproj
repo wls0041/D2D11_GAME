@@ -157,6 +157,7 @@
     <ClCompile Include="Framework\Core\D3D11\IAStage\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\InputLayout.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\VertexBuffer.cpp" />
+    <ClCompile Include="Framework\Core\D3D11\OMStage\RenderTexture.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\BaseShader.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\ShaderStage\PixelShader.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Framework\Core\D3D11\IAStage\IndexBuffer.h" />
     <ClInclude Include="Framework\Core\D3D11\IAStage\InputLayout.h" />
     <ClInclude Include="Framework\Core\D3D11\IAStage\VertexBuffer.h" />
+    <ClInclude Include="Framework\Core\D3D11\OMStage\RenderTexture.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\BaseShader.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\ConstantBuffer.h" />
     <ClInclude Include="Framework\Core\D3D11\ShaderStage\PixelShader.h" />
