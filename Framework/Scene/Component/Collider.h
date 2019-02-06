@@ -15,11 +15,14 @@ public:
 	void SetCenter(const Vector3 &center) { this->center = center; }
 	void SetSize(const Vector3 &size) { this->size = size; }
 
-	const bool AABB(Collider *collider, const int &caseNum);
+	const bool AABB(Collider* collider);
+	const CircleCheck AABB_Circle(Collider *collider, const CheckCase &caseNum);
+
 	void Update();
 
 public:
 	function<void()> Event; //함수 포인터를 이용. 등록된 함수를 실행
+	function<void(const CircleCheck &check, Collider *opponent)> EventCircle; //함수 포인터를 이용. 등록된 함수를 실행
 
 private:
 	class Context *context;

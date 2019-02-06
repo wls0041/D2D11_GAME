@@ -1,11 +1,10 @@
 #include "stdafx.h"
-#include "Player.h"
+#include "Bullet.h"
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
-#include "Bullet.h"
 
-Player::Player(Context *context) : context(context), life(2000), bBullet(false), bDie(false), x_clamp(0), time(8)
+Bullet::Bullet(Context *context) : context(context), bExist(false)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -22,10 +21,10 @@ Player::Player(Context *context) : context(context), life(2000), bBullet(false),
 	indexBuffer->Create(geometry.GetIndices());
 
 	vertexShader = new VertexShader(context);
-	vertexShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	vertexShader->Create("../_Assets/Shader/Pang/Animation_Bullet.hlsl");
 
 	pixelShader = new PixelShader(context);
-	pixelShader->Create("../_Assets/Shader/Pang/Animation_Player.hlsl");
+	pixelShader->Create("../_Assets/Shader/Pang/Animation_Bullet.hlsl");
 
 	inputLayout = new InputLayout(context);
 	inputLayout->Create(vertexShader->GetBlob());
@@ -34,7 +33,10 @@ Player::Player(Context *context) : context(context), life(2000), bBullet(false),
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Pang_Player.png");
+	texture = resourceMgr->Load<Texture>("Pang_Item.png");
+
+	//Set transform(scale, position, rotation, world)
+	transform = new Transform(context);
 
 	//Create Rasterizer State
 	{
@@ -80,20 +82,16 @@ Player::Player(Context *context) : context(context), life(2000), bBullet(false),
 	animator = new Animator(context);
 
 	//animator->RegisterAnimation("Idle.xml");
-	animator->LoadFromFile("Pang_Player.xml");
-	animator->SetCurrentAnimation("Idle");
-
-	//Set transform(scale, position, rotation, world)
-	transform = new Transform(context);
-
-	x_clamp = (1280.0f - 150.0f) * 0.5f;
+	animator->LoadFromFile("Pang_Bullet.xml");
+	animator->SetCurrentAnimation("Wire");
 }
 
-Player::~Player()
+Bullet::~Bullet()
 {
-	SAFE_DELETE(collider);
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->ClearCollider("Bullet");
+
 	SAFE_DELETE(transform);
-	SAFE_DELETE(animator);
 	SAFE_DELETE(animationBuffer);
 	SAFE_DELETE(worldBuffer);
 	SAFE_DELETE(inputLayout);
@@ -103,102 +101,46 @@ Player::~Player()
 	SAFE_DELETE(vertexBuffer);
 }
 
-
-const Vector3 & Player::GetSize()
+const Vector3 & Bullet::GetSize()
 {
 	Vector3 size = { animator->GetCurrentkeyframe()->size.x, animator->GetCurrentkeyframe()->size.y, 0 };
 	return Vector3(transform->GetScale() * size);
 }
 
-void Player::SetCollider()
-{	
+void Bullet::SetCollider()
+{
+	Vector3 scale = GetSize();
+	Vector3 position = transform->GetPosition();
+	position.y += scale.y * 0.5f;
+
 	//Collider
 	collider = new Collider(context);
-	collider->SetCenter(transform->GetPosition());
-	collider->SetSize(GetSize());
-	collider->SetTransform(transform);
-	collider->EventCircle = [this](const CircleCheck &check, Collider *opponent) { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		LoseLife();
-		bDie = true;
-	};
-}
-
-void Player::LoseLife()
-{
-	life--;
-}
-
-void Player::ShootBullet()
-{
-	Vector3 position = transform->GetPosition();
-
-	bullet = new Bullet(context);
-	bullet->GetTransform()->SetScale({ 2.0f, 3.7f, 1 });
-	bullet->GetTransform()->SetPosition({ position.x, position.y - GetSize().y * 0.5f, 0 });
-	bullet->SetCollider();
-
-	bullet->SetExist(true);
-	bBullet = true;
-}
-
-void Player::Update()
-{
-	///////////////////////////////////////////
-	auto input = context->GetSubsystem<Input>();
-
-	Vector3 position = transform->GetPosition();
-	Vector3 scale = transform->GetScale();
-	bool bShoot = false;
-	time++;
-
-	if (input->KeyDown(VK_SPACE) && !bBullet) { //충분한 사격모션
-		animator->SetCurrentAnimation("Shoot");
-		bShoot = true;
-		time = 0;
-	}
-	if (time > 8) {
-		if (input->KeyPress(VK_RIGHT)) {
-			animator->SetCurrentAnimation("Move");
-			position.x += 5.0f;
-			if (scale.x < 0) scale.x = -scale.x;
-		}
-		else if (input->KeyPress(VK_LEFT)) {
-			animator->SetCurrentAnimation("Move");
-			position.x -= 5.0f;
-			if (scale.x > 0) scale.x = -scale.x;
-		}
-		else animator->SetCurrentAnimation("Idle");
-
-		position.x = Math::clamp(position.x, -x_clamp, x_clamp);
-	}
-
-	if (bShoot) {
-		ShootBullet();
-	}
-	if (bBullet) {
-		bullet->Update();
-
-		auto colliderMgr = context->GetSubsystem<ColliderManager>();
-		colliderMgr->HitCheck_AABB("Ball", "Bullet"); //Ball이 배경 밖으로 나가는가
-
-		if (!bullet->GetExist()) {
-			SAFE_DELETE(bullet);
-			bBullet = false;
-		}
-	}
-
-	transform->SetPosition(position);
-	transform->SetScale(scale);
-
 	collider->SetCenter(position);
-	///////////////////////////////////////////
+	collider->SetSize(scale);
+	collider->SetTransform(transform);
+	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+		assert(false);
+	};
 
-	///////////////////////////////////////////
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->RegisterCollider("Bullet", collider);
+}
+
+void Bullet::Update()
+{
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
+	///////////////////////////////////////////
 
 	animator->Update();
+	if (!animator->IsPlay()) bExist = false;
+
+	Vector3 scale = GetSize();
+	Vector3 position = transform->GetPosition();
+	position.y += scale.y * 0.5f;
+	collider->SetCenter(position);
+	collider->SetSize(scale);
 
 	auto animData = static_cast<AnimationData*>(animationBuffer->Map());
 	animData->TextureSize = texture->GetSize();
@@ -207,7 +149,7 @@ void Player::Update()
 	animationBuffer->Unmap();
 }
 
-void Player::Render()
+void Bullet::Render()
 {
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
@@ -235,6 +177,4 @@ void Player::Render()
 
 	//Draw Call(indexbuffer를 이용해 그리기 때문에 그냥 Draw로는 불가능함)
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
-
-	if (bBullet) bullet->Render();
 }

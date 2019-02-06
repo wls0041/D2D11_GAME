@@ -98,9 +98,9 @@ void Back::SetCollider()
 {	//Collider
 	collider = new Collider(context);
 	collider->SetCenter(transform->GetPosition());
-	collider->SetSize(transform->GetScale() - Vector3(50.0f, 54.0f, 0.0f));
+	collider->SetSize(transform->GetScale() - Vector3(52.0f, 52.0f, 0.0f));
 	collider->SetTransform(transform);
-	collider->Event = nullptr;
+	collider->EventCircle = nullptr;
 }
 
 void Back::Update()

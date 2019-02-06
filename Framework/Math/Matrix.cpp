@@ -221,10 +221,10 @@ Matrix::Matrix(float _11, float _12, float _13, float _14, float _21, float _22,
 
 const Vector3 Matrix::GetScale()
 {
-	int signX = Math::Sign(_11 * _12 * _13) ? -1 : 1;
-	int signY = Math::Sign(_21 * _22 * _23) ? -1 : 1;
-	int signZ = Math::Sign(_31 * _32 * _33) ? -1 : 1;
-	
+	int signX = Math::Sign(_11 ? _11 : 1 * _12 ? _12 : 1 * _13 ? _13 : 1);
+	int signY = Math::Sign(_21 ? _21 : 1 * _22 ? _22 : 1 * _23 ? _23 : 1);
+	int signZ = Math::Sign(_31 ? _31 : 1 * _32 ? _32 : 1 * _33 ? _33 : 1);
+
 	return Vector3(
 		signX * sqrt(pow(_11, 2) + pow(_12, 2) + pow(_13, 2)),
 		signY * sqrt(pow(_21, 2) + pow(_22, 2) + pow(_23, 2)),

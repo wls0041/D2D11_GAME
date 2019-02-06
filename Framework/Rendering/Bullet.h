@@ -1,20 +1,18 @@
 #pragma once
 
-class Player
+class Bullet
 {
 public:
-	Player(class Context *context);
-	virtual ~Player();
+	Bullet(class Context *context);
+	virtual ~Bullet();
 
 	class Transform *GetTransform() const { return transform; }
 	class Collider *GetCollider() const { return collider; }
-	const bool &GetDie() const { return bDie; }
-	const int &GetLife() const { return life; }
+	const bool &GetExist() const { return bExist; }
 	const Vector3 &GetSize();
 
+	void SetExist(const bool &bExist) { this->bExist = bExist; }
 	void SetCollider();
-	void LoseLife();
-	void ShootBullet();
 
 	void Update();
 	void Render();
@@ -36,17 +34,12 @@ private:
 
 	class Transform *transform;
 	class Collider *collider;
-	class Bullet *bullet;
 
 	ID3D11RasterizerState *rsState;
 	ID3D11BlendState *blendState; //OM단계에 들어감(이미 색이 찍혀져 있어야 하기 때문)
 
 	class Animator *animator;
 	ConstantBuffer *animationBuffer;
-
-	float x_clamp;
-	bool bBullet;
-	bool bDie;
-	int time;
-	int life;
+	
+	bool bExist;
 };

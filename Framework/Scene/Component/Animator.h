@@ -12,7 +12,6 @@ public:
 
 	class Animation *GetCurrentAnimation() const { return curAnimation; }
 	struct Keyframe *GetCurrentkeyframe();
-	const bool &GetIsEnd() const { return isEnd; }
 
 	void SetCurrentAnimation(const string &animationName);
 

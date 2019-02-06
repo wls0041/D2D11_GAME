@@ -1,5 +1,8 @@
 #pragma once
 
+enum class CheckCase : uint { Rect_Circle, Circle_Rect, Back_Circle };
+enum class CircleCheck : uint { None, CollisionX, CollisionY, CollisionXY, CollisionEdge };
+
 class BoundBox
 {
 public:
@@ -18,7 +21,9 @@ public:
 	const Vector3 GetExtents() const { return (maxBox - minBox) * 0.5f; }
 
 	Intersection IsInside(const Vector3 &point);
-	Intersection IsInside(const BoundBox &box , const int &caseNum);
+	Intersection IsInside(const BoundBox &box);
+	CircleCheck IsInside_Circle(const BoundBox &box);
+	CircleCheck IsOutside_Circle(const BoundBox &box);
 
 	void Transformed(const Matrix &matrix); //³»ºÎ¿ë
 

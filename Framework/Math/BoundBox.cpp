@@ -55,52 +55,59 @@ Intersection BoundBox::IsInside(const Vector3 & point)
 	return Intersection::Inside;
 }
 
-Intersection BoundBox::IsInside(const BoundBox & box, const int &caseNum)
+Intersection BoundBox::IsInside(const BoundBox & box)
 {
-	if (caseNum == 0) {
-		if (box.maxBox.x < minBox.x || box.minBox.x > maxBox.x ||
-			box.maxBox.y < minBox.y || box.minBox.y > maxBox.y ||
-			box.maxBox.z < minBox.z || box.minBox.z > maxBox.z)
-			return Intersection::Outside;
-		else if (box.minBox.x < minBox.x || box.maxBox.x > maxBox.x ||
-			box.minBox.y < minBox.y || box.maxBox.y > maxBox.y ||
-			box.minBox.z < minBox.z || box.maxBox.z > maxBox.z)
-			return Intersection::Intersect;
-		else return Intersection::Inside;
-	}
-	else if (caseNum == 1) { //자기가 원일 때(타원 x), intersect여부만 판단
-		Vector3 radius = box.GetExtents();
-		Vector3 center = box.GetCenter();
-
-		//원의 중점과 rect의 정점을 비교해 x축이 겹치거나 y축이 겹칠 때 계산(계산량 감소용)
-		if ((minBox.x <= center.x && maxBox.x >= center.x) || (minBox.y <= center.y && maxBox.y >= center.y)) {
-			Vector3 exMaxBox = maxBox + radius;
-			Vector3 exMinBox = minBox - radius;
-			float dis = Vector3::Distance(maxBox , center);
- 			if (exMinBox.x < center.x && exMaxBox.x > center.x && exMinBox.y < center.y && exMaxBox.y > center.y)
-				return Intersection::Intersect;
-		}
-		else if (Vector3::Distance(center, minBox) < radius.x)
-			return Intersection::Intersect; //좌하단
-		else if (Vector3::Distance(center, maxBox) < radius.x)
-			return Intersection::Intersect; //우상단
-		else if (Vector3::Distance(center, { maxBox.x, minBox.y, 0 }) < radius.x)
-			return Intersection::Intersect; //우하단
-		else if (Vector3::Distance(center, { minBox.x, maxBox.y, 0 }) < radius.x)
-			return Intersection::Intersect; //좌하단
-
+	if (box.maxBox.x < minBox.x || box.minBox.x > maxBox.x ||
+		box.maxBox.y < minBox.y || box.minBox.y > maxBox.y ||
+		box.maxBox.z < minBox.z || box.minBox.z > maxBox.z)
 		return Intersection::Outside;
+	else if (box.minBox.x < minBox.x || box.maxBox.x > maxBox.x ||
+		box.minBox.y < minBox.y || box.maxBox.y > maxBox.y ||
+		box.minBox.z < minBox.z || box.maxBox.z > maxBox.z)
+		return Intersection::Intersect;
+	else return Intersection::Inside;
+}
+
+CircleCheck BoundBox::IsInside_Circle(const BoundBox & box)
+{
+	//intersect여부만 판단
+	Vector3 radius = box.GetExtents();
+	Vector3 center = box.GetCenter();
+
+	//원의 중점과 rect의 정점을 비교해 x축이 겹치거나 y축이 겹칠 때 계산(계산량 감소용)
+	if ((minBox.x < center.x && maxBox.x > center.x) || (minBox.y < center.y && maxBox.y > center.y)) {
+		Vector3 exMaxBox = maxBox + radius;
+		Vector3 exMinBox = minBox - radius;
+		float dis = Vector3::Distance(maxBox, center);
+
+		if (exMinBox.x < center.x && exMaxBox.x > center.x && exMinBox.y < center.y && exMaxBox.y > center.y) {
+			if (minBox.x < center.x && maxBox.x > center.x) 
+				return CircleCheck::CollisionY;
+			else if (minBox.y < center.y && maxBox.y > center.y)
+				return CircleCheck::CollisionX;
+		}
 	}
-	else if (caseNum == 2) { //원 & 벽충돌 x축
-		if (box.minBox.x < minBox.x && box.maxBox.x > maxBox.x) 
-			return Intersection::Outside;
-		else return Intersection::Inside;
+	else {
+		if (Vector3::Distance(center, minBox) < radius.x)
+			return CircleCheck::CollisionEdge; //좌하단
+		if (Vector3::Distance(center, maxBox) < radius.x)
+			return CircleCheck::CollisionEdge; //우상단
+		if (Vector3::Distance(center, { maxBox.x, minBox.y, 0 }) < radius.x)
+			return CircleCheck::CollisionEdge; //우하단
+		if (Vector3::Distance(center, { minBox.x, maxBox.y, 0 }) < radius.x)
+			return CircleCheck::CollisionEdge; //좌하단
 	}
-	else if (caseNum == 3) {//원 & 벽충돌 y축
-		if (box.minBox.y < minBox.y && box.maxBox.y > maxBox.y)
-			return Intersection::Outside;
-		else return Intersection::Inside;
-	}
+
+	return CircleCheck::None;
+}
+
+CircleCheck BoundBox::IsOutside_Circle(const BoundBox & box)
+{	 
+	//box == 배경
+	if (box.minBox.x > minBox.x || box.maxBox.x < maxBox.x) return CircleCheck::CollisionX; //원 & 벽충돌 x축
+	else if (box.minBox.y > minBox.y || box.maxBox.y < maxBox.y) return CircleCheck::CollisionY; //원 & 벽충돌 y축
+	else if ((box.minBox.x == minBox.x || box.maxBox.x == maxBox.x) && (box.minBox.y == minBox.y || box.maxBox.y == maxBox.y)) return CircleCheck::CollisionXY;
+	return CircleCheck::None;
 }
 
 void BoundBox::Transformed(const Matrix & matrix)

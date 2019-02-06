@@ -21,8 +21,8 @@ Scene::Scene(class Context *context) : context(context)
 	player->SetCollider();
 
 	ball = new Ball(context);
-	ball->GetTransform()->SetScale({ 200, 200, 1 });
-	ball->GetTransform()->SetPosition({ 0, 50, 0 });
+	ball->GetTransform()->SetScale({ 160, 160, 1 });
+	ball->GetTransform()->SetPosition({ -300, 150, 0 });
 	ball->SetMoveDir({ 1.0f, -1.0f, 0.0f });
 	ball->SetCollider();
 
@@ -31,12 +31,14 @@ Scene::Scene(class Context *context) : context(context)
 	back->GetTransform()->SetPosition({ 0, 0, 0 });
 	back->SetOffset({ 8, 1520 });
 	back->SetCollider();
+	back->Update();
 
 	block = new Block(context);
 	block->GetTransform()->SetScale({ 100, 50, 1 });
 	block->GetTransform()->SetPosition({ 0, 0, 0 });
 	block->SetOffset({ 8, 1520 });
 	block->SetCollider();
+	block->Update();
 
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
 	bgm = new AudioSource(context);
@@ -71,19 +73,14 @@ void Scene::Update()
 
 	auto input = context->GetSubsystem<Input>();
 
-	auto colliderMgr = context->GetSubsystem<ColliderManager>();
-	ball->SetCurCheck(true);
-	colliderMgr->HitCheck_AABB("Back", "Ball", 2); //Ball이 배경 밖으로 나가는가(x측)
-	ball->SetCurCheck(false);
-	colliderMgr->HitCheck_AABB("Back", "Ball", 3); //Ball이 배경 밖으로 나가는가(y축)
-
-	colliderMgr->HitCheck_AABB("Ball", "Player", 1); //Ball Player충돌
-	colliderMgr->HitCheck_AABB("Ball", "Block", 1); //Ball Player충돌
-
 	ball->Update();
 	player->Update();
-	back->Update();
-	block->Update();
+
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->HitCheck_AABB_Circle("Back", "Ball", CheckCase::Back_Circle); //Ball이 배경 밖으로 나가는가
+	//colliderMgr->HitCheck_AABB_Circle("Block", "Ball", CheckCase::Circle_Rect); //Ball Block충돌
+	colliderMgr->HitCheck_AABB_Circle("Ball", "Player", CheckCase::Circle_Rect); //Ball Player충돌
+
 }
 
 void Scene::Render()

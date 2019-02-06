@@ -318,7 +318,7 @@ void Graphics::ResizeClient(const uint & width, const uint & height)
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.Width = static_cast<float>(Settings::Get().GetWidth());
-	viewport.Height = static_cast<float>(Settings::Get().GetHeight() - 150);
+	viewport.Height = static_cast<float>(Settings::Get().GetHeight());
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 

@@ -35,11 +35,17 @@ void ColliderManager::Clear()
 	colliderLayers.clear();
 }
 
-void ColliderManager::HitCheck_AABB(const string & attacker, const string & receiver, const int & caseNum)
+void ColliderManager::ClearCollider(const string & name)
+{
+	colliderLayers[name].clear();
+	colliderLayers[name].shrink_to_fit();
+}
+
+void ColliderManager::HitCheck_AABB(const string & attacker, const string & receiver)
 {
 	for (auto receiverCollider : colliderLayers[receiver])
 		for (auto attackerCollider : colliderLayers[attacker]) {
-			bool bCheck = receiverCollider->AABB(attackerCollider, caseNum);
+			int bCheck = receiverCollider->AABB(attackerCollider);
 
 			if (bCheck) {
 				if (receiverCollider->Event != nullptr) 
@@ -47,3 +53,17 @@ void ColliderManager::HitCheck_AABB(const string & attacker, const string & rece
 			}
 		}
 }
+
+void ColliderManager::HitCheck_AABB_Circle(const string & attacker, const string & receiver, const CheckCase & caseNum)
+{
+	for (auto receiverCollider : colliderLayers[receiver])
+		for (auto attackerCollider : colliderLayers[attacker]) {
+			auto bCheck = receiverCollider->AABB_Circle(attackerCollider, caseNum);
+
+			if (bCheck != CircleCheck::None) {
+				if (receiverCollider->EventCircle != nullptr)
+					receiverCollider->EventCircle(bCheck, attackerCollider);
+			}
+		}
+}
+

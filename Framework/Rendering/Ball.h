@@ -8,12 +8,19 @@ public:
 
 	class Transform *GetTransform() const { return transform; }
 	class Collider *GetCollider() const { return collider; }
+	const int &GetLevel() const { return level; }
+	const int &GetNumber() const { return ballNum; }
 
 	void SetCollider();
 
 	void SetMoveDir(const Vector3 &moveDir) { this->moveDir = moveDir; }
-	void SetCurCheck(const bool &curCheck_X) { this->curCheck_X = curCheck_X; }
-	void InvMoveDir();
+	void SetFloorSpeed(const float &floorSpeed) { this->floorSpeed = floorSpeed; }
+	void SetJumpSpeed(const float &jumpSpeed) { this->jumpSpeed.y = jumpSpeed; }
+	void SetLevel(const int &level) { this->level = level; }
+	void SetNumber(const int &ballNum) { this->ballNum = ballNum; }
+
+	void InvMoveDir(const CircleCheck &check, class Collider *opponent);
+
 
 	void Update();
 	void Render();
@@ -42,10 +49,15 @@ private:
 	ConstantBuffer *spriteBuffer;
 
 	Vector3 moveDir; //공의 x, y움직임이 양방향, 음방향인지 결정
-	Vector3 tempPos;
-	float jumpSpeed;
+	Vector3 position;
+	Vector3 jumpSpeed;
 	float jumpAccel;
-	bool curCheck_X;
-	bool bRepos;
-	bool canMoveY;
+
+	class Collider *opponent;
+	CircleCheck bCheck;
+	float floorSpeed;
+	bool bUpdate;
+	int ballNum;
+	int time;
+	int level;
 };

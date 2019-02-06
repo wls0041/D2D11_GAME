@@ -49,6 +49,8 @@
     <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
     <ClCompile Include="Framework\Resource\Effect.cpp" />
     <ClCompile Include="Framework\Rendering\Block.cpp" />
+    <ClCompile Include="Framework\Rendering\Bullet.cpp" />
+    <ClCompile Include="Framework\Rendering\BallManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -103,6 +105,8 @@
     <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
     <ClInclude Include="Framework\Resource\Effect.h" />
     <ClInclude Include="Framework\Rendering\Block.h" />
+    <ClInclude Include="Framework\Rendering\Bullet.h" />
+    <ClInclude Include="Framework\Rendering\BallManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

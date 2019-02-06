@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Animator.h"
 
-Animator::Animator(Context * context) : context(context), mode(AnimationMode::Play), curFrameNumber(0), frameTimer(0.0f), curAnimation(nullptr), isEnd(false)
+Animator::Animator(Context * context) : context(context), mode(AnimationMode::Play), curFrameNumber(0), frameTimer(0.0f), curAnimation(nullptr)
 {
 	timer = context->GetSubsystem<Timer>();
 	resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -13,7 +13,7 @@ Animator::~Animator()
 
 void Animator::Update()
 {
-	bool bCheck = true;
+ 	bool bCheck = true;
 	bCheck &= curAnimation != nullptr;
 	bCheck &= IsPlay();
 
@@ -27,8 +27,7 @@ void Animator::Update()
 			case RepeatType::Once:
 				if (curFrameNumber >= curAnimation->GetKeyframeCount()) {
 					curFrameNumber = curAnimation->GetKeyframeCount() - 1;
-					Pause();
-					isEnd = true;
+					Stop();
 				}
 				break;
 			case RepeatType::Loop:
@@ -144,17 +143,16 @@ void Animator::Play()
 {
 	mode = AnimationMode::Play;
 	frameTimer = 0.0f;
-	isEnd = false;
 }
 
 void Animator::Stop()
 {
 	mode = AnimationMode::Stop;
+	frameTimer = 0.0f;
+	curFrameNumber = 0;
 }
 
 void Animator::Pause()
 {
 	mode = AnimationMode::Pause;
-	frameTimer = 0.0f;
-	curFrameNumber = 0;
 }

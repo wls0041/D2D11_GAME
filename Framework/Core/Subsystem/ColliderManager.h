@@ -13,7 +13,9 @@ public:
 	void RegisterColliders(const string &layer, class vector<class Collider*> &colliders);
 
 	void Clear();
-	void HitCheck_AABB(const string &attacker, const string &receiver, const int &caseNum = 0);
+	void ClearCollider(const string &name);
+	void HitCheck_AABB(const string &attacker, const string &receiver);
+	void HitCheck_AABB_Circle(const string &attacker, const string &receiver, const CheckCase &caseNum);
 
 private:
 	map<string, vector<class Collider*>> colliderLayers;

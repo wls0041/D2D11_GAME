@@ -8,6 +8,8 @@ Camera::Camera(Context * context) : context(context), position(0, 0, 0), zoom(1.
 
 	view.SetIdentity();
 	projection.SetIdentity();
+
+	position -= Vector3::Up * 75.0f;
 }
 
 Camera::~Camera()

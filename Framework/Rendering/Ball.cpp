@@ -4,7 +4,7 @@
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Ball::Ball(Context *context) : context(context), moveDir(0.0f), jumpSpeed(12.0f), jumpAccel(0.5f), tempPos(0.0f), curCheck_X(true), bRepos(false), canMoveY(true)
+Ball::Ball(Context *context) : context(context), moveDir(0.0f), position(0.0f), bCheck(CircleCheck::None), jumpSpeed(4.0f, 14.0f, 0.0f), floorSpeed(32.0f), jumpAccel(1.0f), ballNum(0), time(0), bUpdate(true), level(0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -100,48 +100,109 @@ void Ball::SetCollider()
 	collider->SetCenter(transform->GetPosition());
 	collider->SetSize(transform->GetScale());
 	collider->SetTransform(transform);
-	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		InvMoveDir();	
+	position = transform->GetPosition();
+	collider->EventCircle = [this](const CircleCheck &check, Collider *opponent) {
+		bCheck = check;
+		this->opponent = opponent;
+
+		Update();
 	};
+
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->RegisterCollider("Ball", collider);
 }
 
-void Ball::InvMoveDir()
+void Ball::InvMoveDir(const CircleCheck & check, Collider * opponent)
 {
-	Vector3 position = transform->GetPosition();
+	Vector3 size = opponent->GetBoundBox().GetMax() - opponent->GetBoundBox().GetMin();
+	Vector3 minLimit = 0.0f, maxLimit = 0.0f;
+	bUpdate = false;
 
-	//충돌 후 한틱의 움직임이 있어 Collision 버그가 발생. 한틱의 움직임을 되돌림
-	curCheck_X == true ? moveDir.x = -moveDir.x : moveDir.y = -moveDir.y; 
-	curCheck_X == true ? position.x += 4.0f * moveDir.x : position.y += jumpSpeed * moveDir.y; //canMoveY = false; 
-	//if (curCheck_X == false && moveDir.y < 0) 
-	//	bRepos = true;
+	if (size.x > 1000) { //벽과 충돌
+		minLimit = opponent->GetBoundBox().GetMin() + transform->GetScale() * 0.5f;
+		maxLimit = opponent->GetBoundBox().GetMax() - transform->GetScale() * 0.5f;
 
-	transform->SetPosition(position);
-	collider->SetCenter(position);
+		if (check == CircleCheck::CollisionY) {
+			if (position.y > maxLimit.y) position.y = maxLimit.y;
+			else if (position.y < minLimit.y) {
+				position.y = minLimit.y;
+				jumpSpeed.y = floorSpeed * Math::Sign(jumpSpeed.y);
+			}
+			jumpSpeed.y = -jumpSpeed.y;
+		}
+		else if (check == CircleCheck::CollisionX) {
+			if (position.x > maxLimit.x) position.x = maxLimit.x; 
+			else if (position.x < minLimit.x) position.x = minLimit.x; 
+			jumpSpeed.x = -jumpSpeed.x;
+		}
+		else if (check == CircleCheck::CollisionXY) {
+			if (position.y > maxLimit.y) position.y = maxLimit.y;
+			else if (position.y < minLimit.y) position.y = minLimit.y;
+			if (position.x > maxLimit.x) position.x = maxLimit.x;
+			else if (position.x < minLimit.x) position.x = minLimit.x;
+			jumpSpeed.x = -jumpSpeed.x;
+		}
+	}
+	else { //Block과 충돌
+		CircleCheck subCheck = check; //Edge에 부딪혔을 때 튕길 방향 판정
+		minLimit = opponent->GetBoundBox().GetMin() - transform->GetScale() * 0.5f;
+		maxLimit = opponent->GetBoundBox().GetMax() + transform->GetScale() * 0.5f;
 
+		if (subCheck == CircleCheck::CollisionEdge) { //모서리에 부딪히면 각도에 따라서 움직일 방향 결정
+			Vector3 compCoord = position - opponent->GetCenter(); //원과 블록의 사이각을 구하기 위한 좌표
+
+			float oppoDegree = Math::ToDegree(atan2(opponent->GetSize().y - opponent->GetCenter().y, opponent->GetSize().x - opponent->GetCenter().x)); //상대 중점과 상대 정점의 사이각
+			float compDegree = Math::ToDegree(atan2(compCoord.y, compCoord.x)); //원과 블록 중점간의 사이각
+			//minLimit = opponent->GetBoundBox().GetMin() - (100.0f * cosf(oppoDegree), 100.0f * sinf(oppoDegree));
+			//maxLimit = opponent->GetBoundBox().GetMax() + (100.0f * cosf(oppoDegree), 100.0f * sinf(oppoDegree));
+
+			if ((oppoDegree + 5 < compDegree && compDegree < 175 - oppoDegree) 
+				|| -(175 - oppoDegree) < compDegree && compDegree < (-(oppoDegree + 5))) subCheck = CircleCheck::CollisionY;
+
+			else if ((5 < compDegree && compDegree < oppoDegree - 5) || (175 - oppoDegree < compDegree && compDegree < 175) ||
+				(-(oppoDegree - 5) < compDegree && compDegree < -5) || (-175 < compDegree && compDegree < -(175 - oppoDegree))) subCheck = CircleCheck::CollisionX;
+			
+			else subCheck = CircleCheck::CollisionXY;
+		}
+		if (subCheck == CircleCheck::CollisionY) {
+			if (position.y > opponent->GetBoundBox().GetMax().y) position.y = maxLimit.y;
+			else if (position.y < opponent->GetBoundBox().GetMin().y) position.y = minLimit.y;
+			jumpSpeed.y += jumpAccel * Math::Sign(jumpSpeed.y);
+			jumpSpeed.y = -jumpSpeed.y;
+		}
+		else if (subCheck == CircleCheck::CollisionX) {
+			if (position.x > opponent->GetBoundBox().GetMax().x) position.x = maxLimit.x;
+			else if (position.x < opponent->GetBoundBox().GetMin().x) position.x = minLimit.x;
+			jumpSpeed.x = -jumpSpeed.x;
+		}
+		else if (subCheck == CircleCheck::CollisionXY) {
+			/*if (position.y > opponent->GetBoundBox().GetMax().y) position.y = maxLimit.y;
+			else if (position.y < opponent->GetBoundBox().GetMin().y) position.y = minLimit.y;
+			if (position.x > opponent->GetBoundBox().GetMax().x) position.x = maxLimit.x;
+			else if (position.x < opponent->GetBoundBox().GetMin().x) position.x = minLimit.x;*/
+			jumpSpeed.y += jumpAccel * Math::Sign(jumpSpeed.y);
+			jumpSpeed = jumpSpeed * -1.0f;
+		}
+	}
+
+	
 }
 
 void Ball::Update()
 {
-	//if (moveDir.y < 0 && jumpSpeed <= 0.0f) {
-	//	curCheck_X = false;
-	//	jumpSpeed = -jumpSpeed;
-	//	InvMoveDir();
-	//}
-	//float speed = transform->GetPosition.y
-
-
 	////////////////////공의 이동////////////////////////
-	//jumpSpeed < 0 ? moveDir.y = -1.0f : moveDir.y = 1.0f;
-	jumpSpeed -= jumpAccel * moveDir.y;
-
-	Vector3 position = transform->GetPosition();
-	position.x += 4.0f * moveDir.x;
-	position.y += jumpSpeed * moveDir.y;
+	if (bCheck != CircleCheck::None) {
+		InvMoveDir(bCheck, opponent);
+	}
+	if (bUpdate) {
+		jumpSpeed.y += jumpAccel;
+		position.y -= jumpSpeed.y;
+		position.x += jumpSpeed.x;
+	}
 
 	collider->SetCenter(position);
-
 	transform->SetPosition(position);
-
+	
 	auto data = static_cast<WorldData*>(worldBuffer->Map());
 	data->World = transform->GetWorldMatrix();
 	worldBuffer->Unmap();
@@ -151,6 +212,9 @@ void Ball::Update()
 	animData->SpriteOffset = Vector2(0, 5);
 	animData->SpriteSize = Vector2(50, 42);
 	spriteBuffer->Unmap();
+
+	bCheck = CircleCheck::None;
+	bUpdate = true;
 }
 
 void Ball::Render()
