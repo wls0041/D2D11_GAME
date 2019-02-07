@@ -1,19 +1,17 @@
 #include "stdafx.h"
-#include "./App/Game.h"
+#include "./Framework/Core/Window.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpszCmdParam, int nCmdShow) //진입점
 {
-	//settings에 값 입력
-	Settings::Get().SetAppName(L"D2D11Game");
-	Settings::Get().SetWindowInstance(hInstance);
-	Settings::Get().SetWidth(1280);
-	Settings::Get().SetHeight(720);
-	Settings::Get().SetIsVsync(true); //프레임을 일정으로 고정
-	Settings::Get().SetIsFullScreen(false);
+	Window::Create(hInstance, L"D2DGame", 1280, 720);
+	Window::Show();
 
-	//Game 클래스로 넘어가 App이 가진 함수를 이용해 게임 실행 
-	Game *game = new Game();
-	WPARAM wParam = game->Run();
-	SAFE_DELETE(game);
-	return wParam;
+	while (Window::Update())//나가는 메세지가 들어오면 나가고 아니라면 계속 루프
+	{
+
+	}
+
+	Window::Destroy();
+
+	return 0;
 }

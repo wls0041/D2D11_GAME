@@ -3,11 +3,8 @@
   <ItemGroup>
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="App\App.cpp" />
-    <ClCompile Include="App\Game.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Graphics.cpp" />
     <ClCompile Include="Framework\Core\Settings.cpp" />
-    <ClCompile Include="Framework\Core\Window.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Input.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\Timer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\VertexBuffer.cpp" />
@@ -46,11 +43,10 @@
     <ClCompile Include="Framework\Resource\Effect.cpp" />
     <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
     <ClCompile Include="Framework\Core\D3D11\OMStage\RenderTexture.cpp" />
+    <ClCompile Include="Framework\Core\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="App\App.h" />
-    <ClInclude Include="App\Game.h" />
     <ClInclude Include="Framework\Core\Subsystem\ISubsystem.h" />
     <ClInclude Include="Framework\Core\Context.h" />
     <ClInclude Include="Framework\Core\Subsystem\Graphics.h" />
@@ -97,6 +93,7 @@
     <ClInclude Include="Framework\Resource\Effect.h" />
     <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
     <ClInclude Include="Framework\Core\D3D11\OMStage\RenderTexture.h" />
+    <ClInclude Include="Framework\Core\Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />
