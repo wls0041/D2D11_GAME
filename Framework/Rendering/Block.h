@@ -38,6 +38,5 @@ private:
 
 	ConstantBuffer *spriteBuffer;
 
-	int count;
 	Vector2 offset;
 };

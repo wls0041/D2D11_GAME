@@ -71,7 +71,7 @@ void AudioSource::SetIsMute(const bool & bMute)
 void AudioSource::SetVolume(const float & volume)
 {
 	if (!audioClip) return;
-	if (this->volume == volume) return;
+	//if (this->volume == volume) return;
 
 	this->volume = Math::clamp(volume, 0.0f, 1.0f); //0~1로 정규화 되어 있음
 	audioClip->SetVolume(this->volume);

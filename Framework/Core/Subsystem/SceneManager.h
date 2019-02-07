@@ -8,6 +8,7 @@ public:
 	virtual ~SceneManager();
 
 	void Initialize() override;
+	const int &GetLife() const { return life; }
 
 	void Update();
 	void Render();
@@ -20,4 +21,20 @@ public:
 private:
 	class Scene *currentScene; //검색된 씬을 꺼내놓고 그걸 쓰다가 다른 씬이 필요하면 그 때 다시 검색
 	map<string, class Scene*> scenes; //씬은 한 번에 하나만 필요하기 때문에 검색이 빠른 map을 사용, map의 key값은 고유함
+	class Rect *winMessage;
+	class Rect *loseMessage;
+	class Rect *title;
+
+	class AudioSource *bgm;
+	class AudioSource *loseBgm;
+	class AudioSource *winBgm;
+	class Camera *camera;
+	class ConstantBuffer *cameraBuffer;
+
+	bool bLose;
+	bool bWin;
+	bool bStart;
+
+	int delayTime;
+	int life;
 };

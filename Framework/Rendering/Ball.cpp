@@ -3,8 +3,9 @@
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
+#include "../Scene/Component/AudioSource.h"
 
-Ball::Ball(Context *context) : context(context), moveDir(0.0f), position(0.0f), bCheck(CircleCheck::None), jumpSpeed(4.0f, 14.0f, 0.0f), floorSpeed(32.0f), jumpAccel(1.0f), ballNum(0), time(0), bUpdate(true), level(0)
+Ball::Ball(Context *context) : context(context), position(0.0f), bCheck(CircleCheck::None), jumpSpeed(5.0f, -14.0f, 0.0f), floorSpeed(32.0f), jumpAccel(1.0f), bCollision(false), bUpdate(true), ballNum(0), time(0), level(0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -78,10 +79,16 @@ Ball::Ball(Context *context) : context(context), moveDir(0.0f), position(0.0f), 
 
 	//Set transform(scale, position, rotation, world)
 	transform = new Transform(context);
+
+	pop_SE = new AudioSource(context);
 }
 
 Ball::~Ball()
 {
+	auto colliderMgr = context->GetSubsystem<ColliderManager>();
+	colliderMgr->ClearCollider(to_string(ballNum));
+
+	SAFE_DELETE(pop_SE);
 	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(spriteBuffer);
@@ -107,9 +114,16 @@ void Ball::SetCollider()
 
 		Update();
 	};
+	collider->Event = [this]() { //bulletÃæµ¹
+		bCollision = true;
+
+		pop_SE->SetAudioClip("Pang_Pop.wav");
+		pop_SE->Play();
+		pop_SE->SetVolume(0.5f);
+	};
 
 	auto colliderMgr = context->GetSubsystem<ColliderManager>();
-	colliderMgr->RegisterCollider("Ball", collider);
+	colliderMgr->RegisterCollider(to_string(ballNum), collider);
 }
 
 void Ball::InvMoveDir(const CircleCheck & check, Collider * opponent)
@@ -167,7 +181,6 @@ void Ball::InvMoveDir(const CircleCheck & check, Collider * opponent)
 		if (subCheck == CircleCheck::CollisionY) {
 			if (position.y > opponent->GetBoundBox().GetMax().y) position.y = maxLimit.y;
 			else if (position.y < opponent->GetBoundBox().GetMin().y) position.y = minLimit.y;
-			jumpSpeed.y += jumpAccel * Math::Sign(jumpSpeed.y);
 			jumpSpeed.y = -jumpSpeed.y;
 		}
 		else if (subCheck == CircleCheck::CollisionX) {
@@ -180,12 +193,9 @@ void Ball::InvMoveDir(const CircleCheck & check, Collider * opponent)
 			else if (position.y < opponent->GetBoundBox().GetMin().y) position.y = minLimit.y;
 			if (position.x > opponent->GetBoundBox().GetMax().x) position.x = maxLimit.x;
 			else if (position.x < opponent->GetBoundBox().GetMin().x) position.x = minLimit.x;*/
-			jumpSpeed.y += jumpAccel * Math::Sign(jumpSpeed.y);
 			jumpSpeed = jumpSpeed * -1.0f;
 		}
 	}
-
-	
 }
 
 void Ball::Update()

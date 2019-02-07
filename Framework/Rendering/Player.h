@@ -8,12 +8,15 @@ public:
 
 	class Transform *GetTransform() const { return transform; }
 	class Collider *GetCollider() const { return collider; }
-	const bool &GetDie() const { return bDie; }
+	const bool &IsLive() const { return bLive; }
+	const bool &IsFinish() const { return bDeadFinish; }
 	const int &GetLife() const { return life; }
 	const Vector3 &GetSize();
 
+	void LoseLife(const float &pos);
+
+	void SetLife(const int &life) { this->life = life; }
 	void SetCollider();
-	void LoseLife();
 	void ShootBullet();
 
 	void Update();
@@ -42,11 +45,19 @@ private:
 	ID3D11BlendState *blendState; //OM단계에 들어감(이미 색이 찍혀져 있어야 하기 때문)
 
 	class Animator *animator;
+	class AudioSource *shoot_SE;
+	class AudioSource *death_SE;
+
 	ConstantBuffer *animationBuffer;
 
+	Vector3 jumpSpeed;
+	Color color;
+	float jumpAccel;
 	float x_clamp;
+	float timeLimit;
 	bool bBullet;
-	bool bDie;
-	int time;
+	bool bLive;
+	bool bDeadFinish;
+	int deadTimer;
 	int life;
 };

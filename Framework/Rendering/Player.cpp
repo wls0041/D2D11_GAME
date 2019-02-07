@@ -3,9 +3,10 @@
 #include "../Scene/Component/Animator.h"
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
+#include "../Scene/Component/AudioSource.h"
 #include "Bullet.h"
 
-Player::Player(Context *context) : context(context), life(2000), bBullet(false), bDie(false), x_clamp(0), time(8)
+Player::Player(Context *context) : context(context), jumpSpeed(2.0f, 8.0f, 0.0f), jumpAccel(0.3f), life(5), x_clamp(0), bBullet(false), bLive(true), bDeadFinish(false), timeLimit(60.1f), deadTimer(0), color(1.0f)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -87,10 +88,16 @@ Player::Player(Context *context) : context(context), life(2000), bBullet(false),
 	transform = new Transform(context);
 
 	x_clamp = (1280.0f - 150.0f) * 0.5f;
+
+	shoot_SE = new AudioSource(context);
+	death_SE = new AudioSource(context);
+	death_SE->SetAudioClip("Pang_Death.mp3");
 }
 
 Player::~Player()
 {
+	SAFE_DELETE(death_SE);
+	SAFE_DELETE(shoot_SE);
 	SAFE_DELETE(collider);
 	SAFE_DELETE(transform);
 	SAFE_DELETE(animator);
@@ -117,14 +124,29 @@ void Player::SetCollider()
 	collider->SetCenter(transform->GetPosition());
 	collider->SetSize(GetSize());
 	collider->SetTransform(transform);
-	collider->EventCircle = [this](const CircleCheck &check, Collider *opponent) { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		LoseLife();
-		bDie = true;
+	collider->EventPlayer = [this](const float &pos) { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
+		LoseLife(pos);
 	};
 }
 
-void Player::LoseLife()
+void Player::LoseLife(const float &pos)
 {
+	float position = transform->GetPosition().x;
+	int dir;
+
+	position > pos ? dir = 1 : dir = -1;
+
+	Vector3 scale = transform->GetScale();
+	scale.x = dir * scale.x * Math::Sign(scale.x);
+	transform->SetScale(scale);
+
+	jumpSpeed.x *= Math::Sign(scale.x);
+
+	bLive = false;
+	death_SE->Play();
+	death_SE->SetVolume(0.5f);
+	deadTimer = 0;
+
 	life--;
 }
 
@@ -149,48 +171,72 @@ void Player::Update()
 	Vector3 position = transform->GetPosition();
 	Vector3 scale = transform->GetScale();
 	bool bShoot = false;
-	time++;
 
-	if (input->KeyDown(VK_SPACE) && !bBullet) { //충분한 사격모션
-		animator->SetCurrentAnimation("Shoot");
-		bShoot = true;
-		time = 0;
-	}
-	if (time > 8) {
+	if (bLive) {
+		if (input->KeyDown('T')) {
+			timeLimit = 3;
+			color = { 1.0f, 1.0f, 0.0f, 1.0f };
+		}
+
+		if (input->KeyDown(VK_SPACE) && !bBullet) { //충분한 사격모션
+			animator->SetCurrentAnimation("Shoot");
+			bShoot = true;
+			deadTimer = 0;
+		}
 		if (input->KeyPress(VK_RIGHT)) {
 			animator->SetCurrentAnimation("Move");
-			position.x += 5.0f;
+			position.x += 8.0f;
 			if (scale.x < 0) scale.x = -scale.x;
 		}
 		else if (input->KeyPress(VK_LEFT)) {
 			animator->SetCurrentAnimation("Move");
-			position.x -= 5.0f;
+			position.x -= 8.0f;
 			if (scale.x > 0) scale.x = -scale.x;
 		}
 		else animator->SetCurrentAnimation("Idle");
 
 		position.x = Math::clamp(position.x, -x_clamp, x_clamp);
-	}
 
-	if (bShoot) {
-		ShootBullet();
-	}
-	if (bBullet) {
-		bullet->Update();
+		if (bShoot) {
+			ShootBullet();
+			shoot_SE->SetAudioClip("Pang_Shoot.mp3");
+			shoot_SE->Play();
+			shoot_SE->SetVolume(0.45f);
+		}
+		if (bBullet) {
+			bullet->Update();
 
-		auto colliderMgr = context->GetSubsystem<ColliderManager>();
-		colliderMgr->HitCheck_AABB("Ball", "Bullet"); //Ball이 배경 밖으로 나가는가
+			auto colliderMgr = context->GetSubsystem<ColliderManager>();
+			colliderMgr->HitCheck_AABB("Block", "Bullet"); //Ball Block충돌
 
-		if (!bullet->GetExist()) {
-			SAFE_DELETE(bullet);
-			bBullet = false;
+			if (!bullet->GetExist()) {
+				SAFE_DELETE(bullet);
+				bBullet = false;
+			}
+		}
+
+		timeLimit -= context->GetSubsystem<Timer>()->GetDeltaTimeSec();
+		if (timeLimit <= 0) {
+			LoseLife(0.0f);
+			scale = transform->GetScale();
 		}
 	}
-
+	else {
+		deadTimer++;
+		animator->SetCurrentAnimation("Die");
+		if (deadTimer > 30 && deadTimer < 120) {
+			jumpSpeed.y -= jumpAccel;
+			position += jumpSpeed;
+		}
+		else if (deadTimer > 120) {
+			bDeadFinish = true;
+		}
+	}
 	transform->SetPosition(position);
 	transform->SetScale(scale);
 
 	collider->SetCenter(position);
+
 	///////////////////////////////////////////
 
 	///////////////////////////////////////////
@@ -237,4 +283,7 @@ void Player::Render()
 	dc->DrawIndexed(geometry.GetIndexCount(), 0, 0); //몇 개를, 몇 번부터
 
 	if (bBullet) bullet->Render();
+
+	auto dw = context->GetSubsystem<DirectWrite>();
+	dw->Text(L"Time : " + to_wstring(static_cast<int>(timeLimit)), Vector2(1000, 780), 50.0f, color);
 }

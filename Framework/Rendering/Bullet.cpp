@@ -84,6 +84,7 @@ Bullet::Bullet(Context *context) : context(context), bExist(false)
 	//animator->RegisterAnimation("Idle.xml");
 	animator->LoadFromFile("Pang_Bullet.xml");
 	animator->SetCurrentAnimation("Wire");
+
 }
 
 Bullet::~Bullet()
@@ -119,7 +120,10 @@ void Bullet::SetCollider()
 	collider->SetSize(scale);
 	collider->SetTransform(transform);
 	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		assert(false);
+		bExist = false;
+
+		auto colliderMgr = context->GetSubsystem<ColliderManager>();
+		colliderMgr->ClearCollider("Bullet");
 	};
 
 	auto colliderMgr = context->GetSubsystem<ColliderManager>();

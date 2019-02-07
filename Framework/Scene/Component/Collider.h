@@ -22,6 +22,7 @@ public:
 
 public:
 	function<void()> Event; //함수 포인터를 이용. 등록된 함수를 실행
+	function<void(const int &dir)> EventPlayer;
 	function<void(const CircleCheck &check, Collider *opponent)> EventCircle; //함수 포인터를 이용. 등록된 함수를 실행
 
 private:

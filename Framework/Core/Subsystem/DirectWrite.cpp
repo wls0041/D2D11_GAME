@@ -86,13 +86,39 @@ void DirectWrite::EndTextDraw()
 	assert(SUCCEEDED(hr));
 }
 
-void DirectWrite::Text(const wstring & text, const Vector2 & position, const float & fontSize, const Color & fontColor, const wstring & fontName, const DWRITE_FONT_WEIGHT &fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
+void DirectWrite::Text(const wstring & text, const Vector2 & position, const float & fontSize, const Color & fontColor, const wstring & fontName, const DWRITE_FONT_WEIGHT & fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
 {
 	D2D1_RECT_F range;
-	range.left = position.x; //¿ÞÂÊ»ó´ÜºÎÅÍ ¾¸
-	range.top = position.y;
+	range.left = position.x;
+	range.top = position.y + fontSize * 0.5f;
 	range.right = position.x + text.length() * fontSize;
-	range.bottom = position.y + fontSize;
+	range.bottom = position.y - fontSize * 0.5f;
+
+	auto brush = RegisterBrush(fontColor);
+	auto format = RegisterFormat(fontName, fontSize, fontWeight, fontStyle, fontStretch);
+	writeDeviceContext->DrawTextW(text.c_str(), text.length(), format, range, brush);
+}
+
+void DirectWrite::Text_Middle(const wstring & text, const Vector2 & position, const float & fontSize, const Color & fontColor, const wstring & fontName, const DWRITE_FONT_WEIGHT &fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
+{
+	D2D1_RECT_F range;
+	range.left = position.x - text.length() * fontSize * 0.35f;
+	range.top = position.y + fontSize * 0.5f;
+	range.right = position.x + text.length() * fontSize * 0.65f;
+	range.bottom = position.y - fontSize * 0.5f;
+
+	auto brush = RegisterBrush(fontColor);
+	auto format = RegisterFormat(fontName, fontSize, fontWeight, fontStyle, fontStretch);
+	writeDeviceContext->DrawTextW(text.c_str(), text.length(), format, range, brush);
+}
+
+void DirectWrite::Text_Right(const wstring & text, const Vector2 & position, const float & fontSize, const Color & fontColor, const wstring & fontName, const DWRITE_FONT_WEIGHT & fontWeight, const DWRITE_FONT_STYLE & fontStyle, const DWRITE_FONT_STRETCH & fontStretch)
+{
+	D2D1_RECT_F range;
+	range.left = position.x - text.length() * fontSize;
+	range.top = position.y + fontSize * 0.5f;
+	range.right = position.x;
+	range.bottom = position.y - fontSize * 0.5f;
 
 	auto brush = RegisterBrush(fontColor);
 	auto format = RegisterFormat(fontName, fontSize, fontWeight, fontStyle, fontStretch);

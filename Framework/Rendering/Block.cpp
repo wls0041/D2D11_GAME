@@ -4,7 +4,7 @@
 #include "../Scene/Component/Transform.h"
 #include "../Scene/Component/Collider.h"
 
-Block::Block(Context *context) : context(context), offset(0, 0), count(10000)
+Block::Block(Context *context) : context(context), offset(0, 0)
 {
 	graphics = context->GetSubsystem<Graphics>();
 	auto resourceMgr = context->GetSubsystem<ResourceManager>();
@@ -33,7 +33,7 @@ Block::Block(Context *context) : context(context), offset(0, 0), count(10000)
 	worldBuffer->Create<WorldData>();
 
 	//Create Texture
-	texture = resourceMgr->Load<Texture>("Pang_Back.png");
+	texture = resourceMgr->Load<Texture>("Pang_Item.png");
 
 	//Create Rasterizer State
 	{
@@ -100,9 +100,6 @@ void Block::SetCollider()
 	collider->SetCenter(transform->GetPosition());
 	collider->SetSize(transform->GetScale());
 	collider->SetTransform(transform);
-	collider->Event = [this]() { //람다식.람다함수. 무명의 함수, 정식형태 [this]()->void
-		count--;
-	};
 }
 
 void Block::Update()
@@ -113,16 +110,13 @@ void Block::Update()
 
 	auto animData = static_cast<AnimationData*>(spriteBuffer->Map());
 	animData->TextureSize = texture->GetSize();
-	animData->SpriteOffset = offset;
-	animData->SpriteSize = Vector2(384, 208);
+	animData->SpriteOffset = Vector2(40, 587);
+	animData->SpriteSize = Vector2(24, 8);
 	spriteBuffer->Unmap();
 }
 
 void Block::Render()
 {
-	auto dw = context->GetSubsystem<DirectWrite>();
-	dw->Text(to_wstring(count), Vector2(900, 700), 100.0f, Color(1, 1, 0, 1));
-
 	vertexBuffer->BindPipeline();
 	indexBuffer->BindPipeline();
 	inputLayout->BindPipeline();

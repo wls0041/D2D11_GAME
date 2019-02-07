@@ -37,26 +37,43 @@ void ColliderManager::Clear()
 
 void ColliderManager::ClearCollider(const string & name)
 {
-	colliderLayers[name].clear();
-	colliderLayers[name].shrink_to_fit();
+	if (colliderLayers.count(name) > 0) {
+		colliderLayers[name].clear();
+		colliderLayers[name].shrink_to_fit();
+	}
 }
 
 void ColliderManager::HitCheck_AABB(const string & attacker, const string & receiver)
 {
-	for (auto receiverCollider : colliderLayers[receiver])
+	for (auto receiverCollider : colliderLayers[receiver]) {
 		for (auto attackerCollider : colliderLayers[attacker]) {
 			int bCheck = receiverCollider->AABB(attackerCollider);
 
 			if (bCheck) {
-				if (receiverCollider->Event != nullptr) 
+				if (receiverCollider->Event != nullptr)
 					receiverCollider->Event();
 			}
 		}
+	}
+}
+
+void ColliderManager::HitCheck_AABB_Bullet(const string & attacker, const string & receiver, const CheckCase & caseNum)
+{
+	for (auto receiverCollider : colliderLayers[receiver]) {
+		for (auto attackerCollider : colliderLayers[attacker]) {
+			auto bCheck = receiverCollider->AABB_Circle(attackerCollider, caseNum);
+
+			if (bCheck != CircleCheck::None) {
+				if (receiverCollider->Event != nullptr) receiverCollider->Event();
+				if (attackerCollider->Event != nullptr) attackerCollider->Event();
+			}
+		}
+	}
 }
 
 void ColliderManager::HitCheck_AABB_Circle(const string & attacker, const string & receiver, const CheckCase & caseNum)
 {
-	for (auto receiverCollider : colliderLayers[receiver])
+	for (auto receiverCollider : colliderLayers[receiver]) {
 		for (auto attackerCollider : colliderLayers[attacker]) {
 			auto bCheck = receiverCollider->AABB_Circle(attackerCollider, caseNum);
 
@@ -65,5 +82,20 @@ void ColliderManager::HitCheck_AABB_Circle(const string & attacker, const string
 					receiverCollider->EventCircle(bCheck, attackerCollider);
 			}
 		}
+	}
+}
+
+void ColliderManager::HitCheck_AABB_Player(const string & attacker, const string & receiver, const float &position)
+{
+	for (auto receiverCollider : colliderLayers[receiver]) {
+		for (auto attackerCollider : colliderLayers[attacker]) {
+			auto bCheck = receiverCollider->AABB_Circle(attackerCollider, CheckCase::Circle_Rect);
+
+			if (bCheck != CircleCheck::None) {
+				if (receiverCollider->EventPlayer != nullptr)
+					receiverCollider->EventPlayer(position);
+			}
+		}
+	}
 }
 

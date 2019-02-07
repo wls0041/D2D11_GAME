@@ -34,7 +34,15 @@ public:
 	void EndTextDraw();
 
 	void Text(const wstring &text, const Vector2 &position, const float &fontSize = 20.0f,
-		const Color &fontColor = Color(0, 0, 0, 1), const wstring &fontName = L"굴림체", const DWRITE_FONT_WEIGHT &fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
+		const Color &fontColor = Color(0, 0, 0, 1), const wstring &fontName = L"Verdana", const DWRITE_FONT_WEIGHT &fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
+		const DWRITE_FONT_STYLE &fontStyle = DWRITE_FONT_STYLE_NORMAL, const DWRITE_FONT_STRETCH &fontStretch = DWRITE_FONT_STRETCH_NORMAL); //출력함수
+	
+	void Text_Middle(const wstring &text, const Vector2 &position, const float &fontSize = 20.0f,
+		const Color &fontColor = Color(0, 0, 0, 1), const wstring &fontName = L"Verdana", const DWRITE_FONT_WEIGHT &fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
+		const DWRITE_FONT_STYLE &fontStyle = DWRITE_FONT_STYLE_NORMAL, const DWRITE_FONT_STRETCH &fontStretch = DWRITE_FONT_STRETCH_NORMAL); //출력함수
+
+	void Text_Right(const wstring &text, const Vector2 &position, const float &fontSize = 20.0f,
+		const Color &fontColor = Color(0, 0, 0, 1), const wstring &fontName = L"Verdana", const DWRITE_FONT_WEIGHT &fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
 		const DWRITE_FONT_STYLE &fontStyle = DWRITE_FONT_STYLE_NORMAL, const DWRITE_FONT_STRETCH &fontStretch = DWRITE_FONT_STRETCH_NORMAL); //출력함수
 
 private:

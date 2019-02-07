@@ -15,7 +15,9 @@ public:
 	void Clear();
 	void ClearCollider(const string &name);
 	void HitCheck_AABB(const string &attacker, const string &receiver);
+	void HitCheck_AABB_Bullet(const string &attacker, const string &receiver, const CheckCase &caseNum);
 	void HitCheck_AABB_Circle(const string &attacker, const string &receiver, const CheckCase &caseNum);
+	void HitCheck_AABB_Player(const string &attacker, const string &receiver, const float &position);
 
 private:
 	map<string, vector<class Collider*>> colliderLayers;
