@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "./Framework/Core/Window.h"
 #include "./Framework/Core/Engine.h"
+#include "./Editor/Editor.h"
 
+static Editor *editor;
 static Engine *engine;
 static Graphics *graphics;
 
@@ -22,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPSTR lpszCmdPar
 
 		graphics->BeginScene();
 		{
-
+			editor->Render();
 		}
 		graphics->EndScene();
 	}
@@ -45,8 +47,12 @@ void Initialize()
 	engine = new Engine();
 	engine->Initialize();
 
+	editor = new Editor();
+	editor->Initialize(engine->GetContext());
+
 	graphics = engine->GetContext()->GetSubsystem<Graphics>();
 
+	Window::EditorProc = Editor::EditorProc;
 	Window::InputProc = Input::MouseProc;
 	Window::Resize = Resize;
 }

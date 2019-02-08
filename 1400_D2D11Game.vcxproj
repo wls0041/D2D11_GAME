@@ -152,6 +152,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Editor\Editor.cpp" />
+    <ClCompile Include="Editor\ImGui\ImGuizmo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\Source\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\Source\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\Source\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\Source\imgui_stdlib.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\Source\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\ImGui\TextEditor.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Editor\Widget\Hierarchy.cpp" />
     <ClCompile Include="Framework\Core\D3D11\BasicData\Vertex.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\InputLayout.cpp" />
@@ -203,6 +231,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Editor\Editor.h" />
+    <ClInclude Include="Editor\ImGui\ImGuizmo.h" />
+    <ClInclude Include="Editor\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="Editor\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="Editor\ImGui\Source\imconfig.h" />
+    <ClInclude Include="Editor\ImGui\Source\imgui.h" />
+    <ClInclude Include="Editor\ImGui\Source\imgui_internal.h" />
+    <ClInclude Include="Editor\ImGui\Source\imgui_stdlib.h" />
+    <ClInclude Include="Editor\ImGui\Source\imstb_rectpack.h" />
+    <ClInclude Include="Editor\ImGui\Source\imstb_textedit.h" />
+    <ClInclude Include="Editor\ImGui\Source\imstb_truetype.h" />
+    <ClInclude Include="Editor\ImGui\TextEditor.h" />
+    <ClInclude Include="Editor\Widget\Hierarchy.h" />
+    <ClInclude Include="Editor\Widget\IWidget.h" />
     <ClInclude Include="Framework\Core\Context.h" />
     <ClInclude Include="Framework\Core\D3D11\BasicData\Config.h" />
     <ClInclude Include="Framework\Core\D3D11\BasicData\Geometry.h" />

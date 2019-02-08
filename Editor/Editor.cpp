@@ -3,6 +3,7 @@
 #include "./ImGui/Source/imgui.h"
 #include "./ImGui/imgui_impl_win32.h"
 #include "./ImGui/imgui_impl_dx11.h"
+#include "./Widget/Hierarchy.h"
 
 #define DOCKING_ENABLED ImGui::GetIO().ConfigFlags & ImguiConfigFlags_DockingEnable //bit연산에 의해 오른쪽이 켜져있을 때만 true 나옴
 
@@ -16,6 +17,12 @@ Editor::Editor() : context(nullptr), bInitialized(false), bDockspace(true)
 
 Editor::~Editor()
 {
+	if (!bInitialized) return;
+	for (auto widget : widgets) SAFE_DELETE(widget);
+
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 LRESULT Editor::MessageProc(HWND handle, uint message, WPARAM wParam, LPARAM lParam)
@@ -39,14 +46,14 @@ void Editor::Initialize(Context * context)
 	ImGuiIO &io = ImGui::GetIO(); //input ouput에 관한 모든 정보 가지고 있음
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; //tab을 누르면 다른 창 선택되는 기능
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; //docking기능 가능하게 함. 안켜주면 7줄에서 false반환됨
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcon;
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcon;
 	io.ConfigResizeWindowsFromEdges = true; //전체화면 아닐 때 모서리를 드래그해서 사이즈조절 가능하게 함
 
 	ImGui_ImplWin32_Init(Settings::Get().GetWindowHandle());
 	ImGui_ImplDX11_Init(graphics->GetDevice(), graphics->GetDeviceContext());
 
-	//TODO:
+	widgets.emplace_back(new Hierarchy(context));
 
 	EditorProc = bind(&Editor::MessageProc, this, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4); //변수 4개 맵핑
 	bInitialized = true;
@@ -56,6 +63,23 @@ void Editor::Initialize(Context * context)
 
 void Editor::Render()
 {
+	if (!bInitialized) return;
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	for (auto widget : widgets) {
+		if (widget->IsVisible()) {
+			widget->Begin();
+			widget->Render();
+			widget->End();
+		}
+	}
+
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); //imgui안의 drawdata를 받아서 dx11에 뿌려줌
 }
 
 
