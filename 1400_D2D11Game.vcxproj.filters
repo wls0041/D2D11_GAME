@@ -44,6 +44,7 @@
     <ClCompile Include="Framework\Core\Subsystem\EffectManager.cpp" />
     <ClCompile Include="Framework\Core\D3D11\OMStage\RenderTexture.cpp" />
     <ClCompile Include="Framework\Core\Engine.cpp" />
+    <ClCompile Include="Editor\Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="Framework\Core\Subsystem\EffectManager.h" />
     <ClInclude Include="Framework\Core\D3D11\OMStage\RenderTexture.h" />
     <ClInclude Include="Framework\Core\Engine.h" />
+    <ClInclude Include="Editor\Editor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\Core\D3D11\BasicData\Geometry.inl" />

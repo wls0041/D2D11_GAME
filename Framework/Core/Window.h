@@ -31,6 +31,7 @@ namespace Window
 		case WM_SIZE:
 			if (Resize != nullptr && wParam != SIZE_MINIMIZED)
 				Resize(lParam & 0xffff, (lParam >> 16) & 0xffff);
+			break;
 		case WM_CLOSE:
 		case WM_DESTROY:
 			PostQuitMessage(0);

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Editor\Editor.cpp" />
     <ClCompile Include="Framework\Core\D3D11\BasicData\Vertex.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Core\D3D11\IAStage\InputLayout.cpp" />
@@ -201,6 +202,7 @@
     <ClCompile Include="Framework\Core\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Editor\Editor.h" />
     <ClInclude Include="Framework\Core\Context.h" />
     <ClInclude Include="Framework\Core\D3D11\BasicData\Config.h" />
     <ClInclude Include="Framework\Core\D3D11\BasicData\Geometry.h" />
