@@ -61,6 +61,20 @@ void BallManager::Split(const int &index)
 	Balls[number]->SetCollider();
 	number++;
 
+	//for (auto iter = effects.begin(); iter != effects.end();) { //resourceManager등록 안했다면. 사용 안하면 erase전에 delete해야함
+	//	auto effect = *iter;
+	//	effect->Update();
+	//
+	//	if (!effect->IsExist()) {
+	//		SAFE_DELETE(effect);
+	//		iter = effects.erase(iter); //iter -> 지우고 그 자리를 반환
+	//	}
+	//	else iter++;
+	//} //동적할당이 빈번하면 빈공간이 생기고 그 공간을 활용하지 못하는 병목현상이 생길 수 있음
+	////따라서 미리 데이터공간을 할당하는 데이터풀링이 필요함
+	//
+	//int i = index;
+	//SAFE_DELETE(Balls[i]); 
 	Balls.erase(index);
 }
 
